@@ -2,7 +2,7 @@ use image::{RgbImage, Rgb};
 use nalgebra::{Vector3};
 use std::ops::Add;
 
-use crate::model::{Model};
+use crate::model::{Model, Hittable};
 use crate::light::{Light};
 use crate::ray::{Ray};
 
@@ -36,16 +36,13 @@ impl Scene {
 
     fn trace(&self, ray: &Ray) -> Vector3<f64> {
         let mut min_distance = f64::INFINITY;
-        let mut intersection: Option<(f64, Vector3<f64>, Box<&Model>)> = None;
-        for m in &self.models {
-            for t in &m.hittables {
-                match t.intersects(ray) {
-                    None => (),
-                    Some(distance) => {
-                        if distance < min_distance {
-                            min_distance = distance;
-                            intersection = Some((distance, t.normal(ray.get_point(distance)), Box::new(m)))
-                        }
+        let mut intersection: Option<(f64, &Model, &Box<dyn Hittable>)> = None;
+        for m in self.models.iter() {
+            for t in m.hittables.iter() {
+                if let Some(distance) = t.intersects(ray) {
+                    if distance < min_distance {
+                        min_distance = distance;
+                        intersection = Some((distance, m, &t))
                     }
                 }
             }
@@ -53,10 +50,10 @@ impl Scene {
 
         match intersection {
             None => Vector3::new(0.0, 0.0, 0.0),
-            Some((distance, normal, model)) => {
+            Some((distance, model, hittable)) => {
                 self.lights
                     .iter()
-                    .map(|l| l.shade(&ray, ray.get_point(distance), distance, normal, &model))
+                    .map(|l| l.shade(&ray, ray.get_point(distance), &model, &hittable))
                     .fold(Vector3::new(0.0, 0.0, 0.0), |a, b| a.add(b))
             }
         }

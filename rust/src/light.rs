@@ -3,11 +3,11 @@ use std::ops::Mul;
 use std::ops::Sub;
 use std::ops::Add;
 
-use crate::model::{Model};
+use crate::model::{Model, Hittable};
 use crate::ray::{Ray};
 
 pub trait Light {
-  fn shade(&self, ray: &Ray, point: Vector3<f64>, distance: f64, normal: Vector3<f64>, model: &Model) -> Vector3<f64>;
+  fn shade(&self, ray: &Ray, point: Vector3<f64>, model: &Model, hittable: &Box<dyn Hittable>) -> Vector3<f64>;
 }
 
 pub struct AmbientLight {
@@ -28,7 +28,7 @@ pub struct PointLight {
 }
 
 impl Light for AmbientLight {
-  fn shade(&self, _ray: &Ray, _point: Vector3<f64>, _distance: f64, _normal: Vector3<f64>, model: &Model) -> Vector3<f64> {
+  fn shade(&self, _ray: &Ray, _point: Vector3<f64>, model: &Model, _hittable: &Box<dyn Hittable>) -> Vector3<f64> {
         let kd = model.material.diffuse_reflection;
         let cd = model.material.diffuse_color;
         let cl = self.color;
@@ -38,11 +38,11 @@ impl Light for AmbientLight {
 }
 
 impl Light for DirectionalLight {
-  fn shade(&self, _ray: &Ray, point: Vector3<f64>, _distance: f64, normal: Vector3<f64>, model: &Model) -> Vector3<f64> {
+  fn shade(&self, _ray: &Ray, point: Vector3<f64>, model: &Model, hittable: &Box<dyn Hittable>) -> Vector3<f64> {
     let l = self.location.sub(point).normalize();
     let kd = model.material.diffuse_reflection;
     let cd = model.material.diffuse_color;
-    let n = normal;
+    let n = hittable.normal(point);
     let cl = self.color;
     let ls = self.radiance;
     return cd
@@ -54,14 +54,14 @@ impl Light for DirectionalLight {
 }
 
 impl Light for PointLight {
-    fn shade(&self, ray: &Ray, point: Vector3<f64>, _distance: f64, normal: Vector3<f64>, model: &Model) -> Vector3<f64> {
+    fn shade(&self, ray: &Ray, point: Vector3<f64>, model: &Model, hittable: &Box<dyn Hittable>) -> Vector3<f64> {
         let w = ray.start.sub(point).normalize();
         let l = self.location.sub(point).normalize();
         let kd = model.material.diffuse_reflection;
         let cd = model.material.diffuse_color;
         let ks = model.material.specular_refection;
         let e = model.material.shininess;
-        let n = normal;
+        let n = hittable.normal(point);
         let cl = self.color;
         let ls = self.radiance;
 
