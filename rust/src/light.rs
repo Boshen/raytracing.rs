@@ -7,7 +7,7 @@ use crate::model::{Model, Hittable};
 use crate::ray::{Ray};
 
 pub trait Light {
-  fn shade(&self, ray: &Ray, point: Vector3<f64>, model: &Model, hittable: &Box<dyn Hittable>) -> Vector3<f64>;
+  fn shade(&self, ray: &Ray, point: Vector3<f64>, model: &Model, hittable: &Box<dyn Hittable>, models: &Vec<Model>) -> Vector3<f64>;
 }
 
 pub struct AmbientLight {
@@ -28,7 +28,7 @@ pub struct PointLight {
 }
 
 impl Light for AmbientLight {
-  fn shade(&self, _ray: &Ray, _point: Vector3<f64>, model: &Model, _hittable: &Box<dyn Hittable>) -> Vector3<f64> {
+  fn shade(&self, _ray: &Ray, _point: Vector3<f64>, model: &Model, _hittable: &Box<dyn Hittable>, _models: &Vec<Model>) -> Vector3<f64> {
         let kd = model.material.diffuse_reflection;
         let cd = model.material.diffuse_color;
         let cl = self.color;
@@ -38,7 +38,7 @@ impl Light for AmbientLight {
 }
 
 impl Light for DirectionalLight {
-  fn shade(&self, _ray: &Ray, point: Vector3<f64>, model: &Model, hittable: &Box<dyn Hittable>) -> Vector3<f64> {
+  fn shade(&self, _ray: &Ray, point: Vector3<f64>, model: &Model, hittable: &Box<dyn Hittable>, _models: &Vec<Model>) -> Vector3<f64> {
     let l = self.location.sub(point).normalize();
     let kd = model.material.diffuse_reflection;
     let cd = model.material.diffuse_color;
@@ -54,7 +54,7 @@ impl Light for DirectionalLight {
 }
 
 impl Light for PointLight {
-    fn shade(&self, ray: &Ray, point: Vector3<f64>, model: &Model, hittable: &Box<dyn Hittable>) -> Vector3<f64> {
+    fn shade(&self, ray: &Ray, point: Vector3<f64>, model: &Model, hittable: &Box<dyn Hittable>, models: &Vec<Model>) -> Vector3<f64> {
         let w = ray.start.sub(point).normalize();
         let l = self.location.sub(point).normalize();
         let kd = model.material.diffuse_reflection;
@@ -64,6 +64,10 @@ impl Light for PointLight {
         let n = hittable.normal(point);
         let cl = self.color;
         let ls = self.radiance;
+
+        if n.dot(&w) > 0.0 && self.is_in_shadow(l, point, &models) {
+            return Vector3::new(0.0, 0.0, 0.0)
+        }
 
         // diffuse
         let diffuse_amount = n.dot(&l).max(0.0);
@@ -78,5 +82,22 @@ impl Light for PointLight {
         let specular_amount = r.dot(&w);
         let specular = cl.mul(ks * specular_amount.powf(e) * diffuse_amount * ls);
         return diffuse.add(specular)
+    }
+
+}
+
+impl PointLight {
+    fn is_in_shadow(&self, l: Vector3<f64>, point: Vector3<f64>, models: &Vec<Model>) -> bool {
+        let shadow_ray = Ray {start: point.add(l.mul(0.00001)), direction: l};
+        for m in models.iter() {
+            if !m.material.transparent {
+                for h in m.hittables.iter() {
+                    if let Some(_) = h.intersects(&shadow_ray) {
+                        return true
+                    }
+                }
+            }
+        }
+        return false
     }
 }

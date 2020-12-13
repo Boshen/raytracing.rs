@@ -53,7 +53,7 @@ impl Scene {
             Some((distance, model, hittable)) => {
                 self.lights
                     .iter()
-                    .map(|l| l.shade(&ray, ray.get_point(distance), &model, &hittable))
+                    .map(|l| l.shade(&ray, ray.get_point(distance), &model, &hittable, &self.models))
                     .fold(Vector3::new(0.0, 0.0, 0.0), |a, b| a.add(b))
             }
         }
