@@ -1,4 +1,4 @@
-use nalgebra::{Vector3, Dot, Cross};
+use nalgebra::{Vector3, Dot, Cross, Norm};
 use std::ops::{Sub, Mul};
 
 use crate::ray::{Ray};
@@ -21,6 +21,7 @@ pub struct Material {
 pub trait Hittable {
     fn scale(&mut self, l: f64) -> ();
     fn intersects(&self, ray: &Ray) -> Option<f64>;
+    fn normal(&self, p: Vector3<f64>) -> Vector3<f64>;
 }
 
 pub struct Triangle(
@@ -81,6 +82,12 @@ impl Hittable for Triangle {
         }
 
         return Some(t)
+    }
+
+    fn normal(&self, _p: Vector3<f64>) -> Vector3<f64> {
+        let e1 = self.1.sub(self.0);
+        let e2 = self.2.sub(self.0);
+        return e2.cross(&e1).normalize();
     }
 
     fn scale(&mut self, l: f64) {
@@ -144,6 +151,13 @@ impl Hittable for Sphere {
     }
 
     return Some(t)
+  }
+
+  fn normal(&self, p: Vector3<f64>) -> Vector3<f64> {
+    return p
+      .sub(self.center)
+      .mul(1.0 / self.radius)
+      .normalize()
   }
 
   fn scale(&mut self, l: f64) {

@@ -2,6 +2,17 @@ use nalgebra::{Vector3};
 
 use crate::model::{Model, Material, Triangle, Sphere, Hittable};
 
+pub fn default_metarial() -> Material {
+    return Material {
+        diffuse_reflection: 1.0,
+        diffuse_color: Vector3::new(0.0, 0.0, 0.0),
+        reflection: 0.0,
+        specular_refection: 0.0,
+        shininess: 0.0,
+        transparent: false,
+    }
+}
+
 pub fn get_models() -> Vec<Model> {
     let mut models: Vec<Model> = Vec::new();
 
@@ -16,23 +27,16 @@ pub fn get_models() -> Vec<Model> {
     let mut g = Vector3::new(l, l, l);
     let mut h = Vector3::new(0.0, l, l);
 
-    let default_metarial = Material {
-        diffuse_reflection: 1.0,
-        diffuse_color: Vector3::new(0.0, 0.0, 0.0),
-        reflection: 0.0,
-        specular_refection: 0.0,
-        shininess: 0.0,
-        transparent: false,
-    };
+    let material = default_metarial();
 
-    let wall_beige         = Material { diffuse_color: Vector3::new(0.85, 0.85, 0.7), ..default_metarial };
-    let wall_red           = Material { diffuse_color: Vector3::new(0.75, 0.15, 0.15), ..default_metarial };
-    let wall_green         = Material { diffuse_color: Vector3::new(0.15, 0.75, 0.15), ..default_metarial };
-    let light_material     = Material { diffuse_color: Vector3::new(1.0, 1.0, 1.0), diffuse_reflection: 10.0, transparent: true, ..default_metarial };
-    let light_box_material = Material { diffuse_color: Vector3::new(0.2, 0.2, 0.2), diffuse_reflection: 5.0, transparent: true, ..default_metarial };
-    let block_blue         = Material { diffuse_color: Vector3::new(0.05, 0.6, 1.0), ..default_metarial };
-    let block_orange       = Material { diffuse_color: Vector3::new(0.8, 0.7, 0.05), ..default_metarial };
-    let sphere_material    = Material { diffuse_reflection: 0.0, reflection: 1.0, specular_refection: 1.0, shininess: 5.0, ..default_metarial };
+    let wall_beige         = Material { diffuse_color: Vector3::new(0.85, 0.85, 0.7), ..material };
+    let wall_red           = Material { diffuse_color: Vector3::new(0.75, 0.15, 0.15), ..material };
+    let wall_green         = Material { diffuse_color: Vector3::new(0.15, 0.75, 0.15), ..material };
+    let light_material     = Material { diffuse_color: Vector3::new(1.0, 1.0, 1.0), diffuse_reflection: 10.0, transparent: true, ..material };
+    let light_box_material = Material { diffuse_color: Vector3::new(0.2, 0.2, 0.2), diffuse_reflection: 5.0, transparent: true, ..material };
+    let block_blue         = Material { diffuse_color: Vector3::new(0.05, 0.6, 1.0), ..material };
+    let block_orange       = Material { diffuse_color: Vector3::new(0.8, 0.7, 0.05), ..material };
+    let sphere_material    = Material { diffuse_reflection: 0.0, reflection: 1.0, specular_refection: 1.0, shininess: 5.0, ..material };
 
     // floor
     models.push(Model::new(wall_beige, vec![t(c, b, a), t(c, d, b)]));
