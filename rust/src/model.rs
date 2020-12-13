@@ -8,21 +8,6 @@ pub struct Model {
     pub hittables: Vec<Box<dyn Hittable>>,
 }
 
-impl Model {
-    pub fn new(material: Material, hittables:Vec<Box<dyn Hittable>>) -> Model {
-        Model {
-            material: material,
-            hittables: hittables,
-        }
-    }
-
-    pub fn scale(&mut self, l: f64) {
-        for h in &mut self.hittables {
-            h.scale(l);
-        }
-    }
-}
-
 #[derive(Copy, Clone)]
 pub struct Material {
   pub diffuse_reflection: f64,
@@ -43,6 +28,27 @@ pub struct Triangle(
     pub Vector3<f64>,
     pub Vector3<f64>
 );
+
+pub struct Sphere {
+    pub radius: f64,
+    pub center: Vector3<f64>
+}
+
+impl Model {
+    pub fn new(material: Material, hittables:Vec<Box<dyn Hittable>>) -> Model {
+        Model {
+            material: material,
+            hittables: hittables,
+        }
+    }
+
+    pub fn scale(&mut self, l: f64) {
+        for h in &mut self.hittables {
+            h.scale(l);
+        }
+    }
+}
+
 
 impl Hittable for Triangle {
     fn intersects(&self, ray: &Ray) -> Option<f64> {
@@ -94,4 +100,57 @@ impl Hittable for Triangle {
         self.1.y = -self.1.y;
         self.2.y = -self.2.y;
     }
+}
+
+impl Sphere {
+  pub fn new(radius: f64, center: Vector3<f64>) -> Sphere {
+      Sphere {
+          radius: radius,
+          center: center
+      }
+  }
+}
+
+impl Hittable for Sphere {
+  fn intersects(&self, ray: &Ray) -> Option<f64>{
+    let center = self.center;
+    let radius = self.radius;
+    let start = ray.start;
+    let dx = ray.direction.x;
+    let dy = ray.direction.y;
+    let dz = ray.direction.z;
+
+    let a = dx * dx + dy * dy + dz * dz;
+    let b = 2.0 * dx * (start.x - center.x) + 2.0 * dy * (start.y - center.y) + 2.0 * dz * (start.z - center.z);
+    let c =
+      center.x * center.x +
+      center.y * center.y +
+      center.z * center.z +
+      start.x * start.x +
+      start.y * start.y +
+      start.z * start.z -
+      2.0 * (center.x * start.x + center.y * start.y + center.z * start.z) -
+      radius * radius;
+
+    let disc = b * b - 4.0 * a * c;
+
+    if disc < 0.0 {
+      return None
+    }
+
+    let t = (-b - disc.sqrt()) / (2.0 * a);
+    if t < 0.0 {
+      return None
+    }
+
+    return Some(t)
+  }
+
+  fn scale(&mut self, l: f64) {
+    self.center = self.center.mul(2.0 / l);
+    self.center = self.center.sub(Vector3::new(1.0, 1.0, 1.0));
+    self.center.x = -self.center.x;
+    self.center.y = -self.center.y;
+    self.radius = (self.radius * 2.0) / l;
+  }
 }

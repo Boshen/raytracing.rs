@@ -1,6 +1,6 @@
 use nalgebra::{Vector3};
 
-use crate::model::{Model, Material, Triangle, Hittable};
+use crate::model::{Model, Material, Triangle, Sphere, Hittable};
 
 pub fn get_models() -> Vec<Model> {
     let mut models: Vec<Model> = Vec::new();
@@ -32,7 +32,7 @@ pub fn get_models() -> Vec<Model> {
     let light_box_material = Material { diffuse_color: Vector3::new(0.2, 0.2, 0.2), diffuse_reflection: 5.0, transparent: true, ..default_metarial };
     let block_blue         = Material { diffuse_color: Vector3::new(0.05, 0.6, 1.0), ..default_metarial };
     let block_orange       = Material { diffuse_color: Vector3::new(0.8, 0.7, 0.05), ..default_metarial };
-    // let sphere_material    = Material { diffuse_reflection: 0.0, reflection: 1.0, specular_refection: 1.0, shininess: 5.0, ..default_metarial };
+    let sphere_material    = Material { diffuse_reflection: 0.0, reflection: 1.0, specular_refection: 1.0, shininess: 5.0, ..default_metarial };
 
     // floor
     models.push(Model::new(wall_beige, vec![t(c, b, a), t(c, d, b)]));
@@ -133,6 +133,11 @@ pub fn get_models() -> Vec<Model> {
             t(e, a, c),
             t(g, f, e),
             t(g, h, f),
+    ]));
+
+    // sphere
+    models.push(Model::new(sphere_material, vec![
+            Box::new(Sphere::new(40.0, Vector3::new(200.0, 165.0 + 40.0, 120.0)))
     ]));
 
     for m in &mut models {
