@@ -2,14 +2,14 @@ use image::{RgbImage, Rgb};
 use nalgebra::{Vector3};
 
 use crate::ray::{Ray};
-use crate::model::{Triangle};
+use crate::model::{Model};
 
 pub struct Scene {
     pub width: u32,
     pub height: u32,
     pub focal_length: u32,
     pub camera: Vector3<f64>,
-    pub models: Vec<Triangle>
+    pub models: Vec<Model>
 }
 
 impl Scene {
@@ -33,14 +33,16 @@ impl Scene {
 
     fn trace(&self, ray: &Ray) -> Vector3<f64> {
         let mut min_distance = f64::INFINITY;
-        let mut hit_model: Option<&Triangle> = None;
+        let mut hit_model: Option<&Model> = None;
         for m in &self.models {
-            match m.intersects(ray) {
-                None => (),
-                Some(t) => {
-                    if t < min_distance {
-                        min_distance = t;
-                        hit_model = Some(&m)
+            for t in &m.hittables {
+                match t.intersects(ray) {
+                    None => (),
+                    Some(t) => {
+                        if t < min_distance {
+                            min_distance = t;
+                            hit_model = Some(&m)
+                        }
                     }
                 }
             }
@@ -48,7 +50,7 @@ impl Scene {
 
         match hit_model {
             None => Vector3::new(0.0, 0.0, 0.0),
-            Some(_m) => Vector3::new(1.0, 1.0, 1.0),
+            Some(m) => m.material.diffuse_color,
         }
     }
 }

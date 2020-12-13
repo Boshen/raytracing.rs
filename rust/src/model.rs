@@ -3,14 +3,49 @@ use std::ops::{Sub, Mul};
 
 use crate::ray::{Ray};
 
+pub struct Model {
+    pub material: Material,
+    pub hittables: Vec<Box<dyn Hittable>>,
+}
+
+impl Model {
+    pub fn new(material: Material, hittables:Vec<Box<dyn Hittable>>) -> Model {
+        Model {
+            material: material,
+            hittables: hittables,
+        }
+    }
+
+    pub fn scale(&mut self, l: f64) {
+        for h in &mut self.hittables {
+            h.scale(l);
+        }
+    }
+}
+
+#[derive(Copy, Clone)]
+pub struct Material {
+  pub diffuse_reflection: f64,
+  pub diffuse_color: Vector3<f64>,
+  pub reflection: f64,
+  pub specular_refection: f64,
+  pub shininess: f64,
+  pub transparent: bool
+}
+
+pub trait Hittable {
+    fn scale(&mut self, l: f64) -> ();
+    fn intersects(&self, ray: &Ray) -> Option<f64>;
+}
+
 pub struct Triangle(
     pub Vector3<f64>,
     pub Vector3<f64>,
     pub Vector3<f64>
 );
 
-impl Triangle {
-    pub fn intersects(&self, ray: &Ray) -> Option<f64> {
+impl Hittable for Triangle {
+    fn intersects(&self, ray: &Ray) -> Option<f64> {
         let epsilon = 0.000001;
         let e1 = self.1.sub(self.0);
         let e2 = self.2.sub(self.0);
@@ -42,7 +77,7 @@ impl Triangle {
         return Some(t)
     }
 
-    pub fn scale(&mut self, l: f64) {
+    fn scale(&mut self, l: f64) {
         self.0 = self.0.mul(2.0 / l);
         self.1 = self.1.mul(2.0 / l);
         self.2 = self.2.mul(2.0 / l);
