@@ -1,7 +1,8 @@
 use image::{RgbImage, Rgb};
-use nalgebra::{Vector3};
+use nalgebra::{Vector3, Dot};
 use std::ops::Add;
 use std::ops::Mul;
+use std::ops::Sub;
 
 use crate::model::{Model, Hittable};
 use crate::light::{Light};
@@ -53,10 +54,10 @@ impl Scene {
     fn get_color(&self, x: f64, y: f64) -> Vector3<f64> {
         let d = Vector3::new(x, y, self.focal_length as f64);
         let ray = Ray {start: self.camera, direction: d};
-        return self.trace(&ray)
+        return self.trace(&ray, Vector3::new(0.0, 0.0, 0.0), 0)
     }
 
-    fn trace(&self, ray: &Ray) -> Vector3<f64> {
+    fn trace(&self, ray: &Ray, color: Vector3<f64>, depth: u64) -> Vector3<f64> {
         let mut min_distance = f64::INFINITY;
         let mut intersection: Option<(f64, &Model, &Box<dyn Hittable>)> = None;
         for m in self.models.iter() {
@@ -73,11 +74,29 @@ impl Scene {
         match intersection {
             None => Vector3::new(0.0, 0.0, 0.0),
             Some((distance, model, hittable)) => {
-                self.lights
+                let point = ray.get_point(distance);
+                let shade_color = self.lights
                     .iter()
-                    .map(|l| l.shade(&ray, ray.get_point(distance), &model, &hittable, &self.models))
-                    .fold(Vector3::new(0.0, 0.0, 0.0), |a, b| a.add(b))
+                    .map(|l| l.shade(&ray, point, &model, &hittable, &self.models))
+                    .fold(Vector3::new(0.0, 0.0, 0.0), |a, b| a.add(b));
+                let reflection_color = self.calc_reflection_color(&ray, point, &model, &hittable, color, depth);
+                return shade_color.add(reflection_color)
             }
         }
     }
+
+  fn calc_reflection_color(&self, ray: &Ray, point: Vector3<f64>, model: &Model, hittable: &Box<dyn Hittable>, color: Vector3<f64>, depth: u64) -> Vector3<f64> {
+    if depth > 3 {
+      return color
+    }
+    let reflection = model.material.reflection;
+    if reflection == 0.0 {
+      return color
+    }
+    let normal = hittable.normal(point);
+    let reflect_dir = 2.0 * ray.direction.dot(&normal);
+    let reflect_ray = Ray{start: point, direction: ray.direction.sub(normal.mul(reflect_dir))};
+    let reflection_color = self.trace(&reflect_ray, color, depth + 1);
+    return reflection_color.mul(reflection).add(color);
+  }
 }
