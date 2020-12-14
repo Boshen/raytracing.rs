@@ -3,6 +3,9 @@ use std::ops::{Sub, Mul};
 
 use crate::ray::{Ray};
 
+pub type Color = Vector3<f64>;
+pub type Vec3 = Vector3<f64>;
+
 pub struct Model {
     pub material: Material,
     pub hittables: Vec<Box<dyn Hittable>>,
@@ -11,7 +14,7 @@ pub struct Model {
 #[derive(Copy, Clone)]
 pub struct Material {
   pub diffuse_reflection: f64,
-  pub diffuse_color: Vector3<f64>,
+  pub diffuse_color: Color,
   pub reflection: f64,
   pub specular_refection: f64,
   pub shininess: f64,
@@ -21,18 +24,18 @@ pub struct Material {
 pub trait Hittable: Send + Sync {
     fn scale(&mut self, l: f64) -> ();
     fn intersects(&self, ray: &Ray) -> Option<f64>;
-    fn normal(&self, p: &Vector3<f64>) -> Vector3<f64>;
+    fn normal(&self, p: &Vec3) -> Vec3;
 }
 
 pub struct Triangle(
-    pub Vector3<f64>,
-    pub Vector3<f64>,
-    pub Vector3<f64>
+    pub Vec3,
+    pub Vec3,
+    pub Vec3
 );
 
 pub struct Sphere {
     pub radius: f64,
-    pub center: Vector3<f64>
+    pub center: Vec3
 }
 
 impl Model {
@@ -89,7 +92,7 @@ impl Hittable for Triangle {
         return Some(t)
     }
 
-    fn normal(&self, _p: &Vector3<f64>) -> Vector3<f64> {
+    fn normal(&self, _p: &Vec3) -> Vec3 {
         let e1 = self.1.sub(self.0);
         let e2 = self.2.sub(self.0);
         return e2.cross(&e1).normalize();
@@ -100,9 +103,9 @@ impl Hittable for Triangle {
         self.1 = self.1.mul(2.0 / l);
         self.2 = self.2.mul(2.0 / l);
 
-        self.0 = self.0.sub(Vector3::new(1.0, 1.0, 1.0));
-        self.1 = self.1.sub(Vector3::new(1.0, 1.0, 1.0));
-        self.2 = self.2.sub(Vector3::new(1.0, 1.0, 1.0));
+        self.0 = self.0.sub(Vec3::new(1.0, 1.0, 1.0));
+        self.1 = self.1.sub(Vec3::new(1.0, 1.0, 1.0));
+        self.2 = self.2.sub(Vec3::new(1.0, 1.0, 1.0));
 
         self.0.x = -self.0.x;
         self.1.x = -self.1.x;
@@ -115,7 +118,7 @@ impl Hittable for Triangle {
 }
 
 impl Sphere {
-  pub fn new(radius: f64, center: Vector3<f64>) -> Sphere {
+  pub fn new(radius: f64, center: Vec3) -> Sphere {
       Sphere {
           radius: radius,
           center: center
@@ -164,7 +167,7 @@ impl Hittable for Sphere {
     return Some(t)
   }
 
-  fn normal(&self, p: &Vector3<f64>) -> Vector3<f64> {
+  fn normal(&self, p: &Vec3) -> Vec3 {
     return p
       .sub(self.center)
       .mul(1.0 / self.radius)
@@ -173,7 +176,7 @@ impl Hittable for Sphere {
 
   fn scale(&mut self, l: f64) {
     self.center = self.center.mul(2.0 / l);
-    self.center = self.center.sub(Vector3::new(1.0, 1.0, 1.0));
+    self.center = self.center.sub(Vec3::new(1.0, 1.0, 1.0));
     self.center.x = -self.center.x;
     self.center.y = -self.center.y;
     self.radius = (self.radius * 2.0) / l;
