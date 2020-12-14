@@ -14,7 +14,7 @@ pub struct Scene {
     pub height: u32,
     pub focal_length: u32,
     pub camera: Vector3<f64>,
-    pub lights: Vec<Box<dyn Light>>,
+    pub lights: Vec<Light>,
     pub models: Vec<Model>
 }
 
@@ -84,15 +84,15 @@ impl Scene {
                 let point = ray.get_point(distance);
                 let shade_color = self.lights
                     .iter()
-                    .map(|l| l.shade(&ray, point, &model, &hittable, &self.models))
+                    .map(|l| l.shade(&ray, &point, &model, &hittable, &self.models))
                     .fold(Vector3::new(0.0, 0.0, 0.0), |a, b| a.add(b));
-                let reflection_color = self.calc_reflection_color(&ray, point, &model, &hittable, color, depth);
+                let reflection_color = self.calc_reflection_color(&ray, &point, &model, &hittable, color, depth);
                 return shade_color.add(reflection_color)
             }
         }
     }
 
-  fn calc_reflection_color(&self, ray: &Ray, point: Vector3<f64>, model: &Model, hittable: &Box<dyn Hittable>, color: Vector3<f64>, depth: u64) -> Vector3<f64> {
+  fn calc_reflection_color(&self, ray: &Ray, point: &Vector3<f64>, model: &Model, hittable: &Box<dyn Hittable>, color: Vector3<f64>, depth: u64) -> Vector3<f64> {
     if depth > 3 {
       return color
     }
@@ -100,9 +100,9 @@ impl Scene {
     if reflection == 0.0 {
       return color
     }
-    let normal = hittable.normal(point);
+    let normal = hittable.normal(&point);
     let reflect_dir = 2.0 * ray.direction.dot(&normal);
-    let reflect_ray = Ray{start: point, direction: ray.direction.sub(normal.mul(reflect_dir))};
+    let reflect_ray = Ray{start: *point, direction: ray.direction.sub(normal.mul(reflect_dir))};
     let reflection_color = self.trace(&reflect_ray, color, depth + 1);
     return reflection_color.mul(reflection).add(color);
   }

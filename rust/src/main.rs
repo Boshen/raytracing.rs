@@ -9,23 +9,24 @@ mod light;
 
 use crate::models::{get_models};
 use crate::scene::{Scene};
-use crate::light::{Light, AmbientLight, DirectionalLight, PointLight};
+use crate::light::{Light, LightData};
 
 fn main() {
     let width = 500;
     let height = 500;
 
-    let lights: Vec<Box<dyn Light>> = vec![
-        Box::new(AmbientLight {
+    let lights = vec![
+        Light::Ambient(LightData {
             radiance: 1.0,
-            color: Vector3::new(0.2, 0.2, 0.2)
+            color: Vector3::new(0.2, 0.2, 0.2),
+            location: Vector3::new(0.0, 0.0, 0.0)
         }),
-        Box::new(DirectionalLight {
+        Light::Directional(LightData{
             radiance: 1.0,
             color: Vector3::new(1.0, 1.0, 1.0),
             location: Vector3::new(0.0, 0.0, -1.0)
         }),
-        Box::new(PointLight {
+        Light::Point(LightData{
             radiance: 3.0,
             color: Vector3::new(1.0, 1.0, 1.0),
             location: Vector3::new(0.0, -1.0, 0.0)
