@@ -68,13 +68,13 @@ pub fn get_models() -> Vec<Model> {
     };
 
     // floor
-    models.push(Model::new(wall_beige, vec![t(c, b, a), t(c, d, b)]));
+    models.push(Model::new(l, wall_beige, vec![t(c, b, a), t(c, d, b)]));
     // left
-    models.push(Model::new(wall_red, vec![t(a, e, c), t(c, e, g)]));
+    models.push(Model::new(l, wall_red, vec![t(a, e, c), t(c, e, g)]));
     // right
-    models.push(Model::new(wall_green, vec![t(f, b, d), t(h, f, d)]));
+    models.push(Model::new(l, wall_green, vec![t(f, b, d), t(h, f, d)]));
     // front wall
-    models.push(Model::new(wall_beige, vec![t(g, d, c), t(g, h, d)]));
+    models.push(Model::new(l, wall_beige, vec![t(g, d, c), t(g, h, d)]));
 
     let hole_radius = 75.0;
     let i = Vec3::new(l / 2.0 + hole_radius, l, l / 2.0 - hole_radius);
@@ -92,6 +92,7 @@ pub fn get_models() -> Vec<Model> {
 
     // ceiling
     models.push(Model::new(
+        l,
         wall_beige,
         vec![
             t(e, m, g),
@@ -106,7 +107,11 @@ pub fn get_models() -> Vec<Model> {
     ));
 
     // light hole
-    models.push(Model::new(light_material, vec![t(l2, k, i), t(l2, i, j)]));
+    models.push(Model::new(
+        l,
+        light_material,
+        vec![t(l2, k, i), t(l2, i, j)],
+    ));
 
     // frame around light
     let light_box_height = 5.0;
@@ -131,6 +136,7 @@ pub fn get_models() -> Vec<Model> {
         l / 2.0 + hole_radius,
     );
     models.push(Model::new(
+        l,
         light_box_material,
         vec![
             t(i, j, m),
@@ -155,6 +161,7 @@ pub fn get_models() -> Vec<Model> {
     h = Vec3::new(82.0, 165.0, 225.0);
 
     models.push(Model::new(
+        l,
         block_blue,
         vec![
             t(e, b, a),
@@ -181,6 +188,7 @@ pub fn get_models() -> Vec<Model> {
     h = Vec3::new(314.0, 330.0, 456.0);
 
     models.push(Model::new(
+        l,
         block_orange,
         vec![
             t(e, b, a),
@@ -198,6 +206,7 @@ pub fn get_models() -> Vec<Model> {
 
     // sphere
     models.push(Model::new(
+        l,
         sphere_material,
         vec![Box::new(Sphere::new(
             40.0,
@@ -205,9 +214,6 @@ pub fn get_models() -> Vec<Model> {
         ))],
     ));
 
-    for m in &mut models {
-        m.scale(l)
-    }
     models
 }
 

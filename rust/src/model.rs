@@ -39,17 +39,17 @@ pub struct Sphere {
 }
 
 impl Model {
-    pub fn new(material: Material, hittables: Vec<Box<dyn Hittable>>) -> Model {
-        let mins = hittables.iter().map(|h| h.get_min_point()).collect();
-        let maxs = hittables.iter().map(|h| h.get_max_point()).collect();
-        return Model {
+    pub fn new(l: f64, material: Material, hittables: Vec<Box<dyn Hittable>>) -> Model {
+        let mut model = Model {
             material: material,
             hittables: hittables,
-            aabb: AABB::new(mins, maxs),
+            aabb: AABB::new(vec![], vec![]),
         };
+        model.scale(l);
+        return model;
     }
 
-    pub fn scale(&mut self, l: f64) {
+    fn scale(&mut self, l: f64) {
         for h in &mut self.hittables {
             h.scale(l);
         }
