@@ -92,18 +92,18 @@ impl Scene {
         }
     }
 
-  fn calc_reflection_color(&self, ray: &Ray, point: &Vec3, model: &Model, hittable: &Box<dyn Hittable>, color: Color, depth: u64) -> Color {
-    if depth > 3 {
-      return color
+    fn calc_reflection_color(&self, ray: &Ray, point: &Vec3, model: &Model, hittable: &Box<dyn Hittable>, color: Color, depth: u64) -> Color {
+        if depth > 3 {
+            return color
+        }
+        let reflection = model.material.reflection;
+        if reflection == 0.0 {
+            return color
+        }
+        let normal = hittable.normal(&point);
+        let reflect_dir = 2.0 * ray.direction.dot(&normal);
+        let reflect_ray = Ray{start: *point, direction: ray.direction.sub(normal.mul(reflect_dir))};
+        let reflection_color = self.trace(&reflect_ray, color, depth + 1);
+        return reflection_color.mul(reflection).add(color);
     }
-    let reflection = model.material.reflection;
-    if reflection == 0.0 {
-      return color
-    }
-    let normal = hittable.normal(&point);
-    let reflect_dir = 2.0 * ray.direction.dot(&normal);
-    let reflect_ray = Ray{start: *point, direction: ray.direction.sub(normal.mul(reflect_dir))};
-    let reflection_color = self.trace(&reflect_ray, color, depth + 1);
-    return reflection_color.mul(reflection).add(color);
-  }
 }

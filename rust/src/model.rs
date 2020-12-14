@@ -13,12 +13,12 @@ pub struct Model {
 
 #[derive(Copy, Clone)]
 pub struct Material {
-  pub diffuse_reflection: f64,
-  pub diffuse_color: Color,
-  pub reflection: f64,
-  pub specular_refection: f64,
-  pub shininess: f64,
-  pub transparent: bool
+    pub diffuse_reflection: f64,
+    pub diffuse_color: Color,
+    pub reflection: f64,
+    pub specular_refection: f64,
+    pub shininess: f64,
+    pub transparent: bool
 }
 
 pub trait Hittable: Send + Sync {
@@ -112,61 +112,61 @@ impl Hittable for Triangle {
 }
 
 impl Sphere {
-  pub fn new(radius: f64, center: Vec3) -> Sphere {
-      Sphere {
-          radius: radius,
-          center: center
-      }
-  }
+    pub fn new(radius: f64, center: Vec3) -> Sphere {
+        Sphere {
+            radius: radius,
+            center: center
+        }
+    }
 }
 
 impl Hittable for Sphere {
-  fn intersects(&self, ray: &Ray) -> Option<f64>{
-    let center = self.center;
-    let radius = self.radius;
-    let start = ray.start;
-    let dx = ray.direction.x;
-    let dy = ray.direction.y;
-    let dz = ray.direction.z;
+    fn intersects(&self, ray: &Ray) -> Option<f64>{
+        let center = self.center;
+        let radius = self.radius;
+        let start = ray.start;
+        let dx = ray.direction.x;
+        let dy = ray.direction.y;
+        let dz = ray.direction.z;
 
-    let a = dx * dx + dy * dy + dz * dz;
-    let b = 2.0 * dx * (start.x - center.x) + 2.0 * dy * (start.y - center.y) + 2.0 * dz * (start.z - center.z);
-    let c =
-      center.x * center.x +
-      center.y * center.y +
-      center.z * center.z +
-      start.x * start.x +
-      start.y * start.y +
-      start.z * start.z -
-      2.0 * (center.x * start.x + center.y * start.y + center.z * start.z) -
-      radius * radius;
+        let a = dx * dx + dy * dy + dz * dz;
+        let b = 2.0 * dx * (start.x - center.x) + 2.0 * dy * (start.y - center.y) + 2.0 * dz * (start.z - center.z);
+        let c =
+            center.x * center.x +
+            center.y * center.y +
+            center.z * center.z +
+            start.x * start.x +
+            start.y * start.y +
+            start.z * start.z -
+            2.0 * (center.x * start.x + center.y * start.y + center.z * start.z) -
+            radius * radius;
 
-    let disc = b * b - 4.0 * a * c;
+        let disc = b * b - 4.0 * a * c;
 
-    if disc < 0.0 {
-      return None
+        if disc < 0.0 {
+            return None
+        }
+
+        let t = (-b - disc.sqrt()) / (2.0 * a);
+        if t < 0.0 {
+            return None
+        }
+
+        return Some(t)
     }
 
-    let t = (-b - disc.sqrt()) / (2.0 * a);
-    if t < 0.0 {
-      return None
+    fn normal(&self, p: &Vec3) -> Vec3 {
+        return p
+            .sub(self.center)
+            .mul(1.0 / self.radius)
+            .normalize()
     }
 
-    return Some(t)
-  }
-
-  fn normal(&self, p: &Vec3) -> Vec3 {
-    return p
-      .sub(self.center)
-      .mul(1.0 / self.radius)
-      .normalize()
-  }
-
-  fn scale(&mut self, l: f64) {
-    self.center = self.center.mul(2.0 / l);
-    self.center = self.center.sub(Vec3::new(1.0, 1.0, 1.0));
-    self.center.x = -self.center.x;
-    self.center.y = -self.center.y;
-    self.radius = (self.radius * 2.0) / l;
-  }
+    fn scale(&mut self, l: f64) {
+        self.center = self.center.mul(2.0 / l);
+        self.center = self.center.sub(Vec3::new(1.0, 1.0, 1.0));
+        self.center.x = -self.center.x;
+        self.center.y = -self.center.y;
+        self.radius = (self.radius * 2.0) / l;
+    }
 }

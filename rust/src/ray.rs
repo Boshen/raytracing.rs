@@ -9,7 +9,7 @@ pub struct Ray {
 }
 
 impl Ray {
-  pub fn get_point(&self, distance: f64) -> Vec3 {
-    return self.start.add(self.direction.mul(distance))
-  }
+    pub fn get_point(&self, distance: f64) -> Vec3 {
+        return self.start.add(self.direction.mul(distance))
+    }
 }
