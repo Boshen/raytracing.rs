@@ -53,12 +53,6 @@ impl Model {
     }
 }
 
-impl PartialEq for Triangle {
-    fn eq(&self, other: &Self) -> bool {
-        self.0 == other.0 && self.1 == other.1 && self.2 == other.2
-    }
-}
-
 impl Hittable for Triangle {
     fn intersects(&self, ray: &Ray) -> Option<f64> {
         let epsilon = 0.000001;
@@ -124,12 +118,6 @@ impl Sphere {
           center: center
       }
   }
-}
-
-impl PartialEq for Sphere {
-    fn eq(&self, other: &Self) -> bool {
-        self.radius == other.radius && self.center == other.center
-    }
 }
 
 impl Hittable for Sphere {
