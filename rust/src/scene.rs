@@ -68,11 +68,13 @@ impl Scene {
         let mut min_distance = f64::INFINITY;
         let mut intersection: Option<(f64, &Model, &Box<dyn Hittable>)> = None;
         for m in self.models.iter() {
-            for t in m.hittables.iter() {
-                if let Some(distance) = t.intersects(ray) {
-                    if distance < min_distance {
-                        min_distance = distance;
-                        intersection = Some((distance, m, &t))
+            if m.aabb.intersects(&ray) {
+                for t in m.hittables.iter() {
+                    if let Some(distance) = t.intersects(ray) {
+                        if distance < min_distance {
+                            min_distance = distance;
+                            intersection = Some((distance, m, &t))
+                        }
                     }
                 }
             }

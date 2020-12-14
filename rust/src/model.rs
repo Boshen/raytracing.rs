@@ -1,7 +1,8 @@
 use nalgebra::{Vector3, Dot, Cross, Norm};
-use std::ops::{Sub, Mul};
+use std::ops::{Add, Sub, Mul};
 
 use crate::ray::{Ray};
+use crate::aabb::{AABB};
 
 pub type Color = Vector3<f64>;
 pub type Vec3 = Vector3<f64>;
@@ -9,6 +10,7 @@ pub type Vec3 = Vector3<f64>;
 pub struct Model {
     pub material: Material,
     pub hittables: Vec<Box<dyn Hittable>>,
+    pub aabb: AABB
 }
 
 #[derive(Copy, Clone)]
@@ -25,6 +27,8 @@ pub trait Hittable: Send + Sync {
     fn scale(&mut self, l: f64) -> ();
     fn intersects(&self, ray: &Ray) -> Option<f64>;
     fn normal(&self, p: &Vec3) -> Vec3;
+    fn get_min_point(&self) -> Vec3;
+    fn get_max_point(&self) -> Vec3;
 }
 
 pub struct Triangle(
@@ -39,10 +43,13 @@ pub struct Sphere {
 }
 
 impl Model {
-    pub fn new(material: Material, hittables:Vec<Box<dyn Hittable>>) -> Model {
-        Model {
+    pub fn new(material: Material, hittables: Vec<Box<dyn Hittable>>) -> Model {
+        let mins = hittables.iter().map(|h| h.get_min_point()).collect();
+        let maxs = hittables.iter().map(|h| h.get_max_point()).collect();
+        return Model {
             material: material,
             hittables: hittables,
+            aabb: AABB::new(mins, maxs)
         }
     }
 
@@ -50,6 +57,9 @@ impl Model {
         for h in &mut self.hittables {
             h.scale(l);
         }
+        let mins = self.hittables.iter().map(|h| h.get_min_point()).collect();
+        let maxs = self.hittables.iter().map(|h| h.get_max_point()).collect();
+        self.aabb = AABB::new(mins, maxs)
     }
 }
 
@@ -90,6 +100,22 @@ impl Hittable for Triangle {
         let e1 = self.1.sub(self.0);
         let e2 = self.2.sub(self.0);
         return e2.cross(&e1).normalize();
+    }
+
+    fn get_min_point(&self) -> Vec3 {
+        return Vec3::new(
+            self.0.x.min(self.1.x).min(self.2.x),
+            self.0.y.min(self.1.y).min(self.2.y),
+            self.0.z.min(self.1.z).min(self.2.z),
+        )
+    }
+
+    fn get_max_point(&self) -> Vec3 {
+        return Vec3::new(
+            self.0.x.max(self.1.x).max(self.2.x),
+            self.0.y.max(self.1.y).max(self.2.y),
+            self.0.z.max(self.1.z).max(self.2.z),
+        )
     }
 
     fn scale(&mut self, l: f64) {
@@ -160,6 +186,14 @@ impl Hittable for Sphere {
             .sub(self.center)
             .mul(1.0 / self.radius)
             .normalize()
+    }
+
+    fn get_min_point(&self) -> Vec3 {
+        return self.center.sub(self.radius)
+    }
+
+    fn get_max_point(&self) -> Vec3 {
+        return self.center.add(self.radius)
     }
 
     fn scale(&mut self, l: f64) {

@@ -5,6 +5,7 @@ mod ray;
 mod models;
 mod scene;
 mod light;
+mod aabb;
 
 use crate::model::{Vec3};
 use crate::models::{get_models};
