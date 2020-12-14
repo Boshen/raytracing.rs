@@ -22,7 +22,7 @@ impl Scene {
     pub fn algorithm(&self, image: &mut RgbImage) {
         let mut xys: Vec<(u32, u32, Vec3)> = vec![];
         for i in 0..self.width {
-            for j in 0..self.width {
+            for j in 0..self.height {
                 xys.push((i, j, Vec3::new(0.0, 0.0, 0.0)))
             }
         }
