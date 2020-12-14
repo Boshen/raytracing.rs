@@ -6,7 +6,7 @@ use std::ops::Add;
 use crate::model::{Model, Hittable};
 use crate::ray::{Ray};
 
-pub trait Light {
+pub trait Light: Send + Sync {
   fn shade(&self, ray: &Ray, point: Vector3<f64>, model: &Model, hittable: &Box<dyn Hittable>, models: &Vec<Model>) -> Vector3<f64>;
 }
 

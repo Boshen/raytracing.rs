@@ -3,6 +3,7 @@ use nalgebra::{Vector3, Dot};
 use std::ops::Add;
 use std::ops::Mul;
 use std::ops::Sub;
+use rayon::prelude::*;
 
 use crate::model::{Model, Hittable};
 use crate::light::{Light};
@@ -19,19 +20,25 @@ pub struct Scene {
 
 impl Scene {
     pub fn algorithm(&self, image: &mut RgbImage) {
+        let mut xys: Vec<(u32, u32, Vector3<f64>)> = vec![];
         for i in 0..self.width {
-            for j in 0..self.height {
-                let x = (i as f64)  - (self.width as f64) / 2.0;
-                let y = (j as f64) - (self.height as f64) / 2.0;
-                let color = self.antialias(x, y);
-                let rgb = Rgb([
-                    self.to_rgb(color.x),
-                    self.to_rgb(color.y),
-                    self.to_rgb(color.z),
-                ]);
-                image.put_pixel(i, j, rgb);
+            for j in 0..self.width {
+                xys.push((i, j, Vector3::new(0.0, 0.0, 0.0)))
             }
         }
+
+        xys.par_iter_mut().for_each(|t| {
+            let (i, j, _c) = t;
+            let x = (*i as f64)  - (self.width as f64) / 2.0;
+            let y = (*j as f64) - (self.height as f64) / 2.0;
+            let color = self.antialias(x, y);
+            t.2 = color;
+        });
+
+        xys.iter().for_each(|(i, j, color)| {
+            let rgb = Rgb([self.to_rgb(color.x), self.to_rgb(color.y), self.to_rgb(color.z)]);
+            image.put_pixel(*i, *j, rgb);
+        });
     }
 
     fn to_rgb(&self, x: f64) -> u8 {

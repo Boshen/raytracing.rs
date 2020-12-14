@@ -18,7 +18,7 @@ pub struct Material {
   pub transparent: bool
 }
 
-pub trait Hittable {
+pub trait Hittable: Send + Sync {
     fn scale(&mut self, l: f64) -> ();
     fn intersects(&self, ray: &Ray) -> Option<f64>;
     fn normal(&self, p: Vector3<f64>) -> Vector3<f64>;
