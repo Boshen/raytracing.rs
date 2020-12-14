@@ -1,8 +1,8 @@
-use nalgebra::{Vector3, Dot, Cross, Norm};
-use std::ops::{Add, Sub, Mul};
+use nalgebra::{Cross, Dot, Norm, Vector3};
+use std::ops::{Add, Mul, Sub};
 
-use crate::ray::{Ray};
-use crate::aabb::{AABB};
+use crate::aabb::AABB;
+use crate::ray::Ray;
 
 pub type Color = Vector3<f64>;
 pub type Vec3 = Vector3<f64>;
@@ -10,7 +10,7 @@ pub type Vec3 = Vector3<f64>;
 pub struct Model {
     pub material: Material,
     pub hittables: Vec<Box<dyn Hittable>>,
-    pub aabb: AABB
+    pub aabb: AABB,
 }
 
 #[derive(Copy, Clone)]
@@ -20,7 +20,7 @@ pub struct Material {
     pub reflection: f64,
     pub specular_refection: f64,
     pub shininess: f64,
-    pub transparent: bool
+    pub transparent: bool,
 }
 
 pub trait Hittable: Send + Sync {
@@ -31,15 +31,11 @@ pub trait Hittable: Send + Sync {
     fn get_max_point(&self) -> Vec3;
 }
 
-pub struct Triangle(
-    pub Vec3,
-    pub Vec3,
-    pub Vec3
-);
+pub struct Triangle(pub Vec3, pub Vec3, pub Vec3);
 
 pub struct Sphere {
     pub radius: f64,
-    pub center: Vec3
+    pub center: Vec3,
 }
 
 impl Model {
@@ -49,8 +45,8 @@ impl Model {
         return Model {
             material: material,
             hittables: hittables,
-            aabb: AABB::new(mins, maxs)
-        }
+            aabb: AABB::new(mins, maxs),
+        };
     }
 
     pub fn scale(&mut self, l: f64) {
@@ -72,28 +68,28 @@ impl Hittable for Triangle {
         let h = ray.direction.cross(&e2);
         let a = e1.dot(&h);
         if a > -epsilon && a < epsilon {
-            return None
+            return None;
         }
 
         let f = 1.0 / a;
         let s = ray.start.sub(self.0);
         let u = f * s.dot(&h);
         if u < 0.0 || u > 1.0 {
-            return None
+            return None;
         }
 
         let q = s.cross(&e1);
         let v = f * ray.direction.dot(&q);
         if v < 0.0 || u + v > 1.0 {
-            return None
+            return None;
         }
 
         let t = f * e2.dot(&q);
         if t <= epsilon {
-            return None
+            return None;
         }
 
-        return Some(t)
+        return Some(t);
     }
 
     fn normal(&self, _p: &Vec3) -> Vec3 {
@@ -107,7 +103,7 @@ impl Hittable for Triangle {
             self.0.x.min(self.1.x).min(self.2.x),
             self.0.y.min(self.1.y).min(self.2.y),
             self.0.z.min(self.1.z).min(self.2.z),
-        )
+        );
     }
 
     fn get_max_point(&self) -> Vec3 {
@@ -115,7 +111,7 @@ impl Hittable for Triangle {
             self.0.x.max(self.1.x).max(self.2.x),
             self.0.y.max(self.1.y).max(self.2.y),
             self.0.z.max(self.1.z).max(self.2.z),
-        )
+        );
     }
 
     fn scale(&mut self, l: f64) {
@@ -141,13 +137,13 @@ impl Sphere {
     pub fn new(radius: f64, center: Vec3) -> Sphere {
         Sphere {
             radius: radius,
-            center: center
+            center: center,
         }
     }
 }
 
 impl Hittable for Sphere {
-    fn intersects(&self, ray: &Ray) -> Option<f64>{
+    fn intersects(&self, ray: &Ray) -> Option<f64> {
         let center = self.center;
         let radius = self.radius;
         let start = ray.start;
@@ -156,44 +152,42 @@ impl Hittable for Sphere {
         let dz = ray.direction.z;
 
         let a = dx * dx + dy * dy + dz * dz;
-        let b = 2.0 * dx * (start.x - center.x) + 2.0 * dy * (start.y - center.y) + 2.0 * dz * (start.z - center.z);
-        let c =
-            center.x * center.x +
-            center.y * center.y +
-            center.z * center.z +
-            start.x * start.x +
-            start.y * start.y +
-            start.z * start.z -
-            2.0 * (center.x * start.x + center.y * start.y + center.z * start.z) -
-            radius * radius;
+        let b = 2.0 * dx * (start.x - center.x)
+            + 2.0 * dy * (start.y - center.y)
+            + 2.0 * dz * (start.z - center.z);
+        let c = center.x * center.x
+            + center.y * center.y
+            + center.z * center.z
+            + start.x * start.x
+            + start.y * start.y
+            + start.z * start.z
+            - 2.0 * (center.x * start.x + center.y * start.y + center.z * start.z)
+            - radius * radius;
 
         let disc = b * b - 4.0 * a * c;
 
         if disc < 0.0 {
-            return None
+            return None;
         }
 
         let t = (-b - disc.sqrt()) / (2.0 * a);
         if t < 0.0 {
-            return None
+            return None;
         }
 
-        return Some(t)
+        return Some(t);
     }
 
     fn normal(&self, p: &Vec3) -> Vec3 {
-        return p
-            .sub(self.center)
-            .mul(1.0 / self.radius)
-            .normalize()
+        return p.sub(self.center).mul(1.0 / self.radius).normalize();
     }
 
     fn get_min_point(&self) -> Vec3 {
-        return self.center.sub(self.radius)
+        return self.center.sub(self.radius);
     }
 
     fn get_max_point(&self) -> Vec3 {
-        return self.center.add(self.radius)
+        return self.center.add(self.radius);
     }
 
     fn scale(&mut self, l: f64) {

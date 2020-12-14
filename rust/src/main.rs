@@ -1,16 +1,16 @@
-use image::{RgbImage};
+use image::RgbImage;
 
-mod model;
-mod ray;
-mod models;
-mod scene;
-mod light;
 mod aabb;
+mod light;
+mod model;
+mod models;
+mod ray;
+mod scene;
 
-use crate::model::{Vec3};
-use crate::models::{get_models};
-use crate::scene::{Scene};
 use crate::light::{Light, LightData};
+use crate::model::Vec3;
+use crate::models::get_models;
+use crate::scene::Scene;
 
 fn main() {
     let width = 500;
@@ -20,17 +20,17 @@ fn main() {
         Light::Ambient(LightData {
             radiance: 1.0,
             color: Vec3::new(0.2, 0.2, 0.2),
-            location: Vec3::new(0.0, 0.0, 0.0)
+            location: Vec3::new(0.0, 0.0, 0.0),
         }),
-        Light::Directional(LightData{
+        Light::Directional(LightData {
             radiance: 1.0,
             color: Vec3::new(1.0, 1.0, 1.0),
-            location: Vec3::new(0.0, 0.0, -1.0)
+            location: Vec3::new(0.0, 0.0, -1.0),
         }),
-        Light::Point(LightData{
+        Light::Point(LightData {
             radiance: 3.0,
             color: Vec3::new(1.0, 1.0, 1.0),
-            location: Vec3::new(0.0, -1.0, 0.0)
+            location: Vec3::new(0.0, -1.0, 0.0),
         }),
     ];
 
