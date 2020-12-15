@@ -6,16 +6,27 @@ use std::ops::Sub;
 use crate::model::{Color, Hittable, Material, Model, Vec3};
 use crate::ray::Ray;
 
-pub struct LightData {
+pub struct AmbientLight {
+    pub radiance: f64,
+    pub color: Color,
+}
+
+pub struct DirectionalLight {
+    pub radiance: f64,
+    pub color: Color,
+    pub location: Vec3,
+}
+
+pub struct PointLight {
     pub radiance: f64,
     pub color: Color,
     pub location: Vec3,
 }
 
 pub enum Light {
-    Ambient(LightData),
-    Directional(LightData),
-    Point(LightData),
+    Ambient(AmbientLight),
+    Directional(DirectionalLight),
+    Point(PointLight),
 }
 
 impl Light {
@@ -28,45 +39,42 @@ impl Light {
         models: &Vec<Model>,
     ) -> Color {
         match self {
-            Light::Ambient(l) => Light::shade_ambient(&l, &model.material),
-            Light::Directional(l) => {
-                Light::shade_directional(&l, &model.material, &point, &hittable)
-            }
-            Light::Point(l) => {
-                Light::shade_point(&l, &model.material, &ray, &point, &hittable, &models)
-            }
+            Light::Ambient(l) => l.shade(&model.material),
+            Light::Directional(l) => l.shade(&model.material, &point, &hittable),
+            Light::Point(l) => l.shade(&model.material, &ray, &point, &hittable, &models),
         }
     }
+}
 
-    fn shade_ambient(light: &LightData, material: &Material) -> Color {
+impl AmbientLight {
+    pub fn shade(&self, material: &Material) -> Color {
         let kd = material.diffuse_reflection;
         let cd = material.diffuse_color;
-        let cl = light.color;
-        let ls = light.radiance;
+        let cl = self.color;
+        let ls = self.radiance;
         return cd.mul(kd).mul(cl.mul(ls));
     }
+}
 
-    fn shade_directional(
-        light: &LightData,
-        material: &Material,
-        point: &Vec3,
-        hittable: &Box<dyn Hittable>,
-    ) -> Color {
-        let l = light.location.sub(point).normalize();
+impl DirectionalLight {
+    pub fn shade(&self, material: &Material, point: &Vec3, hittable: &Box<dyn Hittable>) -> Color {
+        let l = self.location.sub(point).normalize();
         let kd = material.diffuse_reflection;
         let cd = material.diffuse_color;
         let n = hittable.normal(point);
-        let cl = light.color;
-        let ls = light.radiance;
+        let cl = self.color;
+        let ls = self.radiance;
         return cd
             .mul(kd)
             .mul(1.0 / 3.14)
             .mul(n.dot(&l).max(0.0))
             .mul(cl.mul(ls));
     }
+}
 
-    fn shade_point(
-        light: &LightData,
+impl PointLight {
+    pub fn shade(
+        &self,
         material: &Material,
         ray: &Ray,
         point: &Vec3,
@@ -74,16 +82,16 @@ impl Light {
         models: &Vec<Model>,
     ) -> Color {
         let w = ray.start.sub(point).normalize();
-        let l = light.location.sub(point).normalize();
+        let l = self.location.sub(point).normalize();
         let kd = material.diffuse_reflection;
         let cd = material.diffuse_color;
         let ks = material.specular_refection;
         let e = material.shininess;
         let n = hittable.normal(point);
-        let cl = light.color;
-        let ls = light.radiance;
+        let cl = self.color;
+        let ls = self.radiance;
 
-        if n.dot(&w) > 0.0 && Light::is_in_shadow(l, &point, &models) {
+        if n.dot(&w) > 0.0 && self.is_in_shadow(&l, &point, &models) {
             return Color::new(0.0, 0.0, 0.0);
         }
 
@@ -102,10 +110,10 @@ impl Light {
         return diffuse.add(specular);
     }
 
-    fn is_in_shadow(l: Vec3, point: &Vec3, models: &Vec<Model>) -> bool {
+    fn is_in_shadow(&self, l: &Vec3, point: &Vec3, models: &Vec<Model>) -> bool {
         let shadow_ray = Ray {
             start: point.add(l.mul(0.00001)),
-            direction: l,
+            direction: *l,
         };
         for m in models.iter() {
             if !m.material.transparent {

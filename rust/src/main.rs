@@ -7,7 +7,7 @@ mod models;
 mod ray;
 mod scene;
 
-use crate::light::{Light, LightData};
+use crate::light::{AmbientLight, DirectionalLight, Light, PointLight};
 use crate::model::Vec3;
 use crate::models::get_models;
 use crate::scene::Scene;
@@ -17,17 +17,16 @@ fn main() {
     let height = 500;
 
     let lights = vec![
-        Light::Ambient(LightData {
+        Light::Ambient(AmbientLight {
             radiance: 1.0,
             color: Vec3::new(0.2, 0.2, 0.2),
-            location: Vec3::new(0.0, 0.0, 0.0),
         }),
-        Light::Directional(LightData {
+        Light::Directional(DirectionalLight {
             radiance: 1.0,
             color: Vec3::new(1.0, 1.0, 1.0),
             location: Vec3::new(0.0, 0.0, -1.0),
         }),
-        Light::Point(LightData {
+        Light::Point(PointLight {
             radiance: 3.0,
             color: Vec3::new(1.0, 1.0, 1.0),
             location: Vec3::new(0.0, -1.0, 0.0),
