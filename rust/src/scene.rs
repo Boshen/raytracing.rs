@@ -67,10 +67,10 @@ impl Scene {
             origin: self.camera,
             dir: d,
         };
-        return self.trace(&ray, Color::new(0.0, 0.0, 0.0), 0);
+        return self.trace(&ray, &Color::new(0.0, 0.0, 0.0), 0);
     }
 
-    fn trace(&self, ray: &Ray, color: Color, depth: u64) -> Color {
+    fn trace(&self, ray: &Ray, color: &Color, depth: u64) -> Color {
         let mut min_distance = f64::INFINITY;
         let mut intersection: Option<(f64, &Model, &Box<dyn Hittable>)> = None;
         for m in self.models.iter() {
@@ -108,15 +108,15 @@ impl Scene {
         point: &Vec3,
         model: &Model,
         hittable: &Box<dyn Hittable>,
-        color: Color,
+        color: &Color,
         depth: u64,
     ) -> Color {
         if depth > 3 {
-            return color;
+            return *color;
         }
         let reflection = model.material.reflection;
         if reflection == 0.0 {
-            return color;
+            return *color;
         }
         let normal = hittable.normal(&point);
         let reflect_dir = 2.0 * ray.dir.dot(&normal);
@@ -124,7 +124,7 @@ impl Scene {
             origin: *point,
             dir: ray.dir.sub(normal.mul(reflect_dir)),
         };
-        let reflection_color = self.trace(&reflect_ray, color, depth + 1);
+        let reflection_color = self.trace(&reflect_ray, &color, depth + 1);
         return reflection_color.mul(reflection).add(color);
     }
 }
