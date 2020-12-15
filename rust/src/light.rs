@@ -5,6 +5,7 @@ use std::ops::Sub;
 
 use crate::model::{Color, Hittable, Material, Model, Vec3, SAMPLE_POINTS};
 use crate::ray::Ray;
+use crate::scene::Scene;
 
 pub struct AmbientLight {
     pub radiance: f64,
@@ -118,19 +119,17 @@ impl AreaLight {
     }
 
     fn intensity_at(&self, point: &Vec3, models: &Vec<Model>) -> f64 {
-        let mut intensity = 0.0;
-        for i in 0..SAMPLE_POINTS {
-            for j in 0..SAMPLE_POINTS {
-                let x = self.location.x - self.width / 2.0
-                    + self.width / (SAMPLE_POINTS as f64) * i as f64;
-                let z = self.location.z - self.height / 2.0
-                    + self.height / (SAMPLE_POINTS as f64) * j as f64;
-                let new_location = Vec3::new(x, self.location.y, z);
+        let x = self.location.x - self.width / 2.0;
+        let z = self.location.z - self.height / 2.0;
+        return Scene::get_antialias_points()
+            .iter()
+            .fold(0.0, |intensity, (dx, dz)| {
+                let new_location =
+                    Vec3::new(x + dx * self.width, self.location.y, z + dz * self.width);
                 let l = new_location.sub(point).normalize();
-                intensity += self.is_in_shadow(&point, &l, &models);
-            }
-        }
-        return intensity / (SAMPLE_POINTS as f64 * SAMPLE_POINTS as f64);
+                return intensity + self.is_in_shadow(&point, &l, &models);
+            })
+            / (SAMPLE_POINTS as f64 * SAMPLE_POINTS as f64);
     }
 
     fn is_in_shadow(&self, point: &Vec3, l: &Vec3, models: &Vec<Model>) -> f64 {

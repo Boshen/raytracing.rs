@@ -50,15 +50,12 @@ impl Scene {
     }
 
     fn antialias(&self, x: f64, y: f64) -> Color {
-        let mut color = Color::new(0.0, 0.0, 0.0);
-        for i in 0..SAMPLE_POINTS {
-            for j in 0..SAMPLE_POINTS {
-                let dx = (i as f64 + 0.5) / SAMPLE_POINTS as f64;
-                let dy = (j as f64 + 0.5) / SAMPLE_POINTS as f64;
-                color = color.add(self.get_color(x + dx, y + dy))
-            }
-        }
-        return color.mul(1.0 / (SAMPLE_POINTS as f64 * SAMPLE_POINTS as f64));
+        return Scene::get_antialias_points()
+            .iter()
+            .fold(Color::new(0.0, 0.0, 0.0), |color, (dx, dy)| {
+                color.add(self.get_color(x + dx, y + dy))
+            })
+            .mul(1.0 / (SAMPLE_POINTS as f64 * SAMPLE_POINTS as f64));
     }
 
     fn get_color(&self, x: f64, y: f64) -> Color {
@@ -126,5 +123,19 @@ impl Scene {
         };
         let reflection_color = self.trace(&reflect_ray, &color, depth + 1);
         return reflection_color.mul(reflection).add(color);
+    }
+
+    pub fn get_antialias_points() -> Vec<(f64, f64)> {
+        let n = SAMPLE_POINTS;
+        return (0..n)
+            .into_iter()
+            .flat_map(|i| {
+                let dx = (i as f64 + 0.5) / n as f64;
+                return (0..n).into_iter().map(move |j| {
+                    let dy = (j as f64 + 0.5) / n as f64;
+                    return (dx, dy);
+                });
+            })
+            .collect();
     }
 }
