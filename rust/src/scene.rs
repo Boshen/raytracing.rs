@@ -6,7 +6,7 @@ use std::ops::Mul;
 use std::ops::Sub;
 
 use crate::light::Light;
-use crate::model::{Color, Hittable, Model, Vec3};
+use crate::model::{Color, Hittable, Model, Vec3, SAMPLE_POINTS};
 use crate::ray::Ray;
 
 pub struct Scene {
@@ -50,16 +50,15 @@ impl Scene {
     }
 
     fn antialias(&self, x: f64, y: f64) -> Color {
-        let n = 5; // sample points
         let mut color = Color::new(0.0, 0.0, 0.0);
-        for i in 0..n {
-            for j in 0..n {
-                let dx = (i as f64 + 0.5) / n as f64;
-                let dy = (j as f64 + 0.5) / n as f64;
+        for i in 0..SAMPLE_POINTS {
+            for j in 0..SAMPLE_POINTS {
+                let dx = (i as f64 + 0.5) / SAMPLE_POINTS as f64;
+                let dy = (j as f64 + 0.5) / SAMPLE_POINTS as f64;
                 color = color.add(self.get_color(x + dx, y + dy))
             }
         }
-        return color.mul(1.0 / (n as f64 * n as f64));
+        return color.mul(1.0 / (SAMPLE_POINTS as f64 * SAMPLE_POINTS as f64));
     }
 
     fn get_color(&self, x: f64, y: f64) -> Color {

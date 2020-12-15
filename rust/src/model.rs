@@ -7,6 +7,8 @@ use crate::ray::Ray;
 pub type Color = Vector3<f64>;
 pub type Vec3 = Vector3<f64>;
 
+pub const SAMPLE_POINTS: u32 = 10;
+
 pub struct Model {
     pub material: Material,
     pub hittables: Vec<Box<dyn Hittable>>,

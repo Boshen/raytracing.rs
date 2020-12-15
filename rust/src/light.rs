@@ -3,7 +3,7 @@ use std::ops::Add;
 use std::ops::Mul;
 use std::ops::Sub;
 
-use crate::model::{Color, Hittable, Material, Model, Vec3};
+use crate::model::{Color, Hittable, Material, Model, Vec3, SAMPLE_POINTS};
 use crate::ray::Ray;
 
 pub struct AmbientLight {
@@ -119,17 +119,18 @@ impl AreaLight {
 
     fn intensity_at(&self, point: &Vec3, models: &Vec<Model>) -> f64 {
         let mut intensity = 0.0;
-        let n = 10;
-        for i in 0..n {
-            for j in 0..n {
-                let x = self.location.x - self.width / 2.0 + self.width / (n as f64) * i as f64;
-                let z = self.location.z - self.height / 2.0 + self.height / (n as f64) * j as f64;
+        for i in 0..SAMPLE_POINTS {
+            for j in 0..SAMPLE_POINTS {
+                let x = self.location.x - self.width / 2.0
+                    + self.width / (SAMPLE_POINTS as f64) * i as f64;
+                let z = self.location.z - self.height / 2.0
+                    + self.height / (SAMPLE_POINTS as f64) * j as f64;
                 let new_location = Vec3::new(x, self.location.y, z);
                 let l = new_location.sub(point).normalize();
                 intensity += self.is_in_shadow(&point, &l, &models);
             }
         }
-        return intensity / (n as f64 * n as f64);
+        return intensity / (SAMPLE_POINTS as f64 * SAMPLE_POINTS as f64);
     }
 
     fn is_in_shadow(&self, point: &Vec3, l: &Vec3, models: &Vec<Model>) -> f64 {
