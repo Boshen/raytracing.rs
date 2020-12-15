@@ -83,7 +83,7 @@ impl AreaLight {
         hittable: &Box<dyn Hittable>,
         models: &Vec<Model>,
     ) -> Color {
-        let w = ray.start.sub(point).normalize();
+        let w = ray.origin.sub(point).normalize();
         let l = self.location.sub(point).normalize();
         let kd = material.diffuse_reflection;
         let cd = material.diffuse_color;
@@ -135,8 +135,8 @@ impl AreaLight {
 
     fn is_in_shadow(&self, point: &Vec3, l: &Vec3, models: &Vec<Model>) -> f64 {
         let shadow_ray = Ray {
-            start: point.add(l.mul(0.00001)),
-            direction: *l,
+            origin: point.add(l.mul(0.00001)),
+            dir: *l,
         };
         for m in models.iter() {
             if !m.material.transparent {

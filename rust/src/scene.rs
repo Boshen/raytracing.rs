@@ -64,8 +64,8 @@ impl Scene {
     fn get_color(&self, x: f64, y: f64) -> Color {
         let d = Vec3::new(x, y, self.focal_length as f64);
         let ray = Ray {
-            start: self.camera,
-            direction: d,
+            origin: self.camera,
+            dir: d,
         };
         return self.trace(&ray, Color::new(0.0, 0.0, 0.0), 0);
     }
@@ -119,10 +119,10 @@ impl Scene {
             return color;
         }
         let normal = hittable.normal(&point);
-        let reflect_dir = 2.0 * ray.direction.dot(&normal);
+        let reflect_dir = 2.0 * ray.dir.dot(&normal);
         let reflect_ray = Ray {
-            start: *point,
-            direction: ray.direction.sub(normal.mul(reflect_dir)),
+            origin: *point,
+            dir: ray.dir.sub(normal.mul(reflect_dir)),
         };
         let reflection_color = self.trace(&reflect_ray, color, depth + 1);
         return reflection_color.mul(reflection).add(color);

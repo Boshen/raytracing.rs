@@ -67,21 +67,21 @@ impl Hittable for Triangle {
         let e1 = self.1.sub(self.0);
         let e2 = self.2.sub(self.0);
 
-        let h = ray.direction.cross(&e2);
+        let h = ray.dir.cross(&e2);
         let a = e1.dot(&h);
         if a > -epsilon && a < epsilon {
             return None;
         }
 
         let f = 1.0 / a;
-        let s = ray.start.sub(self.0);
+        let s = ray.origin.sub(self.0);
         let u = f * s.dot(&h);
         if u < 0.0 || u > 1.0 {
             return None;
         }
 
         let q = s.cross(&e1);
-        let v = f * ray.direction.dot(&q);
+        let v = f * ray.dir.dot(&q);
         if v < 0.0 || u + v > 1.0 {
             return None;
         }
@@ -148,10 +148,10 @@ impl Hittable for Sphere {
     fn intersects(&self, ray: &Ray) -> Option<f64> {
         let center = self.center;
         let radius = self.radius;
-        let start = ray.start;
-        let dx = ray.direction.x;
-        let dy = ray.direction.y;
-        let dz = ray.direction.z;
+        let start = ray.origin;
+        let dx = ray.dir.x;
+        let dy = ray.dir.y;
+        let dz = ray.dir.z;
 
         let a = dx * dx + dy * dy + dz * dz;
         let b = 2.0 * dx * (start.x - center.x)
