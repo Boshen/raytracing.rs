@@ -1,5 +1,6 @@
 use image::{Rgb, RgbImage};
 use nalgebra::Dot;
+use rand::Rng;
 use rayon::prelude::*;
 use std::ops::Add;
 use std::ops::Mul;
@@ -127,12 +128,13 @@ impl Scene {
 
     pub fn get_antialias_points() -> Vec<(f64, f64)> {
         let n = SAMPLE_POINTS;
+        let mut rng = rand::thread_rng();
         return (0..n)
             .into_iter()
             .flat_map(|i| {
-                let dx = (i as f64 + 0.5) / n as f64;
+                let dx = (i as f64 + rng.gen_range(0.0, 1.0)) / n as f64;
                 return (0..n).into_iter().map(move |j| {
-                    let dy = (j as f64 + 0.5) / n as f64;
+                    let dy = (j as f64 + rng.gen_range(0.0, 1.0)) / n as f64;
                     return (dx, dy);
                 });
             })
