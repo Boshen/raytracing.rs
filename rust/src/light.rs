@@ -17,16 +17,18 @@ pub struct DirectionalLight {
     pub location: Vec3,
 }
 
-pub struct PointLight {
+pub struct AreaLight {
     pub radiance: f64,
     pub color: Color,
     pub location: Vec3,
+    pub width: f64,
+    pub height: f64,
 }
 
 pub enum Light {
     Ambient(AmbientLight),
     Directional(DirectionalLight),
-    Point(PointLight),
+    Area(AreaLight),
 }
 
 impl Light {
@@ -41,7 +43,7 @@ impl Light {
         match self {
             Light::Ambient(l) => l.shade(&model.material),
             Light::Directional(l) => l.shade(&model.material, &point, &hittable),
-            Light::Point(l) => l.shade(&model.material, &ray, &point, &hittable, &models),
+            Light::Area(l) => l.shade(&model.material, &ray, &point, &hittable, &models),
         }
     }
 }
@@ -72,7 +74,7 @@ impl DirectionalLight {
     }
 }
 
-impl PointLight {
+impl AreaLight {
     pub fn shade(
         &self,
         material: &Material,
@@ -91,7 +93,12 @@ impl PointLight {
         let cl = self.color;
         let ls = self.radiance;
 
-        if n.dot(&w) > 0.0 && self.is_in_shadow(&l, &point, &models) {
+        let mut shadow_intensity = 1.0;
+        if n.dot(&w) > 0.0 {
+            shadow_intensity = self.intensity_at(&point, &models)
+        }
+
+        if shadow_intensity <= 0.0 {
             return Color::new(0.0, 0.0, 0.0);
         }
 
@@ -107,23 +114,40 @@ impl PointLight {
         let r = n.mul(2.0 * diffuse_amount).sub(l);
         let specular_amount = r.dot(&w);
         let specular = cl.mul(ks * specular_amount.powf(e) * diffuse_amount * ls);
-        return diffuse.add(specular);
+        return diffuse.add(specular).mul(shadow_intensity);
     }
 
-    fn is_in_shadow(&self, l: &Vec3, point: &Vec3, models: &Vec<Model>) -> bool {
+    fn intensity_at(&self, point: &Vec3, models: &Vec<Model>) -> f64 {
+        let mut intensity = 0.0;
+        let n = 10;
+        for i in 0..n {
+            for j in 0..n {
+                let x = self.location.x - self.width / 2.0 + self.width / (n as f64) * i as f64;
+                let z = self.location.z - self.height / 2.0 + self.height / (n as f64) * j as f64;
+                let new_location = Vec3::new(x, self.location.y, z);
+                let l = new_location.sub(point).normalize();
+                intensity += self.is_in_shadow(&point, &l, &models);
+            }
+        }
+        return intensity / (n as f64 * n as f64);
+    }
+
+    fn is_in_shadow(&self, point: &Vec3, l: &Vec3, models: &Vec<Model>) -> f64 {
         let shadow_ray = Ray {
             start: point.add(l.mul(0.00001)),
             direction: *l,
         };
         for m in models.iter() {
             if !m.material.transparent {
-                for h in m.hittables.iter() {
-                    if let Some(_) = h.intersects(&shadow_ray) {
-                        return true;
+                if m.aabb.intersects(&shadow_ray) {
+                    for h in m.hittables.iter() {
+                        if let Some(_) = h.intersects(&shadow_ray) {
+                            return 0.0;
+                        }
                     }
                 }
             }
         }
-        return false;
+        return 1.0;
     }
 }

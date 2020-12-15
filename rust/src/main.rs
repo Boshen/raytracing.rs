@@ -7,7 +7,7 @@ mod models;
 mod ray;
 mod scene;
 
-use crate::light::{AmbientLight, DirectionalLight, Light, PointLight};
+use crate::light::{AmbientLight, AreaLight, DirectionalLight, Light};
 use crate::model::Vec3;
 use crate::models::get_models;
 use crate::scene::Scene;
@@ -26,10 +26,12 @@ fn main() {
             color: Vec3::new(1.0, 1.0, 1.0),
             location: Vec3::new(0.0, 0.0, -1.0),
         }),
-        Light::Point(PointLight {
+        Light::Area(AreaLight {
             radiance: 3.0,
             color: Vec3::new(1.0, 1.0, 1.0),
             location: Vec3::new(0.0, -1.0, 0.0),
+            width: 75.0 / 255.0,
+            height: 75.0 / 255.0,
         }),
     ];
 
