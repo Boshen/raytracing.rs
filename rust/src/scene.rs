@@ -1,14 +1,14 @@
 use image::{Rgb, RgbImage};
 use nalgebra::Dot;
-use rand::Rng;
 use rayon::prelude::*;
 use std::ops::Add;
 use std::ops::Mul;
 use std::ops::Sub;
 
 use crate::light::Light;
-use crate::model::{Color, Hittable, Model, Vec3, SAMPLE_POINTS};
+use crate::model::{Color, Hittable, Model, Vec3};
 use crate::ray::Ray;
+use crate::sampler::{get_unit_square_sampler, SAMPLE_POINTS};
 
 pub struct Scene {
     pub width: u32,
@@ -51,7 +51,7 @@ impl Scene {
     }
 
     fn antialias(&self, x: f64, y: f64) -> Color {
-        return Scene::get_antialias_points()
+        return get_unit_square_sampler()
             .iter()
             .fold(Color::new(0.0, 0.0, 0.0), |color, (dx, dy)| {
                 color.add(self.get_color(x + dx, y + dy))
@@ -124,20 +124,5 @@ impl Scene {
         };
         let reflection_color = self.trace(&reflect_ray, &color, depth + 1);
         return reflection_color.mul(reflection).add(color);
-    }
-
-    pub fn get_antialias_points() -> Vec<(f64, f64)> {
-        let n = SAMPLE_POINTS;
-        let mut rng = rand::thread_rng();
-        return (0..n)
-            .into_iter()
-            .flat_map(|i| {
-                let dx = (i as f64 + rng.gen_range(0.0, 1.0)) / n as f64;
-                return (0..n).into_iter().map(move |j| {
-                    let dy = (j as f64 + rng.gen_range(0.0, 1.0)) / n as f64;
-                    return (dx, dy);
-                });
-            })
-            .collect();
     }
 }

@@ -3,9 +3,9 @@ use std::ops::Add;
 use std::ops::Mul;
 use std::ops::Sub;
 
-use crate::model::{Color, Hittable, Material, Model, Vec3, SAMPLE_POINTS};
+use crate::model::{Color, Hittable, Material, Model, Vec3};
 use crate::ray::Ray;
-use crate::scene::Scene;
+use crate::sampler::{get_unit_square_sampler, SAMPLE_POINTS};
 
 pub struct AmbientLight {
     pub radiance: f64,
@@ -121,7 +121,7 @@ impl AreaLight {
     fn intensity_at(&self, point: &Vec3, models: &Vec<Model>) -> f64 {
         let x = self.location.x - self.width / 2.0;
         let z = self.location.z - self.height / 2.0;
-        return Scene::get_antialias_points()
+        return get_unit_square_sampler()
             .iter()
             .fold(0.0, |intensity, (dx, dz)| {
                 let new_location =

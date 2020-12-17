@@ -5,6 +5,7 @@ mod light;
 mod model;
 mod models;
 mod ray;
+mod sampler;
 mod scene;
 
 use crate::light::{AmbientLight, AreaLight, DirectionalLight, Light};
