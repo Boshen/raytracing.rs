@@ -8,7 +8,7 @@ mod ray;
 mod sampler;
 mod scene;
 
-use crate::light::{AmbientLight, AreaLight, DirectionalLight, Light};
+use crate::light::{AmbientLight, AmbientOcculuder, AreaLight, DirectionalLight, Light};
 use crate::model::Vec3;
 use crate::models::get_models;
 use crate::scene::Scene;
@@ -20,7 +20,12 @@ fn main() {
     let lights = vec![
         Light::Ambient(AmbientLight {
             radiance: 1.0,
-            color: Vec3::new(0.2, 0.2, 0.2),
+            color: Vec3::new(0.1, 0.1, 0.1),
+        }),
+        Light::AmbientOcculuder(AmbientOcculuder {
+            radiance: 1.0,
+            color: Vec3::new(1.0, 1.0, 1.0),
+            sample_points_sqrt: 16,
         }),
         Light::Directional(DirectionalLight {
             radiance: 1.0,
@@ -33,6 +38,7 @@ fn main() {
             location: Vec3::new(0.0, -1.0, 0.0),
             width: 75.0 / 255.0,
             height: 75.0 / 255.0,
+            sample_points_sqrt: 5,
         }),
     ];
 
@@ -43,6 +49,7 @@ fn main() {
         camera: Vec3::new(0.0, 0.0, -3.0),
         models: get_models(),
         lights: lights,
+        sample_points_sqrt: 5,
     };
 
     let mut image = RgbImage::new(width, height);

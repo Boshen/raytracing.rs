@@ -1,15 +1,21 @@
-use nalgebra::{Dot, Norm};
+use nalgebra::{Cross, Dot, Norm};
 use std::ops::Add;
 use std::ops::Mul;
 use std::ops::Sub;
 
 use crate::model::{Color, Hittable, Material, Model, Vec3};
 use crate::ray::Ray;
-use crate::sampler::{get_unit_square_sampler, SAMPLE_POINTS};
+use crate::sampler::{get_hemisphere_sampler, get_unit_square_sampler};
 
 pub struct AmbientLight {
     pub radiance: f64,
     pub color: Color,
+}
+
+pub struct AmbientOcculuder {
+    pub radiance: f64,
+    pub color: Color,
+    pub sample_points_sqrt: u32,
 }
 
 pub struct DirectionalLight {
@@ -24,10 +30,12 @@ pub struct AreaLight {
     pub location: Vec3,
     pub width: f64,
     pub height: f64,
+    pub sample_points_sqrt: u32,
 }
 
 pub enum Light {
     Ambient(AmbientLight),
+    AmbientOcculuder(AmbientOcculuder),
     Directional(DirectionalLight),
     Area(AreaLight),
 }
@@ -43,6 +51,7 @@ impl Light {
     ) -> Color {
         match self {
             Light::Ambient(l) => l.shade(&model.material),
+            Light::AmbientOcculuder(l) => l.shade(&point, &hittable, &models),
             Light::Directional(l) => l.shade(&model.material, &point, &hittable),
             Light::Area(l) => l.shade(&model.material, &ray, &point, &hittable, &models),
         }
@@ -56,6 +65,29 @@ impl AmbientLight {
         let cl = self.color;
         let ls = self.radiance;
         return cd.mul(kd).mul(cl.mul(ls));
+    }
+}
+
+impl AmbientOcculuder {
+    pub fn shade(&self, point: &Vec3, hittable: &Box<dyn Hittable>, models: &Vec<Model>) -> Color {
+        let w = hittable.normal(point);
+        let v = w.cross(&Vec3::new(0.0072, 1.0, 0.0034)).normalize();
+        let u = v.cross(&w);
+
+        let amount = get_hemisphere_sampler(self.sample_points_sqrt)
+            .into_iter()
+            .map(|sp| {
+                let dir = u.mul(sp.x).add(v.mul(sp.y)).add(w.mul(sp.z)).normalize();
+                if is_in_shadow(&point, &dir, &models) {
+                    return 0.0;
+                } else {
+                    return 1.0;
+                }
+            })
+            .sum::<f64>()
+            / (self.sample_points_sqrt as f64 * self.sample_points_sqrt as f64);
+
+        return self.color.mul(self.radiance * amount);
     }
 }
 
@@ -121,33 +153,38 @@ impl AreaLight {
     fn intensity_at(&self, point: &Vec3, models: &Vec<Model>) -> f64 {
         let x = self.location.x - self.width / 2.0;
         let z = self.location.z - self.height / 2.0;
-        return get_unit_square_sampler()
+        return get_unit_square_sampler(self.sample_points_sqrt)
             .iter()
-            .fold(0.0, |intensity, (dx, dz)| {
+            .map(|(dx, dz)| {
                 let new_location =
                     Vec3::new(x + dx * self.width, self.location.y, z + dz * self.width);
-                let l = new_location.sub(point).normalize();
-                return intensity + self.is_in_shadow(&point, &l, &models);
+                let dir = new_location.sub(point).normalize();
+                if is_in_shadow(&point, &dir, &models) {
+                    return 0.0;
+                } else {
+                    return 1.0;
+                }
             })
-            / (SAMPLE_POINTS as f64 * SAMPLE_POINTS as f64);
+            .sum::<f64>()
+            / (self.sample_points_sqrt as f64 * self.sample_points_sqrt as f64);
     }
+}
 
-    fn is_in_shadow(&self, point: &Vec3, l: &Vec3, models: &Vec<Model>) -> f64 {
-        let shadow_ray = Ray {
-            origin: point.add(l.mul(0.00001)),
-            dir: *l,
-        };
-        for m in models.iter() {
-            if !m.material.transparent {
-                if m.aabb.intersects(&shadow_ray) {
-                    for h in m.hittables.iter() {
-                        if let Some(_) = h.intersects(&shadow_ray) {
-                            return 0.0;
-                        }
+fn is_in_shadow(point: &Vec3, dir: &Vec3, models: &Vec<Model>) -> bool {
+    let shadow_ray = Ray {
+        origin: point.add(dir.mul(0.00001)),
+        dir: *dir,
+    };
+    for m in models.iter() {
+        if !m.material.transparent {
+            if m.aabb.intersects(&shadow_ray) {
+                for h in m.hittables.iter() {
+                    if let Some(_) = h.intersects(&shadow_ray) {
+                        return true;
                     }
                 }
             }
         }
-        return 1.0;
     }
+    return false;
 }

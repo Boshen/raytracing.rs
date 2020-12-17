@@ -1,14 +1,12 @@
 use image::{Rgb, RgbImage};
 use nalgebra::Dot;
 use rayon::prelude::*;
-use std::ops::Add;
-use std::ops::Mul;
-use std::ops::Sub;
+use std::ops::{Add, Div, Mul, Sub};
 
 use crate::light::Light;
 use crate::model::{Color, Hittable, Model, Vec3};
 use crate::ray::Ray;
-use crate::sampler::{get_unit_square_sampler, SAMPLE_POINTS};
+use crate::sampler::get_unit_square_sampler;
 
 pub struct Scene {
     pub width: u32,
@@ -17,6 +15,7 @@ pub struct Scene {
     pub camera: Vec3,
     pub lights: Vec<Light>,
     pub models: Vec<Model>,
+    pub sample_points_sqrt: u32,
 }
 
 impl Scene {
@@ -51,12 +50,12 @@ impl Scene {
     }
 
     fn antialias(&self, x: f64, y: f64) -> Color {
-        return get_unit_square_sampler()
+        return get_unit_square_sampler(self.sample_points_sqrt)
             .iter()
             .fold(Color::new(0.0, 0.0, 0.0), |color, (dx, dy)| {
                 color.add(self.get_color(x + dx, y + dy))
             })
-            .mul(1.0 / (SAMPLE_POINTS as f64 * SAMPLE_POINTS as f64));
+            .div(self.sample_points_sqrt as f64 * self.sample_points_sqrt as f64);
     }
 
     fn get_color(&self, x: f64, y: f64) -> Color {
