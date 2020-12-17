@@ -63,7 +63,7 @@ pub fn get_models() -> Vec<Model> {
         diffuse_reflection: 0.0,
         reflection: 1.0,
         specular_refection: 1.0,
-        shininess: 5.0,
+        shininess: 3.0,
         ..material
     };
 
@@ -75,6 +75,8 @@ pub fn get_models() -> Vec<Model> {
     models.push(Model::new(l, wall_green, vec![t(f, b, d), t(h, f, d)]));
     // front wall
     models.push(Model::new(l, wall_beige, vec![t(g, d, c), t(g, h, d)]));
+    // wall behind camera
+    models.push(Model::new(l, wall_beige, vec![t(f, e, a), t(f, a, b)]));
 
     let hole_radius = 75.0;
     let i = Vec3::new(l / 2.0 + hole_radius, l, l / 2.0 - hole_radius);
