@@ -21,6 +21,7 @@ pub struct Material {
     pub specular_refection: f64,
     pub shininess: f64,
     pub transparent: bool,
+    pub is_object: bool,
 }
 
 pub trait Hittable: Send + Sync {

@@ -8,6 +8,7 @@ pub fn default_metarial() -> Material {
         specular_refection: 0.0,
         shininess: 0.0,
         transparent: false,
+        is_object: false,
     };
 }
 
@@ -53,17 +54,20 @@ pub fn get_models() -> Vec<Model> {
     };
     let block_blue = Material {
         diffuse_color: Color::new(0.05, 0.6, 1.0),
+        is_object: true,
         ..material
     };
     let block_orange = Material {
         diffuse_color: Color::new(0.8, 0.7, 0.05),
+        is_object: true,
         ..material
     };
     let sphere_material = Material {
         diffuse_reflection: 0.0,
-        reflection: 1.0,
+        reflection: 0.6,
         specular_refection: 1.0,
-        shininess: 3.0,
+        shininess: 2.0,
+        is_object: true,
         ..material
     };
 

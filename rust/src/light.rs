@@ -76,7 +76,7 @@ impl AmbientOcculuder {
             .into_iter()
             .map(|sp| {
                 let dir = u.mul(sp.x).add(v.mul(sp.y)).add(w.mul(sp.z)).normalize();
-                if is_in_shadow(&point, &dir, &models) {
+                if is_in_shadow(&point, &dir, &models, true) {
                     return 0.0;
                 } else {
                     return 1.0;
@@ -156,7 +156,7 @@ impl AreaLight {
                 let new_location =
                     Vec3::new(x + dx * self.width, self.location.y, z + dz * self.width);
                 let dir = new_location.sub(point).normalize();
-                if is_in_shadow(&point, &dir, &models) {
+                if is_in_shadow(&point, &dir, &models, false) {
                     return 0.0;
                 } else {
                     return 1.0;
@@ -167,18 +167,22 @@ impl AreaLight {
     }
 }
 
-fn is_in_shadow(point: &Vec3, dir: &Vec3, models: &Vec<Model>) -> bool {
+fn is_in_shadow(point: &Vec3, dir: &Vec3, models: &Vec<Model>, test_object_only: bool) -> bool {
     let shadow_ray = Ray {
         origin: point.add(dir.mul(0.00001)),
         dir: *dir,
     };
     for m in models.iter() {
-        if !m.material.transparent {
-            if m.aabb.intersects(&shadow_ray) {
-                for h in m.hittables.iter() {
-                    if let Some(_) = h.intersects(&shadow_ray) {
-                        return true;
-                    }
+        if m.material.transparent {
+            continue;
+        }
+        if test_object_only && !m.material.is_object {
+            continue;
+        }
+        if m.aabb.intersects(&shadow_ray) {
+            for h in m.hittables.iter() {
+                if let Some(_) = h.intersects(&shadow_ray) {
+                    return true;
                 }
             }
         }

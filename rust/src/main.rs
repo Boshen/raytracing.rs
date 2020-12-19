@@ -19,11 +19,11 @@ fn main() {
 
     let lights = vec![
         Light::Ambient(AmbientLight {
-            radiance: 1.0,
-            color: Vec3::new(0.1, 0.1, 0.1),
+            radiance: 0.1,
+            color: Vec3::new(1.0, 1.0, 1.0),
         }),
         Light::AmbientOcculuder(AmbientOcculuder {
-            radiance: 1.0,
+            radiance: 0.3,
             color: Vec3::new(1.0, 1.0, 1.0),
             sample_points_sqrt: 16,
         }),
@@ -33,7 +33,7 @@ fn main() {
             location: Vec3::new(0.0, 0.0, -1.0),
         }),
         Light::Area(AreaLight {
-            radiance: 2.5,
+            radiance: 1.5,
             color: Vec3::new(1.0, 1.0, 1.0),
             location: Vec3::new(0.0, -1.0, 0.0),
             width: 75.0 / 255.0,
@@ -49,7 +49,7 @@ fn main() {
         camera: Vec3::new(0.0, 0.0, -3.0),
         models: get_models(),
         lights: lights,
-        sample_points_sqrt: 5,
+        sample_points_sqrt: 1,
     };
 
     let mut image = RgbImage::new(width, height);
