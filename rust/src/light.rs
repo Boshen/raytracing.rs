@@ -154,7 +154,6 @@ impl AreaLight {
         let x = self.location.x - self.width / 2.0;
         let z = self.location.z - self.height / 2.0;
         return get_unit_square_sampler(self.sample_points_sqrt)
-            .iter()
             .map(|(dx, dz)| {
                 let new_location =
                     Vec3::new(x + dx * self.width, self.location.y, z + dz * self.width);

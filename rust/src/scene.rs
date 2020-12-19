@@ -51,7 +51,6 @@ impl Scene {
 
     fn antialias(&self, x: f64, y: f64) -> Color {
         return get_unit_square_sampler(self.sample_points_sqrt)
-            .iter()
             .fold(Color::new(0.0, 0.0, 0.0), |color, (dx, dy)| {
                 color.add(self.get_color(x + dx, y + dy))
             })
