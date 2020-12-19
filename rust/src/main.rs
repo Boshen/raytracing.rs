@@ -53,6 +53,9 @@ fn main() {
     };
 
     let mut image = RgbImage::new(width, height);
-    scene.algorithm(&mut image);
+    scene
+        .algorithm()
+        .into_iter()
+        .for_each(|(i, j, rgb)| image.put_pixel(i, j, rgb));
     image.save("output.png").unwrap();
 }

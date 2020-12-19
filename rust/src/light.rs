@@ -1,7 +1,5 @@
 use nalgebra::{Cross, Dot, Norm};
-use std::ops::Add;
-use std::ops::Mul;
-use std::ops::Sub;
+use std::ops::{Add, Mul, Sub};
 
 use crate::model::{Color, Hittable, Material, Model, Vec3};
 use crate::ray::Ray;

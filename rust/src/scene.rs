@@ -1,4 +1,4 @@
-use image::{Rgb, RgbImage};
+use image::Rgb;
 use nalgebra::Dot;
 use rayon::prelude::*;
 use std::ops::{Add, Div, Mul, Sub};
@@ -19,30 +19,29 @@ pub struct Scene {
 }
 
 impl Scene {
-    pub fn algorithm(&self, image: &mut RgbImage) {
-        let mut xys: Vec<(u32, u32, Vec3)> = vec![];
-        for i in 0..self.width {
-            for j in 0..self.height {
-                xys.push((i, j, Vec3::new(0.0, 0.0, 0.0)))
-            }
-        }
+    pub fn algorithm(&self) -> Vec<(u32, u32, Rgb<u8>)> {
+        let mut arr = (0..self.width)
+            .into_iter()
+            .flat_map(move |i| {
+                return (0..self.height)
+                    .into_iter()
+                    .map(move |j| (i, j, Rgb([0, 0, 0])));
+            })
+            .collect::<Vec<(u32, u32, Rgb<u8>)>>();
 
-        xys.par_iter_mut().for_each(|t| {
+        arr.par_iter_mut().for_each(|t| {
             let (i, j, _c) = t;
             let x = (*i as f64) - (self.width as f64) / 2.0;
             let y = (*j as f64) - (self.height as f64) / 2.0;
             let color = self.antialias(x, y);
-            t.2 = color;
-        });
-
-        xys.iter().for_each(|(i, j, color)| {
             let rgb = Rgb([
                 self.to_rgb(color.x),
                 self.to_rgb(color.y),
                 self.to_rgb(color.z),
             ]);
-            image.put_pixel(*i, *j, rgb);
+            t.2 = rgb;
         });
+        return arr;
     }
 
     fn to_rgb(&self, x: f64) -> u8 {
