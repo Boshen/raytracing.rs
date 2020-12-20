@@ -19,7 +19,7 @@ pub struct AmbientOcculuder {
 pub struct DirectionalLight {
     pub radiance: f64,
     pub color: Color,
-    pub location: Vec3,
+    pub direction: Vec3,
 }
 
 pub struct AreaLight {
@@ -91,7 +91,7 @@ impl AmbientOcculuder {
 
 impl DirectionalLight {
     pub fn shade(&self, material: &Material, point: &Vec3, hittable: &Box<dyn Hittable>) -> Color {
-        let l = self.location.sub(point).normalize();
+        let l = self.direction.sub(point).normalize();
         let kd = material.diffuse_reflection;
         let cd = material.diffuse_color;
         let n = hittable.normal(point);

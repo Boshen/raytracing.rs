@@ -30,7 +30,7 @@ fn main() {
         Light::Directional(DirectionalLight {
             radiance: 1.0,
             color: Vec3::new(1.0, 1.0, 1.0),
-            location: Vec3::new(0.0, 0.0, -1.0),
+            direction: Vec3::new(0.0, 0.0, -1.0),
         }),
         Light::Area(AreaLight {
             radiance: 1.5,
