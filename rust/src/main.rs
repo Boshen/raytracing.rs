@@ -33,7 +33,7 @@ fn main() {
             direction: Vec3::new(0.0, 0.0, -1.0),
         }),
         Light::Area(AreaLight {
-            radiance: 1.5,
+            radiance: 2.0,
             color: Vec3::new(1.0, 1.0, 1.0),
             location: Vec3::new(0.0, -1.0, 0.0),
             width: 75.0 / 255.0,

@@ -33,7 +33,7 @@ impl Scene {
             let (i, j, _c) = t;
             let x = (*i as f64) - (self.width as f64) / 2.0;
             let y = (*j as f64) - (self.height as f64) / 2.0;
-            let color = self.antialias(x, y);
+            let color = self.tone_mapping(self.antialias(x, y));
             let rgb = Rgb([
                 self.to_rgb(color.x),
                 self.to_rgb(color.y),
@@ -42,6 +42,15 @@ impl Scene {
             t.2 = rgb;
         });
         return arr;
+    }
+
+    fn tone_mapping(&self, color: Color) -> Color {
+        let max = color.x.max(color.y).max(color.z);
+        if max > 1.0 {
+            return color.div(max);
+        } else {
+            return color;
+        }
     }
 
     fn to_rgb(&self, x: f64) -> u8 {
