@@ -68,20 +68,20 @@ impl Scene {
     }
 
     fn trace(&self, ray: &Ray, color: &Color, depth: u64) -> Color {
-        let mut min_distance = f64::INFINITY;
-        let mut intersection: Option<(f64, &Model, &Box<dyn Hittable>)> = None;
-        for m in self.models.iter() {
-            if m.aabb.intersects(&ray) {
-                for t in m.hittables.iter() {
-                    if let Some(distance) = t.intersects(ray) {
-                        if distance < min_distance {
-                            min_distance = distance;
-                            intersection = Some((distance, m, &t))
-                        }
-                    }
-                }
-            }
-        }
+        let intersection = self
+            .models
+            .iter()
+            .filter(|model| model.aabb.intersects(&ray))
+            .flat_map(|model| {
+                model
+                    .hittables
+                    .iter()
+                    .map(move |hittable| (model, hittable))
+            })
+            .filter_map(|(model, hittable)| {
+                hittable.intersects(ray).map(|dist| (dist, model, hittable))
+            })
+            .min_by(|t1, t2| (t1.0).partial_cmp(&t2.0).expect("Tried to compare a NaN"));
 
         match intersection {
             None => Color::new(0.0, 0.0, 0.0),
