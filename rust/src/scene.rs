@@ -20,28 +20,21 @@ pub struct Scene {
 
 impl Scene {
     pub fn algorithm(&self) -> Vec<(u32, u32, Rgb<u8>)> {
-        let mut arr = (0..self.width)
-            .into_iter()
-            .flat_map(move |i| {
-                return (0..self.height)
-                    .into_iter()
-                    .map(move |j| (i, j, Rgb([0, 0, 0])));
+        return (0..(self.width * self.height))
+            .into_par_iter()
+            .map(|n| {
+                let (i, j) = (n % self.width, n / self.width);
+                let x = (i as f64) - (self.width as f64) / 2.0;
+                let y = (j as f64) - (self.height as f64) / 2.0;
+                let color = self.tone_mapping(self.antialias(x, y));
+                let rgb = Rgb([
+                    self.to_rgb(color.x),
+                    self.to_rgb(color.y),
+                    self.to_rgb(color.z),
+                ]);
+                return (i, j, rgb);
             })
-            .collect::<Vec<(u32, u32, Rgb<u8>)>>();
-
-        arr.par_iter_mut().for_each(|t| {
-            let (i, j, _c) = t;
-            let x = (*i as f64) - (self.width as f64) / 2.0;
-            let y = (*j as f64) - (self.height as f64) / 2.0;
-            let color = self.tone_mapping(self.antialias(x, y));
-            let rgb = Rgb([
-                self.to_rgb(color.x),
-                self.to_rgb(color.y),
-                self.to_rgb(color.z),
-            ]);
-            t.2 = rgb;
-        });
-        return arr;
+            .collect();
     }
 
     fn tone_mapping(&self, color: Color) -> Color {
