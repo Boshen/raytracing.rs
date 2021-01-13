@@ -1,7 +1,8 @@
 use nalgebra::{Cross, Dot, Norm};
 use std::ops::{Add, Mul, Sub};
 
-use crate::model::{Color, Hittable, Model, Vec3};
+use crate::hittable::Hittable;
+use crate::model::{Color, Model, Vec3};
 use crate::ray::Ray;
 use crate::sampler::{get_hemisphere_sampler, get_unit_square_sampler};
 

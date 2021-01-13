@@ -1,4 +1,5 @@
-use crate::model::{Color, Hittable, Material, Model, Sphere, Triangle, Vec3};
+use crate::hittable::{Hittable, Sphere, Triangle};
+use crate::model::{Color, Material, Model, Vec3};
 
 pub fn default_metarial() -> Material {
     return Material {

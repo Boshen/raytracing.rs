@@ -3,8 +3,9 @@ use nalgebra::Dot;
 use rayon::prelude::*;
 use std::ops::{Add, Div, Mul, Sub};
 
+use crate::hittable::Hittable;
 use crate::light::Light;
-use crate::model::{Color, Hittable, Model, Vec3};
+use crate::model::{Color, Model, Vec3};
 use crate::ray::Ray;
 use crate::sampler::get_unit_square_sampler;
 

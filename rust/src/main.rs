@@ -1,6 +1,7 @@
 use image::RgbImage;
 
 mod aabb;
+mod hittable;
 mod light;
 mod model;
 mod models;
