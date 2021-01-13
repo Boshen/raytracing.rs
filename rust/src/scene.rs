@@ -6,7 +6,7 @@ use std::ops::{Add, Div, Mul, Sub};
 use crate::hittable::Hittable;
 use crate::light::Light;
 use crate::model::{Color, Model, Vec3};
-use crate::ray::Ray;
+use crate::ray::{Ray, RayHit};
 use crate::sampler::get_unit_square_sampler;
 
 pub struct Scene {
@@ -91,7 +91,15 @@ impl Scene {
                 let shade_color = self
                     .lights
                     .iter()
-                    .map(|l| l.shade(&ray, &point, &model, &hittable, &self.models))
+                    .map(|l| {
+                        l.shade(&RayHit {
+                            ray: Box::new(ray),
+                            hit_point: point,
+                            material: Box::new(model.material),
+                            hittable: &hittable,
+                            models: Box::new(&self.models),
+                        })
+                    })
                     .fold(Color::new(0.0, 0.0, 0.0), |a, b| a.add(b));
                 let reflection_color =
                     self.calc_reflection_color(&ray, &point, &model, &hittable, color, depth);
