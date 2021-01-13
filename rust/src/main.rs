@@ -3,6 +3,7 @@ use image::RgbImage;
 mod aabb;
 mod hittable;
 mod light;
+mod material;
 mod model;
 mod models;
 mod ray;
