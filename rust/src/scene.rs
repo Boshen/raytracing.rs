@@ -13,7 +13,7 @@ pub struct Scene {
     pub height: u32,
     pub focal_length: u32,
     pub camera: Vec3,
-    pub lights: Vec<Light>,
+    pub lights: Vec<Box<dyn Light>>,
     pub models: Vec<Model>,
     pub sample_points_sqrt: u32,
 }

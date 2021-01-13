@@ -1,9 +1,20 @@
 use nalgebra::{Cross, Dot, Norm};
 use std::ops::{Add, Mul, Sub};
 
-use crate::model::{Color, Hittable, Material, Model, Vec3};
+use crate::model::{Color, Hittable, Model, Vec3};
 use crate::ray::Ray;
 use crate::sampler::{get_hemisphere_sampler, get_unit_square_sampler};
+
+pub trait Light: Send + Sync {
+    fn shade(
+        &self,
+        ray: &Ray,
+        point: &Vec3,
+        model: &Model,
+        hittable: &Box<dyn Hittable>,
+        models: &Vec<Model>,
+    ) -> Color;
+}
 
 pub struct AmbientLight {
     pub radiance: f64,
@@ -31,43 +42,32 @@ pub struct AreaLight {
     pub sample_points_sqrt: u32,
 }
 
-pub enum Light {
-    Ambient(AmbientLight),
-    AmbientOcculuder(AmbientOcculuder),
-    Directional(DirectionalLight),
-    Area(AreaLight),
-}
-
-impl Light {
-    pub fn shade(
+impl Light for AmbientLight {
+    fn shade(
         &self,
-        ray: &Ray,
-        point: &Vec3,
+        _ray: &Ray,
+        _point: &Vec3,
         model: &Model,
-        hittable: &Box<dyn Hittable>,
-        models: &Vec<Model>,
+        _hittable: &Box<dyn Hittable>,
+        _models: &Vec<Model>,
     ) -> Color {
-        match self {
-            Light::Ambient(l) => l.shade(&model.material),
-            Light::AmbientOcculuder(l) => l.shade(&point, &hittable, &models),
-            Light::Directional(l) => l.shade(&model.material, &point, &hittable),
-            Light::Area(l) => l.shade(&model.material, &ray, &point, &hittable, &models),
-        }
-    }
-}
-
-impl AmbientLight {
-    pub fn shade(&self, material: &Material) -> Color {
-        let kd = material.diffuse_reflection;
-        let cd = material.diffuse_color;
+        let kd = model.material.diffuse_reflection;
+        let cd = model.material.diffuse_color;
         let cl = self.color;
         let ls = self.radiance;
         return cd.mul(kd).mul(cl.mul(ls));
     }
 }
 
-impl AmbientOcculuder {
-    pub fn shade(&self, point: &Vec3, hittable: &Box<dyn Hittable>, models: &Vec<Model>) -> Color {
+impl Light for AmbientOcculuder {
+    fn shade(
+        &self,
+        _ray: &Ray,
+        point: &Vec3,
+        _model: &Model,
+        hittable: &Box<dyn Hittable>,
+        models: &Vec<Model>,
+    ) -> Color {
         let w = hittable.normal(point);
         let v = w.cross(&Vec3::new(0.0072, 1.0, 0.0034)).normalize();
         let u = v.cross(&w);
@@ -89,11 +89,18 @@ impl AmbientOcculuder {
     }
 }
 
-impl DirectionalLight {
-    pub fn shade(&self, material: &Material, point: &Vec3, hittable: &Box<dyn Hittable>) -> Color {
+impl Light for DirectionalLight {
+    fn shade(
+        &self,
+        _ray: &Ray,
+        point: &Vec3,
+        model: &Model,
+        hittable: &Box<dyn Hittable>,
+        _models: &Vec<Model>,
+    ) -> Color {
         let l = self.direction.sub(point).normalize();
-        let kd = material.diffuse_reflection;
-        let cd = material.diffuse_color;
+        let kd = model.material.diffuse_reflection;
+        let cd = model.material.diffuse_color;
         let n = hittable.normal(point);
         let cl = self.color;
         let ls = self.radiance;
@@ -105,21 +112,21 @@ impl DirectionalLight {
     }
 }
 
-impl AreaLight {
-    pub fn shade(
+impl Light for AreaLight {
+    fn shade(
         &self,
-        material: &Material,
         ray: &Ray,
         point: &Vec3,
+        model: &Model,
         hittable: &Box<dyn Hittable>,
         models: &Vec<Model>,
     ) -> Color {
         let w = ray.origin.sub(point).normalize();
         let l = self.location.sub(point).normalize();
-        let kd = material.diffuse_reflection;
-        let cd = material.diffuse_color;
-        let ks = material.specular_refection;
-        let e = material.shininess;
+        let kd = model.material.diffuse_reflection;
+        let cd = model.material.diffuse_color;
+        let ks = model.material.specular_refection;
+        let e = model.material.shininess;
         let n = hittable.normal(point);
         let cl = self.color;
         let ls = self.radiance;
@@ -147,7 +154,9 @@ impl AreaLight {
         let specular = cl.mul(ks * specular_amount.powf(e) * diffuse_amount * ls);
         return diffuse.add(specular).mul(shadow_intensity);
     }
+}
 
+impl AreaLight {
     fn intensity_at(&self, point: &Vec3, models: &Vec<Model>) -> f64 {
         let x = self.location.x - self.width / 2.0;
         let z = self.location.z - self.height / 2.0;
