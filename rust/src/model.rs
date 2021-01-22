@@ -8,13 +8,13 @@ pub type Color = Vector3<f64>;
 pub type Vec3 = Vector3<f64>;
 
 pub struct Model {
-    pub material: Material,
+    pub material: Box<Material>,
     pub hittables: Vec<Box<dyn Hittable>>,
     pub aabb: AABB,
 }
 
 impl Model {
-    pub fn new(l: f64, material: Material, hittables: Vec<Box<dyn Hittable>>) -> Model {
+    pub fn new(l: f64, material: Box<Material>, hittables: Vec<Box<dyn Hittable>>) -> Model {
         let mut model = Model {
             material: material,
             hittables: hittables,

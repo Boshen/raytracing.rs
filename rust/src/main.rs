@@ -1,6 +1,7 @@
 use image::RgbImage;
 
 mod aabb;
+mod brdf;
 mod hittable;
 mod light;
 mod material;
@@ -10,7 +11,9 @@ mod ray;
 mod sampler;
 mod scene;
 
-use crate::light::{AmbientLight, AmbientOcculuder, AreaLight, DirectionalLight, Light};
+use crate::light::{
+    AmbientLight, AmbientOcculuder, AreaLight, DirectionalLight, Light, PointLight,
+};
 use crate::model::Vec3;
 use crate::models::get_models;
 use crate::scene::Scene;
@@ -19,11 +22,11 @@ fn main() {
     let width = 500;
     let height = 500;
 
+    let ambient_light = Box::new(AmbientLight {
+        ls: 0.01,
+        cl: Vec3::new(1.0, 1.0, 1.0),
+    });
     let lights: Vec<Box<dyn Light>> = vec![
-        Box::new(AmbientLight {
-            ls: 0.1,
-            cl: Vec3::new(1.0, 1.0, 1.0),
-        }),
         Box::new(AmbientOcculuder {
             ls: 0.3,
             cl: Vec3::new(1.0, 1.0, 1.0),
@@ -33,6 +36,11 @@ fn main() {
             ls: 1.0,
             cl: Vec3::new(1.0, 1.0, 1.0),
             direction: Vec3::new(0.0, 0.0, -1.0),
+        }),
+        Box::new(PointLight {
+            ls: 1.0,
+            cl: Vec3::new(1.0, 1.0, 1.0),
+            location: Vec3::new(0.0, -1.0, 0.0),
         }),
         Box::new(AreaLight {
             ls: 2.0,
@@ -52,6 +60,7 @@ fn main() {
         models: get_models(),
         lights: lights,
         sample_points_sqrt: 1,
+        ambient_light: ambient_light,
     };
 
     let mut image = RgbImage::new(width, height);

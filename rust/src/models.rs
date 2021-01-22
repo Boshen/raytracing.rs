@@ -1,17 +1,19 @@
+use crate::brdf::{GlossySpecular, Lambertian, PerfectSpecular};
 use crate::hittable::{Hittable, Sphere, Triangle};
-use crate::material::Material;
+use crate::material::{Material, Matte, Phong, Reflective};
 use crate::model::{Color, Model, Vec3};
 
-pub fn default_metarial() -> Material {
-    return Material {
-        diffuse_reflection: 1.0,
-        diffuse_color: Color::new(0.0, 0.0, 0.0),
-        reflection: 0.0,
-        specular_refection: 0.0,
-        shininess: 0.0,
-        transparent: false,
-        is_object: false,
+fn matte(cd: Color) -> Box<Material> {
+    let diffuse_brdf = Lambertian { kd: 1.0, cd: cd };
+    let ambient_brdf = Lambertian {
+        kd: 1.0,
+        cd: Color::new(1.0, 1.0, 1.0),
     };
+    let matte = Matte {
+        diffuse_brdf: Box::new(diffuse_brdf),
+        ambient_brdf: Box::new(ambient_brdf),
+    };
+    return Box::new(Material::Matte(matte));
 }
 
 pub fn get_models() -> Vec<Model> {
@@ -28,71 +30,63 @@ pub fn get_models() -> Vec<Model> {
     let mut g = Vec3::new(l, l, l);
     let mut h = Vec3::new(0.0, l, l);
 
-    let material = default_metarial();
-
-    let wall_beige = Material {
-        diffuse_color: Color::new(0.85, 0.85, 0.7),
-        ..material
-    };
-    let wall_red = Material {
-        diffuse_color: Color::new(0.75, 0.15, 0.15),
-        ..material
-    };
-    let wall_green = Material {
-        diffuse_color: Color::new(0.15, 0.75, 0.15),
-        ..material
-    };
-    let light_material = Material {
-        diffuse_color: Color::new(1.0, 1.0, 1.0),
-        diffuse_reflection: 10.0,
-        transparent: true,
-        ..material
-    };
-    let light_box_material = Material {
-        diffuse_color: Color::new(0.2, 0.2, 0.2),
-        diffuse_reflection: 5.0,
-        transparent: true,
-        ..material
-    };
-    let block_blue = Material {
-        diffuse_color: Color::new(0.05, 0.6, 1.0),
-        is_object: true,
-        ..material
-    };
-    let block_orange = Material {
-        diffuse_color: Color::new(0.8, 0.7, 0.05),
-        is_object: true,
-        ..material
-    };
-    let sphere_material = Material {
-        diffuse_reflection: 0.0,
-        reflection: 0.6,
-        specular_refection: 1.0,
-        shininess: 2.0,
-        is_object: true,
-        ..material
-    };
+    let wall_beige0 = matte(Color::new(0.85, 0.85, 0.7));
+    let wall_beige1 = matte(Color::new(0.85, 0.85, 0.7));
+    let wall_beige2 = matte(Color::new(0.85, 0.85, 0.7));
+    let wall_beige3 = matte(Color::new(0.85, 0.85, 0.7));
+    let wall_red = matte(Color::new(0.75, 0.15, 0.15));
+    let wall_green = matte(Color::new(0.15, 0.75, 0.15));
+    // let light_material = matte(Color::new(1.0, 1.0, 1.0));
+    // let light_box_material = matte(Color::new(0.2, 0.2, 0.2));
+    let block_blue = matte(Color::new(0.05, 0.6, 1.0));
+    let block_orange = matte(Color::new(0.8, 0.7, 0.05));
+    let sphere1_material = Box::new(Material::Phong(Phong {
+        ambient_brdf: Box::new(Lambertian {
+            kd: 1.0,
+            cd: Color::new(1.0, 1.0, 1.0),
+        }),
+        diffuse_brdf: Box::new(Lambertian {
+            kd: 1.0,
+            cd: Color::new(0.8, 0.8, 0.8),
+        }),
+        specular_brdf: Box::new(GlossySpecular { ks: 0.15, exp: 1.0 }),
+    }));
+    let sphere2_material = Box::new(Material::Reflective(Reflective {
+        ambient_brdf: Box::new(Lambertian {
+            kd: 1.0,
+            cd: Color::new(1.0, 1.0, 1.0),
+        }),
+        diffuse_brdf: Box::new(Lambertian {
+            kd: 1.0,
+            cd: Color::new(0.8, 0.8, 0.8),
+        }),
+        specular_brdf: Box::new(GlossySpecular { ks: 0.15, exp: 1.0 }),
+        reflective_brdf: Box::new(PerfectSpecular {
+            kr: 0.75,
+            cr: Color::new(1.0, 1.0, 1.0),
+        }),
+    }));
 
     // floor
-    models.push(Model::new(l, wall_beige, vec![t(c, b, a), t(c, d, b)]));
+    models.push(Model::new(l, wall_beige0, vec![t(c, b, a), t(c, d, b)]));
     // left
     models.push(Model::new(l, wall_red, vec![t(a, e, c), t(c, e, g)]));
     // right
     models.push(Model::new(l, wall_green, vec![t(f, b, d), t(h, f, d)]));
     // front wall
-    models.push(Model::new(l, wall_beige, vec![t(g, d, c), t(g, h, d)]));
+    models.push(Model::new(l, wall_beige1, vec![t(g, d, c), t(g, h, d)]));
     // wall behind camera
-    models.push(Model::new(l, wall_beige, vec![t(f, e, a), t(f, a, b)]));
+    models.push(Model::new(l, wall_beige2, vec![t(f, e, a), t(f, a, b)]));
 
     let hole_radius = 75.0;
     let i = Vec3::new(l / 2.0 + hole_radius, l, l / 2.0 - hole_radius);
     let j = Vec3::new(l / 2.0 - hole_radius, l, l / 2.0 - hole_radius);
     let k = Vec3::new(l / 2.0 + hole_radius, l, l / 2.0 + hole_radius);
     let l2 = Vec3::new(l / 2.0 - hole_radius, l, l / 2.0 + hole_radius);
-    let mut m = Vec3::new(l / 2.0 + hole_radius, l, z_front);
-    let mut n = Vec3::new(l / 2.0 - hole_radius, l, z_front);
-    let mut o = Vec3::new(l / 2.0 + hole_radius, l, l + 5.0);
-    let mut p = Vec3::new(l / 2.0 - hole_radius, l, l + 5.0);
+    let m = Vec3::new(l / 2.0 + hole_radius, l, z_front);
+    let n = Vec3::new(l / 2.0 - hole_radius, l, z_front);
+    let o = Vec3::new(l / 2.0 + hole_radius, l, l + 5.0);
+    let p = Vec3::new(l / 2.0 - hole_radius, l, l + 5.0);
     e = Vec3::new(l + 5.0, l, z_front);
     f = Vec3::new(-5.0, l, z_front);
     g = Vec3::new(l + 5.0, l, l + 5.0);
@@ -101,7 +95,7 @@ pub fn get_models() -> Vec<Model> {
     // ceiling
     models.push(Model::new(
         l,
-        wall_beige,
+        wall_beige3,
         vec![
             t(e, m, g),
             t(m, o, g),
@@ -115,48 +109,48 @@ pub fn get_models() -> Vec<Model> {
     ));
 
     // light hole
-    models.push(Model::new(
-        l,
-        light_material,
-        vec![t(l2, k, i), t(l2, i, j)],
-    ));
+    // models.push(Model::new(
+    // l,
+    // light_material,
+    // vec![t(l2, k, i), t(l2, i, j)],
+    // ));
 
     // frame around light
-    let light_box_height = 5.0;
-    m = Vec3::new(
-        l / 2.0 + hole_radius,
-        l - light_box_height,
-        l / 2.0 - hole_radius,
-    );
-    n = Vec3::new(
-        l / 2.0 - hole_radius,
-        l - light_box_height,
-        l / 2.0 - hole_radius,
-    );
-    o = Vec3::new(
-        l / 2.0 + hole_radius,
-        l - light_box_height,
-        l / 2.0 + hole_radius,
-    );
-    p = Vec3::new(
-        l / 2.0 - hole_radius,
-        l - light_box_height,
-        l / 2.0 + hole_radius,
-    );
-    models.push(Model::new(
-        l,
-        light_box_material,
-        vec![
-            t(i, j, m),
-            t(j, n, m),
-            t(j, l2, n),
-            t(l2, p, n),
-            t(l2, k, o),
-            t(l2, o, p),
-            t(i, m, o),
-            t(k, i, o),
-        ],
-    ));
+    // let light_box_height = 5.0;
+    // m = Vec3::new(
+    // l / 2.0 + hole_radius,
+    // l - light_box_height,
+    // l / 2.0 - hole_radius,
+    // );
+    // n = Vec3::new(
+    // l / 2.0 - hole_radius,
+    // l - light_box_height,
+    // l / 2.0 - hole_radius,
+    // );
+    // o = Vec3::new(
+    // l / 2.0 + hole_radius,
+    // l - light_box_height,
+    // l / 2.0 + hole_radius,
+    // );
+    // p = Vec3::new(
+    // l / 2.0 - hole_radius,
+    // l - light_box_height,
+    // l / 2.0 + hole_radius,
+    // );
+    // models.push(Model::new(
+    // l,
+    // light_box_material,
+    // vec![
+    // t(i, j, m),
+    // t(j, n, m),
+    // t(j, l2, n),
+    // t(l2, p, n),
+    // t(l2, k, o),
+    // t(l2, o, p),
+    // t(i, m, o),
+    // t(k, i, o),
+    // ],
+    // ));
 
     // short block
     a = Vec3::new(290.0, 0.0, 114.0);
@@ -215,11 +209,17 @@ pub fn get_models() -> Vec<Model> {
     // sphere
     models.push(Model::new(
         l,
-        sphere_material,
+        sphere1_material,
         vec![Box::new(Sphere::new(
             40.0,
             Vec3::new(200.0, 165.0 + 40.0, 120.0),
         ))],
+    ));
+
+    models.push(Model::new(
+        l,
+        sphere2_material,
+        vec![Box::new(Sphere::new(60.0, Vec3::new(400.0, 60.0, 100.0)))],
     ));
 
     models

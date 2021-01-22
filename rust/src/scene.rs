@@ -1,9 +1,7 @@
 use image::Rgb;
-use nalgebra::Dot;
 use rayon::prelude::*;
-use std::ops::{Add, Div, Mul, Sub};
+use std::ops::{Add, Div};
 
-use crate::hittable::Hittable;
 use crate::light::Light;
 use crate::model::{Color, Model, Vec3};
 use crate::ray::{Ray, RayHit};
@@ -17,6 +15,7 @@ pub struct Scene {
     pub lights: Vec<Box<dyn Light>>,
     pub models: Vec<Model>,
     pub sample_points_sqrt: u32,
+    pub ambient_light: Box<dyn Light>,
 }
 
 impl Scene {
@@ -65,10 +64,10 @@ impl Scene {
             origin: self.camera,
             dir: d,
         };
-        return self.trace(&ray, &Color::new(0.0, 0.0, 0.0), 0);
+        return self.trace(&ray, 0);
     }
 
-    fn trace(&self, ray: &Ray, color: &Color, depth: u64) -> Color {
+    pub fn trace(&self, ray: &Ray, depth: i32) -> Color {
         let intersection = self
             .models
             .iter()
@@ -88,49 +87,16 @@ impl Scene {
             None => Color::new(0.0, 0.0, 0.0),
             Some((distance, model, hittable)) => {
                 let point = ray.get_point(distance);
-                let shade_color = self
-                    .lights
-                    .iter()
-                    .map(|l| {
-                        l.shade(&RayHit {
-                            ray: Box::new(ray),
-                            hit_point: point,
-                            material: Box::new(model.material),
-                            hittable: &hittable,
-                            models: Box::new(&self.models),
-                        })
-                    })
-                    .fold(Color::new(0.0, 0.0, 0.0), |a, b| a.add(b));
-                let reflection_color =
-                    self.calc_reflection_color(&ray, &point, &model, &hittable, color, depth);
-                return shade_color.add(reflection_color);
+                let rayhit = RayHit {
+                    ray: Box::new(ray),
+                    hit_point: point,
+                    material: Box::new(&model.material),
+                    hittable: &hittable,
+                    scene: Box::new(&self),
+                    depth: depth,
+                };
+                return model.material.shade(&rayhit);
             }
         }
-    }
-
-    fn calc_reflection_color(
-        &self,
-        ray: &Ray,
-        point: &Vec3,
-        model: &Model,
-        hittable: &Box<dyn Hittable>,
-        color: &Color,
-        depth: u64,
-    ) -> Color {
-        if depth > 3 {
-            return *color;
-        }
-        let reflection = model.material.reflection;
-        if reflection == 0.0 {
-            return *color;
-        }
-        let normal = hittable.normal(&point);
-        let reflect_dir = 2.0 * ray.dir.dot(&normal);
-        let reflect_ray = Ray {
-            origin: *point,
-            dir: ray.dir.sub(normal.mul(reflect_dir)),
-        };
-        let reflection_color = self.trace(&reflect_ray, &color, depth + 1);
-        return reflection_color.mul(reflection).add(color);
     }
 }

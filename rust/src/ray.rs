@@ -3,7 +3,8 @@ use std::ops::Mul;
 
 use crate::hittable::Hittable;
 use crate::material::Material;
-use crate::model::{Model, Vec3};
+use crate::model::Vec3;
+use crate::scene::Scene;
 
 pub struct Ray {
     pub origin: Vec3,
@@ -19,7 +20,14 @@ impl Ray {
 pub struct RayHit<'a> {
     pub ray: Box<&'a Ray>,
     pub hit_point: Vec3,
-    pub material: Box<Material>,
+    pub material: Box<&'a Box<Material>>,
     pub hittable: &'a Box<dyn Hittable>,
-    pub models: Box<&'a Vec<Model>>,
+    pub scene: Box<&'a Scene>,
+    pub depth: i32,
+}
+
+impl RayHit<'_> {
+    pub fn normal(&self) -> Vec3 {
+        return self.hittable.normal(&self.hit_point);
+    }
 }
