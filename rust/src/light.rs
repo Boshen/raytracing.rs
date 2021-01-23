@@ -7,28 +7,34 @@ use crate::sampler::{get_hemisphere_sampler, get_unit_square_sampler};
 
 pub trait Light: Send + Sync {
     fn shade(&self, hit: &RayHit) -> Color;
+    fn radiance(&self) -> Color;
 }
 
 pub struct AmbientLight {
-    pub radiance: f64,
-    pub color: Color,
+    pub ls: f64,   // radiance scaling factor [0, infinity)
+    pub cl: Color, // light color
 }
 
 pub struct AmbientOcculuder {
-    pub radiance: f64,
-    pub color: Color,
+    pub ls: f64,
+    pub cl: Color,
     pub sample_points_sqrt: u32,
 }
 
+pub struct PointLight {
+    pub ls: f64,
+    pub cl: Color,
+}
+
 pub struct DirectionalLight {
-    pub radiance: f64,
-    pub color: Color,
+    pub ls: f64,
+    pub cl: Color,
     pub direction: Vec3,
 }
 
 pub struct AreaLight {
-    pub radiance: f64,
-    pub color: Color,
+    pub ls: f64,
+    pub cl: Color,
     pub location: Vec3,
     pub width: f64,
     pub height: f64,
@@ -36,16 +42,22 @@ pub struct AreaLight {
 }
 
 impl Light for AmbientLight {
+    fn radiance(&self) -> Color {
+        return self.cl.mul(self.ls);
+    }
+
     fn shade(&self, hit: &RayHit) -> Color {
         let kd = hit.material.diffuse_reflection;
         let cd = hit.material.diffuse_color;
-        let cl = self.color;
-        let ls = self.radiance;
-        return cd.mul(kd).mul(cl.mul(ls));
+        return cd.mul(kd).mul(self.radiance());
     }
 }
 
 impl Light for AmbientOcculuder {
+    fn radiance(&self) -> Color {
+        return self.cl.mul(self.ls);
+    }
+
     fn shade(&self, hit: &RayHit) -> Color {
         let w = hit.hittable.normal(&hit.hit_point);
         let v = w.cross(&Vec3::new(0.0072, 1.0, 0.0034)).normalize();
@@ -64,27 +76,43 @@ impl Light for AmbientOcculuder {
             .sum::<f64>()
             / (self.sample_points_sqrt as f64 * self.sample_points_sqrt as f64);
 
-        return self.color.mul(self.radiance * amount);
+        return self.radiance().mul(amount);
+    }
+}
+
+impl Light for PointLight {
+    fn radiance(&self) -> Color {
+        return self.cl.mul(self.ls);
+    }
+
+    fn shade(&self, _hit: &RayHit) -> Color {
+        return Color::new(0.0, 0.0, 0.0);
     }
 }
 
 impl Light for DirectionalLight {
+    fn radiance(&self) -> Color {
+        return self.cl.mul(self.ls);
+    }
+
     fn shade(&self, hit: &RayHit) -> Color {
         let l = self.direction.sub(&hit.hit_point).normalize();
         let kd = hit.material.diffuse_reflection;
         let cd = hit.material.diffuse_color;
         let n = hit.hittable.normal(&hit.hit_point);
-        let cl = self.color;
-        let ls = self.radiance;
         return cd
             .mul(kd)
             .mul(1.0 / 3.14)
             .mul(n.dot(&l).max(0.0))
-            .mul(cl.mul(ls));
+            .mul(self.radiance());
     }
 }
 
 impl Light for AreaLight {
+    fn radiance(&self) -> Color {
+        return self.cl.mul(self.ls);
+    }
+
     fn shade(&self, hit: &RayHit) -> Color {
         let w = hit.ray.origin.sub(hit.hit_point).normalize();
         let l = self.location.sub(hit.hit_point).normalize();
@@ -93,8 +121,6 @@ impl Light for AreaLight {
         let ks = hit.material.specular_refection;
         let e = hit.material.shininess;
         let n = hit.hittable.normal(&hit.hit_point);
-        let cl = self.color;
-        let ls = self.radiance;
 
         let mut shadow_intensity = 1.0;
         if n.dot(&w) > 0.0 {
@@ -111,17 +137,23 @@ impl Light for AreaLight {
             .mul(kd)
             .mul(1.0 / 3.14)
             .mul(diffuse_amount)
-            .mul(cl.mul(ls));
+            .mul(self.radiance());
 
         // specular
         let r = n.mul(2.0 * diffuse_amount).sub(l);
         let specular_amount = r.dot(&w);
-        let specular = cl.mul(ks * specular_amount.powf(e) * diffuse_amount * ls);
+        let specular = self
+            .cl
+            .mul(ks * specular_amount.powf(e) * diffuse_amount * self.ls);
         return diffuse.add(specular).mul(shadow_intensity);
     }
 }
 
 impl AreaLight {
+    fn radiance(&self) -> Color {
+        return Color::new(0.0, 0.0, 0.0);
+    }
+
     fn intensity_at(&self, point: &Vec3, models: &Vec<Model>) -> f64 {
         let x = self.location.x - self.width / 2.0;
         let z = self.location.z - self.height / 2.0;

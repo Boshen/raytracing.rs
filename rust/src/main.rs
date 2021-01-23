@@ -21,22 +21,22 @@ fn main() {
 
     let lights: Vec<Box<dyn Light>> = vec![
         Box::new(AmbientLight {
-            radiance: 0.1,
-            color: Vec3::new(1.0, 1.0, 1.0),
+            ls: 0.1,
+            cl: Vec3::new(1.0, 1.0, 1.0),
         }),
         Box::new(AmbientOcculuder {
-            radiance: 0.3,
-            color: Vec3::new(1.0, 1.0, 1.0),
+            ls: 0.3,
+            cl: Vec3::new(1.0, 1.0, 1.0),
             sample_points_sqrt: 16,
         }),
         Box::new(DirectionalLight {
-            radiance: 1.0,
-            color: Vec3::new(1.0, 1.0, 1.0),
+            ls: 1.0,
+            cl: Vec3::new(1.0, 1.0, 1.0),
             direction: Vec3::new(0.0, 0.0, -1.0),
         }),
         Box::new(AreaLight {
-            radiance: 2.0,
-            color: Vec3::new(1.0, 1.0, 1.0),
+            ls: 2.0,
+            cl: Vec3::new(1.0, 1.0, 1.0),
             location: Vec3::new(0.0, -1.0, 0.0),
             width: 75.0 / 255.0,
             height: 75.0 / 255.0,
