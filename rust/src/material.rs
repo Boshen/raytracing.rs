@@ -1,4 +1,4 @@
-use nalgebra::Dot;
+use nalgebra::{Dot, Norm};
 use std::ops::{Add, Mul, Sub};
 
 use crate::brdf::{GlossySpecular, Lambertian, BRDF};
@@ -74,19 +74,22 @@ impl Reflective {
 impl Material {
     pub fn shade(&self, hit: &RayHit) -> Color {
         let ambient_color = self.ambient_color(hit);
-
         return hit
             .scene
             .lights
             .iter()
             .filter_map(|light| {
+                // incoming direction
                 let wi = light.get_direction(hit);
-                let ndotwi = hit.normal().dot(&wi); // angle between light and normal
+                // angle between light and normal
+                let ndotwi = hit.normal().dot(&wi);
+                // not hit by light
                 if ndotwi <= 0.0 {
-                    return None; // not hit by light
+                    return None;
                 }
 
-                let wo = hit.ray.dir.mul(-1.0);
+                // reflected direction
+                let wo = hit.ray.dir.mul(-1.0).normalize();
                 return light.shadow_intensity(hit).map(|shadow_intensity| {
                     return self
                         .diffuse_color(hit, &wo, &wi)

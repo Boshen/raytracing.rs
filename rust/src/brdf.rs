@@ -47,8 +47,7 @@ impl GlossySpecular {
 
 impl BRDF for Lambertian {
     fn f(&self, _hit: &RayHit, _wo: &Vec3, _wi: &Vec3) -> Color {
-        let inv_pi = 1.0 / std::f64::consts::PI;
-        return self.rho().mul(inv_pi);
+        return self.rho().div(std::f64::consts::PI);
     }
 
     fn rho(&self) -> Color {
@@ -77,8 +76,8 @@ impl BRDF for PerfectSpecular {
 
 impl BRDF for GlossySpecular {
     fn f(&self, hit: &RayHit, wo: &Vec3, wi: &Vec3) -> Color {
-        let ndotwi = hit.normal().dot(wi);
-        let r = hit.normal().mul(ndotwi).mul(2.0).sub(wi);
+        let ndotwi = hit.normal().dot(wi).max(0.0);
+        let r = hit.normal().mul(2.0 * ndotwi).sub(wi);
         let rdotwo = r.dot(wo);
         if rdotwo <= 0.0 {
             return Color::new(0.0, 0.0, 0.0);

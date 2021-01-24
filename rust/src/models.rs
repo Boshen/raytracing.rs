@@ -35,9 +35,9 @@ pub fn get_models() -> Vec<Model> {
     let block_blue = matte(Color::new(0.05, 0.6, 1.0));
     let block_orange = matte(Color::new(0.8, 0.7, 0.05));
     let sphere1_material = Box::new(Material::Phong(Phong::new(
-        Lambertian::new(0.5, Color::new(1.0, 1.0, 1.0)),
-        Lambertian::new(0.5, Color::new(0.8, 0.8, 0.8)),
-        GlossySpecular::new(0.15, 20.0),
+        Lambertian::new(0.0, Color::new(1.0, 1.0, 1.0)),
+        Lambertian::new(0.6, Color::new(0.8, 0.8, 0.8)),
+        GlossySpecular::new(0.3, 20.0),
     )));
     let sphere2_material = Box::new(Material::Reflective(Reflective::new(
         Box::new(Lambertian::new(0.5, Color::new(1.0, 1.0, 1.0))),
