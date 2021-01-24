@@ -23,8 +23,26 @@ pub struct PerfectSpecular {
 }
 
 pub struct GlossySpecular {
-    pub ks: f64,  // specular reflection coefficient
+    pub ks: f64,  // specular reflection coefficient [0, 1]
     pub exp: f64, // shininess
+}
+
+impl Lambertian {
+    pub fn new(kd: f64, cd: Color) -> Lambertian {
+        return Lambertian { kd, cd };
+    }
+}
+
+impl PerfectSpecular {
+    pub fn new(kr: f64, cr: Color) -> PerfectSpecular {
+        return PerfectSpecular { kr, cr };
+    }
+}
+
+impl GlossySpecular {
+    pub fn new(ks: f64, exp: f64) -> GlossySpecular {
+        return GlossySpecular { ks, exp };
+    }
 }
 
 impl BRDF for Lambertian {

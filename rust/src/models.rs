@@ -4,15 +4,9 @@ use crate::material::{Material, Matte, Phong, Reflective};
 use crate::model::{Color, Model, Vec3};
 
 fn matte(cd: Color) -> Box<Material> {
-    let diffuse_brdf = Lambertian { kd: 1.0, cd: cd };
-    let ambient_brdf = Lambertian {
-        kd: 1.0,
-        cd: Color::new(1.0, 1.0, 1.0),
-    };
-    let matte = Matte {
-        diffuse_brdf: Box::new(diffuse_brdf),
-        ambient_brdf: Box::new(ambient_brdf),
-    };
+    let diffuse_brdf = Lambertian::new(1.0, cd);
+    let ambient_brdf = Lambertian::new(1.0, Color::new(1.0, 1.0, 1.0));
+    let matte = Matte::new(Box::new(ambient_brdf), Box::new(diffuse_brdf));
     return Box::new(Material::Matte(matte));
 }
 
@@ -40,32 +34,17 @@ pub fn get_models() -> Vec<Model> {
     // let light_box_material = matte(Color::new(0.2, 0.2, 0.2));
     let block_blue = matte(Color::new(0.05, 0.6, 1.0));
     let block_orange = matte(Color::new(0.8, 0.7, 0.05));
-    let sphere1_material = Box::new(Material::Phong(Phong {
-        ambient_brdf: Box::new(Lambertian {
-            kd: 1.0,
-            cd: Color::new(1.0, 1.0, 1.0),
-        }),
-        diffuse_brdf: Box::new(Lambertian {
-            kd: 1.0,
-            cd: Color::new(0.8, 0.8, 0.8),
-        }),
-        specular_brdf: Box::new(GlossySpecular { ks: 0.15, exp: 1.0 }),
-    }));
-    let sphere2_material = Box::new(Material::Reflective(Reflective {
-        ambient_brdf: Box::new(Lambertian {
-            kd: 1.0,
-            cd: Color::new(1.0, 1.0, 1.0),
-        }),
-        diffuse_brdf: Box::new(Lambertian {
-            kd: 1.0,
-            cd: Color::new(0.8, 0.8, 0.8),
-        }),
-        specular_brdf: Box::new(GlossySpecular { ks: 0.15, exp: 1.0 }),
-        reflective_brdf: Box::new(PerfectSpecular {
-            kr: 0.75,
-            cr: Color::new(1.0, 1.0, 1.0),
-        }),
-    }));
+    let sphere1_material = Box::new(Material::Phong(Phong::new(
+        Box::new(Lambertian::new(1.0, Color::new(1.0, 1.0, 1.0))),
+        Box::new(Lambertian::new(1.0, Color::new(0.8, 0.8, 0.8))),
+        Box::new(GlossySpecular::new(0.15, 1.0)),
+    )));
+    let sphere2_material = Box::new(Material::Reflective(Reflective::new(
+        Box::new(Lambertian::new(1.0, Color::new(1.0, 1.0, 1.0))),
+        Box::new(Lambertian::new(1.0, Color::new(0.8, 0.8, 0.8))),
+        Box::new(GlossySpecular::new(0.15, 1.0)),
+        Box::new(PerfectSpecular::new(0.75, Color::new(1.0, 1.0, 1.0))),
+    )));
 
     // floor
     models.push(Model::new(l, wall_beige0, vec![t(c, b, a), t(c, d, b)]));

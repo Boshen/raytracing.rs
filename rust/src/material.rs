@@ -29,6 +29,45 @@ pub struct Reflective {
     pub reflective_brdf: Box<dyn BRDF>,
 }
 
+impl Matte {
+    pub fn new(ambient_brdf: Box<dyn BRDF>, diffuse_brdf: Box<dyn BRDF>) -> Matte {
+        return Matte {
+            ambient_brdf,
+            diffuse_brdf,
+        };
+    }
+}
+
+impl Phong {
+    pub fn new(
+        ambient_brdf: Box<dyn BRDF>,
+        diffuse_brdf: Box<dyn BRDF>,
+        specular_brdf: Box<dyn BRDF>,
+    ) -> Phong {
+        return Phong {
+            ambient_brdf,
+            diffuse_brdf,
+            specular_brdf,
+        };
+    }
+}
+
+impl Reflective {
+    pub fn new(
+        ambient_brdf: Box<dyn BRDF>,
+        diffuse_brdf: Box<dyn BRDF>,
+        specular_brdf: Box<dyn BRDF>,
+        reflective_brdf: Box<dyn BRDF>,
+    ) -> Reflective {
+        return Reflective {
+            ambient_brdf,
+            diffuse_brdf,
+            specular_brdf,
+            reflective_brdf,
+        };
+    }
+}
+
 impl Material {
     pub fn shade(&self, hit: &RayHit) -> Color {
         let ambient_color = self.ambient_color(hit);
@@ -95,10 +134,7 @@ impl Material {
                 let ndotwo = normal.dot(&wo);
                 let wi = normal.mul(2.0 * ndotwo).sub(wo);
                 let fr = m.reflective_brdf.sample_f(hit, &wo, &wi);
-                let reflected_ray = Ray {
-                    origin: hit.hit_point,
-                    dir: wi,
-                };
+                let reflected_ray = Ray::new(hit.hit_point, wi);
                 return hit
                     .scene
                     .trace(&reflected_ray, hit.depth + 1)

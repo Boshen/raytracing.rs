@@ -56,10 +56,7 @@ impl Scene {
 
     fn get_color(&self, x: f64, y: f64) -> Color {
         let d = Vec3::new(x, y, self.focal_length as f64);
-        let ray = Ray {
-            origin: self.camera,
-            dir: d,
-        };
+        let ray = Ray::new(self.camera, d);
         return self.trace(&ray, 0);
     }
 
