@@ -61,6 +61,9 @@ impl Scene {
     }
 
     pub fn trace(&self, ray: &Ray, depth: i32) -> Color {
+        if depth >= 15 {
+            return Color::new(0.0, 0.0, 0.0);
+        }
         let intersection = self
             .models
             .iter()

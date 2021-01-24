@@ -1,7 +1,7 @@
 use nalgebra::{Dot, Norm};
 use std::ops::{Add, Mul, Sub};
 
-use crate::brdf::{GlossySpecular, Lambertian, BRDF};
+use crate::brdf::{GlossySpecular, Lambertian, PerfectSpecular, BRDF};
 use crate::model::{Color, Vec3};
 use crate::ray::{Ray, RayHit};
 
@@ -23,10 +23,10 @@ pub struct Phong {
 }
 
 pub struct Reflective {
-    pub ambient_brdf: Box<dyn BRDF>,
-    pub diffuse_brdf: Box<dyn BRDF>,
-    pub specular_brdf: Box<dyn BRDF>,
-    pub reflective_brdf: Box<dyn BRDF>,
+    pub ambient_brdf: Lambertian,
+    pub diffuse_brdf: Lambertian,
+    pub specular_brdf: GlossySpecular,
+    pub reflective_brdf: PerfectSpecular,
 }
 
 impl Matte {
@@ -57,10 +57,10 @@ impl Phong {
 
 impl Reflective {
     pub fn new(
-        ambient_brdf: Box<dyn BRDF>,
-        diffuse_brdf: Box<dyn BRDF>,
-        specular_brdf: Box<dyn BRDF>,
-        reflective_brdf: Box<dyn BRDF>,
+        ambient_brdf: Lambertian,
+        diffuse_brdf: Lambertian,
+        specular_brdf: GlossySpecular,
+        reflective_brdf: PerfectSpecular,
     ) -> Reflective {
         return Reflective {
             ambient_brdf,

@@ -40,10 +40,10 @@ pub fn get_models() -> Vec<Model> {
         GlossySpecular::new(0.3, 20.0),
     )));
     let sphere2_material = Box::new(Material::Reflective(Reflective::new(
-        Box::new(Lambertian::new(0.1, Color::new(1.0, 1.0, 1.0))),
-        Box::new(Lambertian::new(0.5, Color::new(0.8, 0.8, 0.8))),
-        Box::new(GlossySpecular::new(0.15, 1.0)),
-        Box::new(PerfectSpecular::new(0.75, Color::new(1.0, 1.0, 1.0))),
+        Lambertian::new(0.1, Color::new(1.0, 1.0, 1.0)),
+        Lambertian::new(0.5, Color::new(0.75, 0.75, 0.75)),
+        GlossySpecular::new(0.15, 100.0),
+        PerfectSpecular::new(0.75, Color::new(1.0, 1.0, 1.0)),
     )));
 
     // floor

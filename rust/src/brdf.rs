@@ -17,14 +17,14 @@ pub struct Lambertian {
     pub cd: Color, // diffuse color
 }
 
-pub struct PerfectSpecular {
-    pub kr: f64,   // reflection coefficient
-    pub cr: Color, // reflection color
-}
-
 pub struct GlossySpecular {
     pub ks: f64,  // specular reflection coefficient [0, 1]
     pub exp: f64, // shininess
+}
+
+pub struct PerfectSpecular {
+    pub kr: f64,   // reflection coefficient
+    pub cr: Color, // reflection color
 }
 
 impl Lambertian {
@@ -59,20 +59,6 @@ impl BRDF for Lambertian {
     }
 }
 
-impl BRDF for PerfectSpecular {
-    fn f(&self, _hit: &RayHit, _wo: &Vec3, _wi: &Vec3) -> Color {
-        return Color::new(0.0, 0.0, 0.0); // is black for PerfectSpecular
-    }
-
-    fn rho(&self) -> Color {
-        return Color::new(0.0, 0.0, 0.0); // is black for PerfectSpecular
-    }
-
-    fn sample_f(&self, hit: &RayHit, _wo: &Vec3, wi: &Vec3) -> Color {
-        return self.cr.mul(self.kr).div(hit.normal.dot(&wi));
-    }
-}
-
 impl BRDF for GlossySpecular {
     fn f(&self, hit: &RayHit, wo: &Vec3, wi: &Vec3) -> Color {
         let ndotwi = hit.normal.dot(wi).max(0.0);
@@ -86,10 +72,24 @@ impl BRDF for GlossySpecular {
     }
 
     fn rho(&self) -> Color {
-        return Color::new(0.0, 0.0, 0.0); // is black for PerfectSpecular
+        return Color::new(0.0, 0.0, 0.0); // is black for GlossySpecular
     }
 
     fn sample_f(&self, _hit: &RayHit, _wo: &Vec3, _wi: &Vec3) -> Color {
         return Color::new(0.0, 0.0, 0.0);
+    }
+}
+
+impl BRDF for PerfectSpecular {
+    fn f(&self, _hit: &RayHit, _wo: &Vec3, _wi: &Vec3) -> Color {
+        return Color::new(0.0, 0.0, 0.0); // is black for PerfectSpecular
+    }
+
+    fn rho(&self) -> Color {
+        return Color::new(0.0, 0.0, 0.0); // is black for PerfectSpecular
+    }
+
+    fn sample_f(&self, hit: &RayHit, _wo: &Vec3, wi: &Vec3) -> Color {
+        return self.cr.mul(self.kr).div(hit.normal.dot(&wi));
     }
 }
