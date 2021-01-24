@@ -79,21 +79,18 @@ impl Scene {
             })
             .min_by(|t1, t2| (t1.0).partial_cmp(&t2.0).expect("Tried to compare a NaN"));
 
-        match intersection {
-            None => Color::new(0.0, 0.0, 0.0),
-            Some((distance, model, hittable)) => {
-                let point = ray.get_point(distance);
-                let rayhit = RayHit {
-                    ray: Box::new(ray),
-                    hit_point: point,
-                    material: Box::new(&model.material),
-                    hittable: &hittable,
-                    scene: Box::new(&self),
-                    normal: hittable.normal(&point),
-                    depth: depth,
-                };
-                return model.material.shade(&rayhit);
-            }
-        }
+        return intersection.map_or(Color::new(0.0, 0.0, 0.0), |(distance, model, hittable)| {
+            let point = ray.get_point(distance);
+            let rayhit = RayHit {
+                ray: Box::new(ray),
+                hit_point: point,
+                material: Box::new(&model.material),
+                hittable: &hittable,
+                scene: Box::new(&self),
+                normal: hittable.normal(&point),
+                depth: depth,
+            };
+            return model.material.shade(&rayhit);
+        });
     }
 }
