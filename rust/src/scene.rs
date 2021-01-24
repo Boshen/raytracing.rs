@@ -38,8 +38,8 @@ impl Scene {
     }
 
     fn tone_mapping(&self, color: Color) -> Color {
-        let max = color.x.max(color.y).max(color.z);
-        return if max > 1.0 { color.div(max) } else { color };
+        let max = color.x.max(color.y).max(color.z).max(1.0);
+        return color.div(max);
     }
 
     fn to_rgb(&self, x: f64) -> u8 {
