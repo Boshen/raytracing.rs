@@ -6,9 +6,9 @@ use crate::ray::{Ray, RayHit};
 use crate::sampler::{get_hemisphere_sampler, get_unit_square_sampler};
 
 pub trait Light: Send + Sync {
-    fn radiance(&self) -> Color;
-    fn get_direction(&self, hit: &RayHit) -> Vec3; // the direction of the incoming light at a hit point
-    fn shadow_intensity(&self, hit: &RayHit) -> Option<f64>;
+    fn radiance(&self, hit: &RayHit) -> Color;
+    // the direction of the incoming light at a hit point
+    fn get_direction(&self, hit: &RayHit) -> Vec3;
 }
 
 pub struct AmbientLight {
@@ -44,34 +44,29 @@ pub struct AreaLight {
 }
 
 impl Light for AmbientLight {
-    fn radiance(&self) -> Color {
+    fn radiance(&self, _hit: &RayHit) -> Color {
         return self.cl.mul(self.ls);
     }
 
     fn get_direction(&self, _hit: &RayHit) -> Vec3 {
         return Vec3::new(0.0, 0.0, 0.0);
     }
+}
 
-    fn shadow_intensity(&self, _hit: &RayHit) -> Option<f64> {
-        return Some(1.0);
+impl AmbientOcculuder {
+    fn uvw(&self, hit: &RayHit) -> (Vec3, Vec3, Vec3) {
+        let w = hit.normal();
+        let v = w.cross(&Vec3::new(0.0072, 1.0, 0.0034)).normalize();
+        let u = v.cross(&w);
+        return (u, v, w);
     }
 }
 
 impl Light for AmbientOcculuder {
-    fn radiance(&self) -> Color {
-        return self.cl.mul(self.ls);
-    }
-
-    fn get_direction(&self, _hit: &RayHit) -> Vec3 {
-        return Vec3::new(0.0, 0.0, 0.0);
-    }
-
-    fn shadow_intensity(&self, hit: &RayHit) -> Option<f64> {
-        let w = hit.normal();
-        let v = w.cross(&Vec3::new(0.0072, 1.0, 0.0034)).normalize();
-        let u = v.cross(&w);
-
-        let amount = get_hemisphere_sampler(self.sample_points_sqrt)
+    fn radiance(&self, hit: &RayHit) -> Color {
+        let (u, v, w) = self.uvw(hit);
+        let sample_points = self.sample_points_sqrt as f64 * self.sample_points_sqrt as f64;
+        let shadow_amount = get_hemisphere_sampler(self.sample_points_sqrt)
             .into_iter()
             .map(|sp| {
                 let dir = u.mul(sp.x).add(v.mul(sp.y)).add(w.mul(sp.z)).normalize();
@@ -81,56 +76,50 @@ impl Light for AmbientOcculuder {
                     1.0
                 };
             })
-            .sum::<f64>()
-            / (self.sample_points_sqrt as f64 * self.sample_points_sqrt as f64);
+            .sum::<f64>();
+        return self.cl.mul(self.ls).mul(shadow_amount / sample_points);
+    }
 
-        return Some(amount);
+    fn get_direction(&self, hit: &RayHit) -> Vec3 {
+        let (u, v, w) = self.uvw(hit);
+        return u.add(v).add(w);
     }
 }
 
 impl Light for DirectionalLight {
-    fn radiance(&self) -> Color {
+    fn radiance(&self, _hit: &RayHit) -> Color {
         return self.cl.mul(self.ls);
     }
 
     fn get_direction(&self, _hit: &RayHit) -> Vec3 {
         return self.direction;
     }
-
-    fn shadow_intensity(&self, _hit: &RayHit) -> Option<f64> {
-        return Some(1.0);
-    }
 }
 
 impl Light for PointLight {
-    fn radiance(&self) -> Color {
-        return self.cl.mul(self.ls);
+    fn radiance(&self, hit: &RayHit) -> Color {
+        let direction = self.location.sub(hit.hit_point).normalize();
+        let shadow_amount = if is_in_shadow(&hit.hit_point, &direction, &hit.scene.models) {
+            0.0
+        } else {
+            1.0
+        };
+        return self.cl.mul(self.ls).mul(shadow_amount);
     }
 
     fn get_direction(&self, hit: &RayHit) -> Vec3 {
         return self.location.sub(hit.hit_point).normalize();
-    }
-
-    fn shadow_intensity(&self, hit: &RayHit) -> Option<f64> {
-        return if is_in_shadow(&hit.hit_point, &self.get_direction(hit), &hit.scene.models) {
-            None
-        } else {
-            Some(1.0)
-        };
     }
 }
 
 impl Light for AreaLight {
-    fn radiance(&self) -> Color {
-        return self.cl.mul(self.ls);
+    fn radiance(&self, hit: &RayHit) -> Color {
+        let shadow_amount = self.intensity_at(&hit.hit_point, &hit.scene.models);
+        return self.cl.mul(self.ls).mul(shadow_amount);
     }
 
     fn get_direction(&self, hit: &RayHit) -> Vec3 {
         return self.location.sub(hit.hit_point).normalize();
-    }
-
-    fn shadow_intensity(&self, hit: &RayHit) -> Option<f64> {
-        return Some(self.intensity_at(&hit.hit_point, &hit.scene.models));
     }
 }
 

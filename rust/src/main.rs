@@ -23,12 +23,12 @@ fn main() {
     let height = 500;
 
     let ambient_light = Box::new(AmbientLight {
-        ls: 0.01,
+        ls: 0.5,
         cl: Vec3::new(1.0, 1.0, 1.0),
     });
     let lights: Vec<Box<dyn Light>> = vec![
         Box::new(AmbientOcculuder {
-            ls: 0.3,
+            ls: 1.0,
             cl: Vec3::new(1.0, 1.0, 1.0),
             sample_points_sqrt: 16,
         }),

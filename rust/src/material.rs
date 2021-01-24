@@ -78,27 +78,23 @@ impl Material {
             .scene
             .lights
             .iter()
-            .filter_map(|light| {
-                // incoming direction
+            .map(|light| {
+                // wi: incoming direction
+                // ndotwi: angle between light and normal
                 let wi = light.get_direction(hit);
-                // angle between light and normal
                 let ndotwi = hit.normal().dot(&wi);
                 // not hit by light
                 if ndotwi <= 0.0 {
-                    return None;
+                    return Color::new(0.0, 0.0, 0.0);
                 }
-
-                // reflected direction
+                // wo: reflected direction
                 let wo = hit.ray.dir.mul(-1.0).normalize();
-                return light.shadow_intensity(hit).map(|shadow_intensity| {
-                    return self
-                        .diffuse_color(hit, &wo, &wi)
-                        .add(self.specular_color(hit, &wo, &wi))
-                        .mul(light.radiance())
-                        .mul(ndotwi)
-                        .mul(shadow_intensity)
-                        .add(self.reflective_color(hit, &wo));
-                });
+                return self
+                    .diffuse_color(hit, &wo, &wi)
+                    .add(self.specular_color(hit, &wo, &wi))
+                    .mul(light.radiance(hit))
+                    .mul(ndotwi)
+                    .add(self.reflective_color(hit, &wo));
             })
             .fold(ambient_color, |a, b| a.add(b));
     }
@@ -109,7 +105,7 @@ impl Material {
             Material::Phong(m) => m.ambient_brdf.rho(),
             Material::Reflective(m) => m.ambient_brdf.rho(),
         };
-        return rho.mul(hit.scene.ambient_light.radiance());
+        return rho.mul(hit.scene.ambient_light.radiance(hit));
     }
 
     fn diffuse_color(&self, hit: &RayHit, wo: &Vec3, wi: &Vec3) -> Color {
