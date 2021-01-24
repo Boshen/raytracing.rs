@@ -86,6 +86,7 @@ impl Scene {
                     material: Box::new(&model.material),
                     hittable: &hittable,
                     scene: Box::new(&self),
+                    normal: hittable.normal(&point),
                     depth: depth,
                 };
                 return model.material.shade(&rayhit);

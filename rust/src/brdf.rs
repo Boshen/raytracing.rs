@@ -69,15 +69,14 @@ impl BRDF for PerfectSpecular {
     }
 
     fn sample_f(&self, hit: &RayHit, _wo: &Vec3, wi: &Vec3) -> Color {
-        let normal = hit.normal();
-        return self.cr.mul(self.kr).div(normal.dot(&wi));
+        return self.cr.mul(self.kr).div(hit.normal.dot(&wi));
     }
 }
 
 impl BRDF for GlossySpecular {
     fn f(&self, hit: &RayHit, wo: &Vec3, wi: &Vec3) -> Color {
-        let ndotwi = hit.normal().dot(wi).max(0.0);
-        let r = hit.normal().mul(2.0 * ndotwi).sub(wi);
+        let ndotwi = hit.normal.dot(wi).max(0.0);
+        let r = hit.normal.mul(2.0 * ndotwi).sub(wi);
         let rdotwo = r.dot(wo);
         if rdotwo <= 0.0 {
             return Color::new(0.0, 0.0, 0.0);

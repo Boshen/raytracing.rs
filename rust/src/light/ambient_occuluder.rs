@@ -15,7 +15,7 @@ pub struct AmbientOcculuder {
 
 impl AmbientOcculuder {
     fn uvw(&self, hit: &RayHit) -> (Vec3, Vec3, Vec3) {
-        let w = hit.normal();
+        let w = hit.normal;
         let v = w.cross(&Vec3::new(0.0072, 1.0, 0.0034)).normalize();
         let u = v.cross(&w);
         return (u, v, w);

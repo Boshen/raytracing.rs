@@ -27,11 +27,6 @@ pub struct RayHit<'a> {
     pub material: Box<&'a Box<Material>>,
     pub hittable: &'a Box<dyn Hittable>,
     pub scene: Box<&'a Scene>,
+    pub normal: Vec3,
     pub depth: i32,
-}
-
-impl RayHit<'_> {
-    pub fn normal(&self) -> Vec3 {
-        return self.hittable.normal(&self.hit_point);
-    }
 }

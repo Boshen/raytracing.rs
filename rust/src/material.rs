@@ -82,7 +82,7 @@ impl Material {
                 // wi: incoming direction
                 // ndotwi: angle between light and normal
                 let wi = light.get_direction(hit);
-                let ndotwi = hit.normal().dot(&wi);
+                let ndotwi = hit.normal.dot(&wi);
                 // not hit by light
                 if ndotwi <= 0.0 {
                     return Color::new(0.0, 0.0, 0.0);
@@ -132,7 +132,7 @@ impl Material {
             Material::Matte(_) => z,
             Material::Phong(_) => z,
             Material::Reflective(m) => {
-                let normal = hit.normal();
+                let normal = hit.normal;
                 let ndotwo = normal.dot(&wo);
                 let wi = normal.mul(2.0 * ndotwo).sub(wo);
                 let fr = m.reflective_brdf.sample_f(hit, &wo, &wi);
