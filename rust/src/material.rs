@@ -1,7 +1,7 @@
 use nalgebra::Dot;
 use std::ops::{Add, Mul, Sub};
 
-use crate::brdf::BRDF;
+use crate::brdf::{GlossySpecular, Lambertian, BRDF};
 use crate::model::{Color, Vec3};
 use crate::ray::{Ray, RayHit};
 
@@ -12,14 +12,14 @@ pub enum Material {
 }
 
 pub struct Matte {
-    pub ambient_brdf: Box<dyn BRDF>,
-    pub diffuse_brdf: Box<dyn BRDF>,
+    pub ambient_brdf: Lambertian,
+    pub diffuse_brdf: Lambertian,
 }
 
 pub struct Phong {
-    pub ambient_brdf: Box<dyn BRDF>,
-    pub diffuse_brdf: Box<dyn BRDF>,
-    pub specular_brdf: Box<dyn BRDF>,
+    pub ambient_brdf: Lambertian,
+    pub diffuse_brdf: Lambertian,
+    pub specular_brdf: GlossySpecular,
 }
 
 pub struct Reflective {
@@ -30,7 +30,7 @@ pub struct Reflective {
 }
 
 impl Matte {
-    pub fn new(ambient_brdf: Box<dyn BRDF>, diffuse_brdf: Box<dyn BRDF>) -> Matte {
+    pub fn new(ambient_brdf: Lambertian, diffuse_brdf: Lambertian) -> Matte {
         return Matte {
             ambient_brdf,
             diffuse_brdf,
@@ -40,10 +40,13 @@ impl Matte {
 
 impl Phong {
     pub fn new(
-        ambient_brdf: Box<dyn BRDF>,
-        diffuse_brdf: Box<dyn BRDF>,
-        specular_brdf: Box<dyn BRDF>,
+        ambient_brdf: Lambertian,
+        diffuse_brdf: Lambertian,
+        specular_brdf: GlossySpecular,
     ) -> Phong {
+        if diffuse_brdf.kd + specular_brdf.ks >= 1.0 {
+            panic!("kd + ks >= 1.0 in Phong Constructor");
+        }
         return Phong {
             ambient_brdf,
             diffuse_brdf,
