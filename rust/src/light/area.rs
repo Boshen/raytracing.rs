@@ -1,8 +1,8 @@
 use nalgebra::Norm;
 use std::ops::{Mul, Sub};
 
-use crate::light::{is_in_shadow, Light};
-use crate::model::{Color, Model, Vec3};
+use crate::light::Light;
+use crate::model::{Color, Vec3};
 use crate::ray::RayHit;
 use crate::sampler::get_unit_square_sampler;
 
@@ -17,7 +17,7 @@ pub struct AreaLight {
 
 impl Light for AreaLight {
     fn radiance(&self, hit: &RayHit) -> Color {
-        let shadow_amount = self.intensity_at(&hit.hit_point, &hit.scene.models);
+        let shadow_amount = self.intensity_at(&hit);
         return self.cl.mul(self.ls).mul(shadow_amount);
     }
 
@@ -27,15 +27,15 @@ impl Light for AreaLight {
 }
 
 impl AreaLight {
-    fn intensity_at(&self, point: &Vec3, models: &Vec<Model>) -> f64 {
+    fn intensity_at(&self, hit: &RayHit) -> f64 {
         let x = self.location.x - self.width / 2.0;
         let z = self.location.z - self.height / 2.0;
         return get_unit_square_sampler(self.sample_points_sqrt)
             .map(|(dx, dz)| {
                 let new_location =
                     Vec3::new(x + dx * self.width, self.location.y, z + dz * self.width);
-                let dir = new_location.sub(point).normalize();
-                return if is_in_shadow(&point, &dir, &models) {
+                let dir = new_location.sub(hit.hit_point).normalize();
+                return if hit.scene.is_in_shadow(&hit.hit_point, &dir) {
                     0.0
                 } else {
                     1.0

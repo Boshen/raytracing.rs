@@ -1,6 +1,6 @@
 use image::Rgb;
 use rayon::prelude::*;
-use std::ops::{Add, Div};
+use std::ops::{Add, Div, Mul};
 
 use crate::light::Light;
 use crate::model::{Color, Model, Vec3};
@@ -92,5 +92,15 @@ impl Scene {
             };
             return model.material.shade(&rayhit);
         });
+    }
+
+    pub fn is_in_shadow(&self, point: &Vec3, dir: &Vec3) -> bool {
+        let shadow_ray = Ray::new(point.add(dir.mul(0.00001)), *dir);
+        return self
+            .models
+            .iter()
+            .filter(|m| m.aabb.intersects(&shadow_ray))
+            .flat_map(|m| m.hittables.iter())
+            .any(|h| h.intersects(&shadow_ray).is_some());
     }
 }

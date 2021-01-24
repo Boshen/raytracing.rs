@@ -1,7 +1,7 @@
 use nalgebra::{Cross, Norm};
 use std::ops::{Add, Mul};
 
-use crate::light::{is_in_shadow, Light};
+use crate::light::Light;
 use crate::model::{Color, Vec3};
 use crate::ray::RayHit;
 
@@ -28,7 +28,7 @@ impl Light for AmbientOcculuder {
         let shadow_amount = get_hemisphere_sampler(self.sample_points_sqrt)
             .into_iter()
             .map(|sp| u.mul(sp.x).add(v.mul(sp.y)).add(w.mul(sp.z)).normalize())
-            .filter(|dir| !is_in_shadow(&hit.hit_point, &dir, &hit.scene.models))
+            .filter(|dir| !hit.scene.is_in_shadow(&hit.hit_point, &dir))
             .count();
         let sample_points = self.sample_points_sqrt * self.sample_points_sqrt;
         return self

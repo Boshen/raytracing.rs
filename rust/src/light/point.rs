@@ -1,7 +1,7 @@
 use nalgebra::Norm;
 use std::ops::{Mul, Sub};
 
-use crate::light::{is_in_shadow, Light};
+use crate::light::Light;
 use crate::model::{Color, Vec3};
 use crate::ray::RayHit;
 
@@ -14,7 +14,7 @@ pub struct PointLight {
 impl Light for PointLight {
     fn radiance(&self, hit: &RayHit) -> Color {
         let direction = self.location.sub(hit.hit_point).normalize();
-        let shadow_amount = if is_in_shadow(&hit.hit_point, &direction, &hit.scene.models) {
+        let shadow_amount = if hit.scene.is_in_shadow(&hit.hit_point, &direction) {
             0.0
         } else {
             1.0
