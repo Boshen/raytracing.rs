@@ -75,11 +75,11 @@ impl Light for AmbientOcculuder {
             .into_iter()
             .map(|sp| {
                 let dir = u.mul(sp.x).add(v.mul(sp.y)).add(w.mul(sp.z)).normalize();
-                if is_in_shadow(&hit.hit_point, &dir, &hit.scene.models) {
-                    return 0.0;
+                return if is_in_shadow(&hit.hit_point, &dir, &hit.scene.models) {
+                    0.0
                 } else {
-                    return 1.0;
-                }
+                    1.0
+                };
             })
             .sum::<f64>()
             / (self.sample_points_sqrt as f64 * self.sample_points_sqrt as f64);
@@ -112,11 +112,11 @@ impl Light for PointLight {
     }
 
     fn shadow_intensity(&self, hit: &RayHit) -> Option<f64> {
-        if is_in_shadow(&hit.hit_point, &self.get_direction(hit), &hit.scene.models) {
-            return None;
+        return if is_in_shadow(&hit.hit_point, &self.get_direction(hit), &hit.scene.models) {
+            None
         } else {
-            return Some(1.0);
-        }
+            Some(1.0)
+        };
     }
 }
 
@@ -143,11 +143,11 @@ impl AreaLight {
                 let new_location =
                     Vec3::new(x + dx * self.width, self.location.y, z + dz * self.width);
                 let dir = new_location.sub(point).normalize();
-                if is_in_shadow(&point, &dir, &models) {
-                    return 0.0;
+                return if is_in_shadow(&point, &dir, &models) {
+                    0.0
                 } else {
-                    return 1.0;
-                }
+                    1.0
+                };
             })
             .sum::<f64>()
             / (self.sample_points_sqrt as f64 * self.sample_points_sqrt as f64);
@@ -159,14 +159,9 @@ fn is_in_shadow(point: &Vec3, dir: &Vec3, models: &Vec<Model>) -> bool {
         origin: point.add(dir.mul(0.00001)),
         dir: *dir,
     };
-    for m in models.iter() {
-        if m.aabb.intersects(&shadow_ray) {
-            for h in m.hittables.iter() {
-                if let Some(_) = h.intersects(&shadow_ray) {
-                    return true;
-                }
-            }
-        }
-    }
-    return false;
+    return models
+        .iter()
+        .filter(|m| m.aabb.intersects(&shadow_ray))
+        .flat_map(|m| m.hittables.iter())
+        .any(|h| h.intersects(&shadow_ray).is_some());
 }
