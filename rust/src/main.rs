@@ -2,6 +2,7 @@ use image::RgbImage;
 
 mod aabb;
 mod brdf;
+mod camera;
 mod hittable;
 mod light;
 mod material;
@@ -9,23 +10,22 @@ mod model;
 mod models;
 mod ray;
 mod sampler;
-mod scene;
+mod world;
 
+use crate::camera::Camera;
 use crate::light::{
     AmbientLight, AmbientOcculuder, AreaLight, DirectionalLight, Light, PointLight,
 };
 use crate::model::Vec3;
 use crate::models::get_models;
-use crate::scene::Scene;
+use crate::world::World;
 
 fn main() {
-    let width = 500;
-    let height = 500;
-
     let ambient_light = Box::new(AmbientLight {
         ls: 0.5,
         cl: Vec3::new(1.0, 1.0, 1.0),
     });
+
     let lights: Vec<Box<dyn Light>> = vec![
         Box::new(AmbientOcculuder {
             ls: 1.0,
@@ -52,20 +52,25 @@ fn main() {
         }),
     ];
 
-    let scene = Scene {
-        width: width,
-        height: height,
-        focal_length: width,
-        camera: Vec3::new(0.0, 0.0, -3.0),
+    let world = World {
+        width: 500,
+        height: 500,
         models: get_models(),
-        lights: lights,
-        sample_points_sqrt: 1,
-        ambient_light: ambient_light,
+        lights,
+        ambient_light,
     };
 
-    let mut image = RgbImage::new(width, height);
-    scene
-        .algorithm()
+    let camera = Camera::new(
+        &world,
+        Vec3::new(0.0, 0.0, -3.0),
+        Vec3::new(0.0, 0.0, 0.0),
+        Vec3::new(0.0, 1.0, 0.0),
+        1,
+    );
+
+    let mut image = RgbImage::new(world.width, world.height);
+    camera
+        .render_scence()
         .into_iter()
         .for_each(|(i, j, rgb)| image.put_pixel(i, j, rgb));
     image.save("output.png").unwrap();

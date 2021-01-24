@@ -14,7 +14,7 @@ pub struct PointLight {
 impl Light for PointLight {
     fn radiance(&self, hit: &RayHit) -> Color {
         let direction = self.location.sub(hit.hit_point).normalize();
-        let shadow_amount = if hit.scene.is_in_shadow(&hit.hit_point, &direction) {
+        let shadow_amount = if hit.world.is_in_shadow(&hit.hit_point, &direction) {
             0.0
         } else {
             1.0

@@ -35,7 +35,7 @@ impl AreaLight {
                 let new_location =
                     Vec3::new(x + dx * self.width, self.location.y, z + dz * self.width);
                 let dir = new_location.sub(hit.hit_point).normalize();
-                return if hit.scene.is_in_shadow(&hit.hit_point, &dir) {
+                return if hit.world.is_in_shadow(&hit.hit_point, &dir) {
                     0.0
                 } else {
                     1.0

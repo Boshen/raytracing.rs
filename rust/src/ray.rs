@@ -4,7 +4,7 @@ use std::ops::Mul;
 use crate::hittable::Hittable;
 use crate::material::Material;
 use crate::model::Vec3;
-use crate::scene::Scene;
+use crate::world::World;
 
 pub struct Ray {
     pub origin: Vec3,
@@ -26,7 +26,7 @@ pub struct RayHit<'a> {
     pub hit_point: Vec3,
     pub material: Box<&'a Box<Material>>,
     pub hittable: &'a Box<dyn Hittable>,
-    pub scene: Box<&'a Scene>,
+    pub world: Box<&'a World>,
     pub normal: Vec3,
     pub depth: i32,
 }

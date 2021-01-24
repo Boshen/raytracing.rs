@@ -75,7 +75,7 @@ impl Material {
     pub fn shade(&self, hit: &RayHit) -> Color {
         let ambient_color = self.ambient_color(hit);
         return hit
-            .scene
+            .world
             .lights
             .iter()
             .map(|light| {
@@ -105,7 +105,7 @@ impl Material {
             Material::Phong(m) => m.ambient_brdf.rho(),
             Material::Reflective(m) => m.ambient_brdf.rho(),
         };
-        return rho.mul(hit.scene.ambient_light.radiance(hit));
+        return rho.mul(hit.world.ambient_light.radiance(hit));
     }
 
     fn diffuse_color(&self, hit: &RayHit, wo: &Vec3, wi: &Vec3) -> Color {
@@ -138,7 +138,7 @@ impl Material {
                 let fr = m.reflective_brdf.sample_f(hit, &wo, &wi);
                 let reflected_ray = Ray::new(hit.hit_point, wi);
                 return hit
-                    .scene
+                    .world
                     .trace(&reflected_ray, hit.depth + 1)
                     .mul(fr)
                     .mul(normal.dot(&wi));

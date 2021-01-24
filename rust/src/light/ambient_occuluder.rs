@@ -28,7 +28,7 @@ impl Light for AmbientOcculuder {
         let shadow_amount = get_hemisphere_sampler(self.sample_points_sqrt)
             .into_iter()
             .map(|sp| u.mul(sp.x).add(v.mul(sp.y)).add(w.mul(sp.z)).normalize())
-            .filter(|dir| !hit.scene.is_in_shadow(&hit.hit_point, &dir))
+            .filter(|dir| !hit.world.is_in_shadow(&hit.hit_point, &dir))
             .count();
         let sample_points = self.sample_points_sqrt * self.sample_points_sqrt;
         return self
