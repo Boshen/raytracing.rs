@@ -60,17 +60,11 @@ fn main() {
         ambient_light,
     };
 
-    let camera = Camera::new(
-        &world,
-        Vec3::new(0.0, 0.0, -3.0),
-        Vec3::new(0.0, 0.0, 0.0),
-        Vec3::new(0.0, 1.0, 0.0),
-        1,
-    );
+    let camera = Camera::new(Vec3::new(0.0, 0.0, -3.0), Vec3::new(0.0, 0.0, 0.0), 500.0);
 
     let mut image = RgbImage::new(world.width, world.height);
     camera
-        .render_scence()
+        .render_scence(&world)
         .into_iter()
         .for_each(|(i, j, (r, g, b))| image.put_pixel(i, j, Rgb([r, g, b])));
     image.save("output.png").unwrap();
