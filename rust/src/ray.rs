@@ -22,11 +22,11 @@ impl Ray {
 }
 
 pub struct RayHit<'a> {
-    pub ray: Box<&'a Ray>,
+    pub ray: &'a Ray,
     pub hit_point: Vec3,
-    pub material: Box<&'a Box<Material>>,
+    pub material: &'a Material,
     pub hittable: &'a Box<dyn Hittable>,
-    pub world: Box<&'a World>,
+    pub world: &'a World,
     pub normal: Vec3,
     pub depth: i32,
 }

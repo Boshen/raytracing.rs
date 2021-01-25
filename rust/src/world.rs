@@ -34,11 +34,11 @@ impl World {
         return intersection.map_or(Color::new(0.0, 0.0, 0.0), |(distance, model, hittable)| {
             let point = ray.get_point(distance);
             let rayhit = RayHit {
-                ray: Box::new(ray),
+                ray: ray,
                 hit_point: point,
-                material: Box::new(&model.material),
+                material: &model.material,
                 hittable: &hittable,
-                world: Box::new(&self),
+                world: &self,
                 normal: hittable.normal(&point),
                 depth: depth,
             };
