@@ -1,4 +1,3 @@
-use image::Rgb;
 use nalgebra::{Cross, Norm};
 use rayon::prelude::*;
 use std::ops::{Add, Div, Sub};
@@ -42,7 +41,7 @@ impl Camera<'_> {
         };
     }
 
-    pub fn render_scence(&self) -> Vec<(u32, u32, Rgb<u8>)> {
+    pub fn render_scence(&self) -> Vec<(u32, u32, (u8, u8, u8))> {
         let width = self.world.width;
         let height = self.world.height;
         return (0..(width * height))
@@ -52,11 +51,11 @@ impl Camera<'_> {
                 let x = (i as f64) - (width as f64) / 2.0;
                 let y = (j as f64) - (height as f64) / 2.0;
                 let color = self.tone_mapping(self.antialias(x, y));
-                let rgb = Rgb([
+                let rgb = (
                     self.to_rgb(color.x),
                     self.to_rgb(color.y),
                     self.to_rgb(color.z),
-                ]);
+                );
                 return (i, j, rgb);
             })
             .collect();

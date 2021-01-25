@@ -1,4 +1,4 @@
-use image::RgbImage;
+use image::{Rgb, RgbImage};
 
 mod aabb;
 mod brdf;
@@ -72,6 +72,6 @@ fn main() {
     camera
         .render_scence()
         .into_iter()
-        .for_each(|(i, j, rgb)| image.put_pixel(i, j, rgb));
+        .for_each(|(i, j, (r, g, b))| image.put_pixel(i, j, Rgb([r, g, b])));
     image.save("output.png").unwrap();
 }
