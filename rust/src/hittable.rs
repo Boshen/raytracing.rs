@@ -12,6 +12,7 @@ pub trait Hittable: Send + Sync {
     fn get_max_point(&self) -> Vec3;
 }
 
+#[derive(Copy, Clone)]
 pub struct Triangle(pub Vec3, pub Vec3, pub Vec3);
 
 pub struct Sphere {

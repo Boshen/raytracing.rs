@@ -1,28 +1,31 @@
 use image::{Rgb, RgbImage};
+use std::io;
 
 mod aabb;
+mod asset;
 mod brdf;
 mod camera;
 mod hittable;
 mod light;
 mod material;
 mod model;
-mod models;
 mod ray;
 mod sampler;
 mod world;
 
+use crate::asset::Asset;
 use crate::camera::Camera;
 use crate::light::{
     AmbientLight, AmbientOcculuder, AreaLight, DirectionalLight, Light, PointLight,
 };
 use crate::model::Vec3;
-use crate::models::get_models;
 use crate::world::World;
 
-fn main() {
+fn main() -> io::Result<()> {
+    let asset = Asset::new("../assets/cornell_box.obj");
+
     let ambient_light = Box::new(AmbientLight {
-        ls: 0.5,
+        ls: 0.1,
         cl: Vec3::new(1.0, 1.0, 1.0),
     });
 
@@ -55,12 +58,18 @@ fn main() {
     let world = World {
         width: 500,
         height: 500,
-        models: get_models(),
+        models: asset.models,
         lights,
         ambient_light,
     };
 
     let camera = Camera::new(Vec3::new(0.0, 0.0, -3.0), Vec3::new(0.0, 0.0, 0.0), 500.0);
+
+    // let camera = Camera::new(
+    // Vec3::new(278.0, 273.0, -500.0),
+    // Vec3::new(278.0, 278.0, 0.0),
+    // 500.0,
+    // );
 
     let mut image = RgbImage::new(world.width, world.height);
     camera
@@ -68,4 +77,6 @@ fn main() {
         .into_iter()
         .for_each(|(i, j, (r, g, b))| image.put_pixel(i, j, Rgb([r, g, b])));
     image.save("output.png").unwrap();
+
+    Ok(())
 }
