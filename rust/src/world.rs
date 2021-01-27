@@ -1,6 +1,7 @@
 use crate::light::Light;
 use crate::model::{Color, Model, Vec3};
 use crate::ray::{Ray, RayHit};
+use nalgebra::{Dot, Norm};
 use std::ops::{Add, Mul};
 
 pub struct World {
@@ -33,13 +34,22 @@ impl World {
 
         return intersection.map_or(Color::new(0.0, 0.0, 0.0), |(distance, model, hittable)| {
             let point = ray.get_point(distance);
+
+            let normal = hittable.normal(&point);
+            // revert normal if we hit the inside surface
+            let wo = ray.dir.mul(-1.0).normalize();
+            let adjusted_normal = if normal.dot(&wo) < 1.0 {
+                normal.mul(-1.0)
+            } else {
+                normal
+            };
             let rayhit = RayHit {
                 ray: ray,
                 hit_point: point,
                 material: &model.material,
                 hittable: &hittable,
                 world: &self,
-                normal: hittable.normal(&point),
+                normal: adjusted_normal,
                 depth: depth,
             };
             return model.material.shade(&rayhit);
