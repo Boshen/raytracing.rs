@@ -1,48 +1,24 @@
-newmtl floor
-Ka  0.5 0.5 0.5
-Kd  0.4 0.4 0.4
-Ks  0 0 0
-r 0.7
-d  1
-
-newmtl ceiling
-Ka  0.5 0.5 0.5
-Kd  0.4 0.4 0.4
-Ks  0 0 0
-d  1
-
-newmtl back
-Ka  0.5 0.5 0.5
-Kd  0.4 0.4 0.4
-Ks  0 0 0
-d  1
-
-newmtl green
-Ka  0 0.5 0
-Kd  0 0.5 0
-Ks  0 0 0
-d  1
+newmtl white
+Ka 0 0 0
+Kd 1 1 1
+Ks 0 0 0
 
 newmtl red
-Ka  0.5 0 0
-Kd  0.5 0 0
-Ks  0.5 0 0
-d  1
+Ka 0 0 0
+Kd 1 0 0
+Ks 0 0 0
 
-newmtl short_box
-Ka  0.6 0.6 0.6
-Kd  0.5 0.5 0.5
-Ks  0 0 0
-d  1
+newmtl green
+Ka 0 0 0
+Kd 0 1 0
+Ks 0 0 0
 
-newmtl tall_box
-Ka  0.6 0.6 0.6
-Kd  0.5 0.5 0.5
-Ks  0 0 0
-d  1
+newmtl blue
+Ka 0 0 0
+Kd 0 0 1
+Ks 0 0 0
 
-# units are watts/nm^2
 newmtl light
-Ka 1.8 1.5 0.9
-Kd 14.4 12.0 7.2
-Ks  2 2 2
+Ka 20 20 20
+Kd 1 1 1
+Ks 0 0 0
