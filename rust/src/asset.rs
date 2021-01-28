@@ -3,7 +3,7 @@ extern crate tobj;
 use crate::brdf::Lambertian;
 use crate::color::Color;
 use crate::hittable::{Hittable, Triangle};
-use crate::material::{Material, Matte};
+use crate::material::{Emissive, Material, Matte};
 use crate::model::{Model, Vec3};
 
 #[derive(Clone)]
@@ -60,26 +60,24 @@ impl Asset {
                 None => {}
                 Some(material_id) => {
                     let m = &materials[material_id];
-                    let ambient_brdf = Lambertian::new(
-                        0.5,
-                        Color::new(
-                            m.ambient[0] as f64,
-                            m.ambient[1] as f64,
-                            m.ambient[2] as f64,
-                        ),
+                    let ambient = Color::new(
+                        m.ambient[0] as f64,
+                        m.ambient[1] as f64,
+                        m.ambient[2] as f64,
                     );
-                    let diffuse_brdf = Lambertian::new(
-                        1.0,
-                        Color::new(
-                            m.diffuse[0] as f64,
-                            m.diffuse[1] as f64,
-                            m.diffuse[2] as f64,
-                        ),
+                    let diffuse = Color::new(
+                        m.diffuse[0] as f64,
+                        m.diffuse[1] as f64,
+                        m.diffuse[2] as f64,
                     );
-                    let matte = Matte::new(ambient_brdf, diffuse_brdf);
-                    asset
-                        .models
-                        .push(Model::new(Box::new(Material::Matte(matte)), triangles));
+                    let material = if m.ambient[0] > 1.0 {
+                        Material::Emissive(Emissive::new(m.ambient[0] as f64, diffuse))
+                    } else {
+                        let ambient_brdf = Lambertian::new(0.5, ambient);
+                        let diffuse_brdf = Lambertian::new(1.0, diffuse);
+                        Material::Matte(Matte::new(ambient_brdf, diffuse_brdf))
+                    };
+                    asset.models.push(Model::new(Box::new(material), triangles));
                 }
             };
         }
