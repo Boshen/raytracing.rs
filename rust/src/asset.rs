@@ -1,9 +1,10 @@
 extern crate tobj;
 
 use crate::brdf::Lambertian;
+use crate::color::Color;
 use crate::hittable::{Hittable, Triangle};
 use crate::material::{Material, Matte};
-use crate::model::{Color, Model, Vec3};
+use crate::model::{Model, Vec3};
 
 #[derive(Clone)]
 pub struct Object {

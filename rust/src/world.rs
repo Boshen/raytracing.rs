@@ -1,5 +1,6 @@
+use crate::color::Color;
 use crate::light::Light;
-use crate::model::{Color, Model, Vec3};
+use crate::model::{Model, Vec3};
 use crate::ray::{Ray, RayHit};
 use nalgebra::{Dot, Norm};
 use std::ops::{Add, Mul};

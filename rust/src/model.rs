@@ -4,7 +4,6 @@ use crate::aabb::AABB;
 use crate::hittable::Hittable;
 use crate::material::Material;
 
-pub type Color = Vector3<f64>;
 pub type Vec3 = Vector3<f64>;
 
 pub struct Model {

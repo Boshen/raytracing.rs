@@ -5,6 +5,7 @@ mod aabb;
 mod asset;
 mod brdf;
 mod camera;
+mod color;
 mod hittable;
 mod light;
 mod material;

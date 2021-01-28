@@ -1,5 +1,6 @@
+use crate::color::Color;
 use crate::light::Light;
-use crate::model::{Color, Vec3};
+use crate::model::Vec3;
 use crate::ray::RayHit;
 use std::ops::Mul;
 

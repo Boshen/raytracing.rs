@@ -1,7 +1,8 @@
 use nalgebra::Dot;
 use std::ops::{Div, Mul, Sub};
 
-use crate::model::{Color, Vec3};
+use crate::color::Color;
+use crate::model::Vec3;
 use crate::ray::RayHit;
 
 pub trait BRDF: Send + Sync {

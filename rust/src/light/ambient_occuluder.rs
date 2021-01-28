@@ -1,8 +1,9 @@
 use nalgebra::{Cross, Norm};
 use std::ops::{Add, Mul};
 
+use crate::color::Color;
 use crate::light::Light;
-use crate::model::{Color, Vec3};
+use crate::model::Vec3;
 use crate::ray::RayHit;
 
 use crate::sampler::get_hemisphere_sampler;

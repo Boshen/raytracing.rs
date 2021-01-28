@@ -2,7 +2,8 @@ use nalgebra::{Cross, Norm};
 use rayon::prelude::*;
 use std::ops::{Add, Div, Mul, Sub};
 
-use crate::model::{Color, Vec3};
+use crate::color::{tone_mapping, Color};
+use crate::model::Vec3;
 use crate::ray::Ray;
 use crate::sampler::get_unit_square_sampler;
 use crate::world::World;
@@ -59,7 +60,7 @@ impl Camera {
                 let (i, j) = (n % width, n / width);
                 let x = (i as f64) - (width as f64) / 2.0;
                 let y = (j as f64) - (height as f64) / 2.0;
-                let color = self.tone_mapping(self.antialias(world, x, y));
+                let color = tone_mapping(&self.antialias(world, x, y));
                 return (
                     self.to_rgb(color.x),
                     self.to_rgb(color.y),
@@ -74,11 +75,6 @@ impl Camera {
             .map(|(dx, dy)| world.trace(&self.get_direction(x + dx, y + dy), 0))
             .fold(Vec3::new(0.0, 0.0, 0.0), |v1, v2| v1.add(v2))
             .div(self.sample_points_sqrt as f64 * self.sample_points_sqrt as f64);
-    }
-
-    fn tone_mapping(&self, color: Color) -> Color {
-        let max = color.x.max(color.y).max(color.z).max(1.0);
-        return color.div(max);
     }
 
     fn to_rgb(&self, x: f64) -> u8 {

@@ -2,7 +2,8 @@ use nalgebra::{Dot, Norm};
 use std::ops::{Add, Mul, Sub};
 
 use crate::brdf::{GlossySpecular, Lambertian, PerfectSpecular, BRDF};
-use crate::model::{Color, Vec3};
+use crate::color::Color;
+use crate::model::Vec3;
 use crate::ray::{Ray, RayHit};
 
 pub enum Material {
