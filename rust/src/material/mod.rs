@@ -1,75 +1,23 @@
 use nalgebra::{Dot, Norm};
 use std::ops::{Add, Mul, Sub};
 
-use crate::brdf::{GlossySpecular, Lambertian, PerfectSpecular, BRDF};
+use crate::brdf::*;
 use crate::color::Color;
 use crate::model::Vec3;
 use crate::ray::{Ray, RayHit};
+
+pub mod matte;
+pub mod phong;
+pub mod reflective;
+
+pub use matte::*;
+pub use phong::*;
+pub use reflective::*;
 
 pub enum Material {
     Matte(Matte),
     Phong(Phong),
     Reflective(Reflective),
-}
-
-pub struct Matte {
-    pub ambient_brdf: Lambertian,
-    pub diffuse_brdf: Lambertian,
-}
-
-pub struct Phong {
-    pub ambient_brdf: Lambertian,
-    pub diffuse_brdf: Lambertian,
-    pub specular_brdf: GlossySpecular,
-}
-
-pub struct Reflective {
-    pub ambient_brdf: Lambertian,
-    pub diffuse_brdf: Lambertian,
-    pub specular_brdf: GlossySpecular,
-    pub reflective_brdf: PerfectSpecular,
-}
-
-impl Matte {
-    pub fn new(ambient_brdf: Lambertian, diffuse_brdf: Lambertian) -> Matte {
-        return Matte {
-            ambient_brdf,
-            diffuse_brdf,
-        };
-    }
-}
-
-impl Phong {
-    pub fn new(
-        ambient_brdf: Lambertian,
-        diffuse_brdf: Lambertian,
-        specular_brdf: GlossySpecular,
-    ) -> Phong {
-        if diffuse_brdf.kd + specular_brdf.ks >= 1.0 {
-            panic!("kd + ks >= 1.0 in Phong Constructor");
-        }
-        return Phong {
-            ambient_brdf,
-            diffuse_brdf,
-            specular_brdf,
-        };
-    }
-}
-
-impl Reflective {
-    pub fn new(
-        ambient_brdf: Lambertian,
-        diffuse_brdf: Lambertian,
-        specular_brdf: GlossySpecular,
-        reflective_brdf: PerfectSpecular,
-    ) -> Reflective {
-        return Reflective {
-            ambient_brdf,
-            diffuse_brdf,
-            specular_brdf,
-            reflective_brdf,
-        };
-    }
 }
 
 impl Material {
