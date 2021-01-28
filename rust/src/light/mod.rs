@@ -15,7 +15,8 @@ pub use directional::*;
 pub use point::*;
 
 pub trait Light: Send + Sync {
-    fn radiance(&self, hit: &RayHit) -> Color;
     // the direction of the incoming light at a hit point
     fn get_direction(&self, hit: &RayHit) -> Vec3;
+    fn radiance(&self, hit: &RayHit) -> Color;
+    fn shadow_amount(&self, hit: &RayHit) -> f64;
 }

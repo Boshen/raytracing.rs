@@ -12,11 +12,15 @@ pub struct DirectionalLight {
 }
 
 impl Light for DirectionalLight {
-    fn radiance(&self, _hit: &RayHit) -> Color {
-        return self.cl.mul(self.ls);
-    }
-
     fn get_direction(&self, _hit: &RayHit) -> Vec3 {
         return self.direction;
+    }
+
+    fn shadow_amount(&self, _hit: &RayHit) -> f64 {
+        return 1.0;
+    }
+
+    fn radiance(&self, _hit: &RayHit) -> Color {
+        return self.cl.mul(self.ls);
     }
 }

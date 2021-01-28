@@ -25,6 +25,15 @@ pub enum Material {
 }
 
 impl Material {
+    pub fn has_shadow(&self) -> bool {
+        return match self {
+            Material::Matte(_) => true,
+            Material::Phong(_) => true,
+            Material::Reflective(_) => true,
+            Material::Emissive(_) => false,
+        };
+    }
+
     pub fn shade(&self, hit: &RayHit) -> Color {
         if let Material::Emissive(emissive) = self {
             return emissive.radiance();
@@ -50,10 +59,11 @@ impl Material {
                 }
                 // wo: reflected direction
                 let wo = hit.ray.dir.mul(-1.0).normalize();
+                let shadow_amount = light.shadow_amount(&hit);
                 return self
                     .diffuse_color(hit, &wo, &wi)
                     .add(self.specular_color(hit, &wo, &wi))
-                    .mul(radiance)
+                    .mul(radiance.mul(shadow_amount))
                     .mul(ndotwi)
                     .add(self.reflective_color(hit, &wo));
             })

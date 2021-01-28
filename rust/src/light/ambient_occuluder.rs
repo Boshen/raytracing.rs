@@ -24,22 +24,23 @@ impl AmbientOcculuder {
 }
 
 impl Light for AmbientOcculuder {
-    fn radiance(&self, hit: &RayHit) -> Color {
-        let (u, v, w) = self.uvw(hit);
-        let shadow_amount = get_hemisphere_sampler(self.sample_points_sqrt)
-            .into_iter()
-            .map(|sp| u.mul(sp.x).add(v.mul(sp.y)).add(w.mul(sp.z)).normalize())
-            .filter(|dir| !hit.world.is_in_shadow(&hit.hit_point, &dir))
-            .count();
-        let sample_points = self.sample_points_sqrt * self.sample_points_sqrt;
-        return self
-            .cl
-            .mul(self.ls)
-            .mul((shadow_amount as f64) / (sample_points as f64));
-    }
-
     fn get_direction(&self, hit: &RayHit) -> Vec3 {
         let (u, v, w) = self.uvw(hit);
         return u.add(v).add(w);
+    }
+
+    fn radiance(&self, hit: &RayHit) -> Color {
+        return self.cl.mul(self.ls);
+    }
+
+    fn shadow_amount(&self, hit: &RayHit) -> f64 {
+        let (u, v, w) = self.uvw(hit);
+        let sample_points = self.sample_points_sqrt * self.sample_points_sqrt;
+        return get_hemisphere_sampler(self.sample_points_sqrt)
+            .into_iter()
+            .map(|sp| u.mul(sp.x).add(v.mul(sp.y)).add(w.mul(sp.z)).normalize())
+            .filter(|dir| !hit.world.is_in_shadow(&hit.hit_point, &dir))
+            .count() as f64
+            / sample_points as f64;
     }
 }

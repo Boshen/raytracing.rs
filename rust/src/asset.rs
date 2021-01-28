@@ -80,14 +80,13 @@ impl Asset {
                         let diffuse_brdf = Lambertian::new(1.0, diffuse);
                         Material::Matte(Matte::new(ambient_brdf, diffuse_brdf))
                     };
-                    if let Material::Emissive(ref e) = material {
+                    if let Material::Emissive(emissive) = material {
                         let arealight = AreaLight {
-                            ls: e.ls,
-                            cl: e.ce,
                             location: Vec3::new(0.0, -1.0, 0.0),
                             width: 75.0 / 255.0,
                             height: 75.0 / 255.0,
                             sample_points_sqrt: 5,
+                            material: emissive,
                         };
                         asset.lights.push(Box::new(arealight));
                     }

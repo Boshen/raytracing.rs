@@ -1,5 +1,4 @@
 use nalgebra::Norm;
-use num_traits::identities::Zero;
 use std::ops::{Mul, Sub};
 
 use crate::color::Color;
@@ -14,16 +13,20 @@ pub struct PointLight {
 }
 
 impl Light for PointLight {
-    fn radiance(&self, hit: &RayHit) -> Color {
-        let direction = self.location.sub(hit.hit_point).normalize();
-        return if hit.world.is_in_shadow(&hit.hit_point, &direction) {
-            Vec3::zero()
-        } else {
-            self.cl.mul(self.ls)
-        };
-    }
-
     fn get_direction(&self, hit: &RayHit) -> Vec3 {
         return self.location.sub(hit.hit_point).normalize();
+    }
+
+    fn radiance(&self, _hit: &RayHit) -> Color {
+        return self.cl.mul(self.ls);
+    }
+
+    fn shadow_amount(&self, hit: &RayHit) -> f64 {
+        let direction = self.location.sub(hit.hit_point).normalize();
+        return if hit.world.is_in_shadow(&hit.hit_point, &direction) {
+            0.0
+        } else {
+            1.0
+        };
     }
 }

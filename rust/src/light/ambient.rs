@@ -11,11 +11,15 @@ pub struct AmbientLight {
 }
 
 impl Light for AmbientLight {
+    fn get_direction(&self, _hit: &RayHit) -> Vec3 {
+        return Vec3::zero();
+    }
+
     fn radiance(&self, _hit: &RayHit) -> Color {
         return self.cl.mul(self.ls);
     }
 
-    fn get_direction(&self, _hit: &RayHit) -> Vec3 {
-        return Vec3::zero();
+    fn shadow_amount(&self, _hit: &RayHit) -> f64 {
+        return 1.0;
     }
 }
