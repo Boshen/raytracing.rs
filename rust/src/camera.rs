@@ -1,4 +1,4 @@
-use nalgebra::{Cross, Norm};
+use nalgebra::{clamp, Cross, Norm};
 use rayon::prelude::*;
 use std::ops::{Add, Div, Mul, Sub};
 
@@ -78,7 +78,7 @@ impl Camera {
     }
 
     fn to_rgb(&self, x: f64) -> u8 {
-        (x * 255.0).min(255.0).round().max(0.0) as u8
+        clamp((x * 255.0).round() as u8, 0, 255) as u8
     }
 
     fn get_direction(&self, x: f64, y: f64) -> Ray {

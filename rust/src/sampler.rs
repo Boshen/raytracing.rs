@@ -4,12 +4,10 @@ use crate::model::Vec3;
 
 pub fn get_unit_square_sampler(n: u32) -> impl Iterator<Item = (f64, f64)> {
     let mut rng = rand::thread_rng();
-    return (0..n).into_iter().flat_map(move |i| {
-        let dx = (i as f64 + rng.gen_range(0.0, 1.0)) / n as f64;
-        return (0..n).into_iter().map(move |j| {
-            let dy = (j as f64 + rng.gen_range(0.0, 1.0)) / n as f64;
-            return (dx, dy);
-        });
+    return (0..n * n).into_iter().map(move |i| {
+        let dx = ((i / n) as f64 + rng.gen_range(0.0, 1.0)) / n as f64;
+        let dy = ((i % n) as f64 + rng.gen_range(0.0, 1.0)) / n as f64;
+        return (dx, dy);
     });
 }
 

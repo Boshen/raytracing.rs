@@ -27,8 +27,11 @@ impl Model {
         for h in &mut self.hittables {
             h.scale(l);
         }
-        let mins = self.hittables.iter().map(|h| h.get_min_point()).collect();
-        let maxs = self.hittables.iter().map(|h| h.get_max_point()).collect();
+        let (mins, maxs) = self
+            .hittables
+            .iter()
+            .map(|h| (h.get_min_point(), h.get_max_point()))
+            .unzip();
         self.aabb = AABB::new(mins, maxs)
     }
 }
