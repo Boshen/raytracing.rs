@@ -1,4 +1,5 @@
 use nalgebra::{clamp, Cross, Norm};
+use num_traits::identities::Zero;
 use rayon::prelude::*;
 use std::ops::{Add, Div, Mul, Sub};
 
@@ -20,7 +21,7 @@ pub struct Camera {
 
 impl Default for Camera {
     fn default() -> Camera {
-        let empty = Vec3::new(0.0, 0.0, 0.0);
+        let empty = Vec3::zero();
         return Camera {
             sample_points_sqrt: 1,
             up: Vec3::new(0.0, 1.0, 0.0),
@@ -73,7 +74,7 @@ impl Camera {
     fn antialias(&self, world: &World, x: f64, y: f64) -> Color {
         return get_unit_square_sampler(self.sample_points_sqrt)
             .map(|(dx, dy)| world.trace(&self.get_direction(x + dx, y + dy), 0))
-            .fold(Vec3::new(0.0, 0.0, 0.0), |v1, v2| v1.add(v2))
+            .fold(Vec3::zero(), |v1, v2| v1.add(v2))
             .div(self.sample_points_sqrt as f64 * self.sample_points_sqrt as f64);
     }
 

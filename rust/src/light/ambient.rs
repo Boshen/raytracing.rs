@@ -2,6 +2,7 @@ use crate::color::Color;
 use crate::light::Light;
 use crate::model::Vec3;
 use crate::ray::RayHit;
+use num_traits::identities::Zero;
 use std::ops::Mul;
 
 pub struct AmbientLight {
@@ -15,6 +16,6 @@ impl Light for AmbientLight {
     }
 
     fn get_direction(&self, _hit: &RayHit) -> Vec3 {
-        return Vec3::new(0.0, 0.0, 0.0);
+        return Vec3::zero();
     }
 }

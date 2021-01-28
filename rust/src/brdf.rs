@@ -1,4 +1,5 @@
 use nalgebra::Dot;
+use num_traits::identities::Zero;
 use std::ops::{Div, Mul, Sub};
 
 use crate::color::Color;
@@ -56,7 +57,7 @@ impl BRDF for Lambertian {
     }
 
     fn sample_f(&self, _hit: &RayHit, _wo: &Vec3, _wi: &Vec3) -> Color {
-        return Color::new(0.0, 0.0, 0.0);
+        return Color::zero();
     }
 }
 
@@ -66,28 +67,28 @@ impl BRDF for GlossySpecular {
         let r = hit.normal.mul(2.0 * ndotwi).sub(wi);
         let rdotwo = r.dot(wo);
         if rdotwo <= 0.0 {
-            return Color::new(0.0, 0.0, 0.0);
+            return Color::zero();
         }
         let s = self.ks * rdotwo.powf(self.exp);
         return Color::new(s, s, s);
     }
 
     fn rho(&self) -> Color {
-        return Color::new(0.0, 0.0, 0.0); // is black for GlossySpecular
+        return Color::zero(); // is black for GlossySpecular
     }
 
     fn sample_f(&self, _hit: &RayHit, _wo: &Vec3, _wi: &Vec3) -> Color {
-        return Color::new(0.0, 0.0, 0.0);
+        return Color::zero();
     }
 }
 
 impl BRDF for PerfectSpecular {
     fn f(&self, _hit: &RayHit, _wo: &Vec3, _wi: &Vec3) -> Color {
-        return Color::new(0.0, 0.0, 0.0); // is black for PerfectSpecular
+        return Color::zero(); // is black for PerfectSpecular
     }
 
     fn rho(&self) -> Color {
-        return Color::new(0.0, 0.0, 0.0); // is black for PerfectSpecular
+        return Color::zero(); // is black for PerfectSpecular
     }
 
     fn sample_f(&self, hit: &RayHit, _wo: &Vec3, wi: &Vec3) -> Color {

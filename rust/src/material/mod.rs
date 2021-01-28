@@ -63,7 +63,7 @@ impl Material {
     }
 
     fn diffuse_color(&self, hit: &RayHit, wo: &Vec3, wi: &Vec3) -> Color {
-        let z = Vec3::new(0.0, 0.0, 0.0);
+        let z = Vec3::zero();
         return match self {
             Material::Matte(m) => m.diffuse_brdf.f(hit, &z, &z),
             Material::Phong(m) => m.diffuse_brdf.f(hit, wo, wi),
@@ -72,7 +72,7 @@ impl Material {
     }
 
     fn specular_color(&self, hit: &RayHit, wo: &Vec3, wi: &Vec3) -> Color {
-        let z = Vec3::new(0.0, 0.0, 0.0);
+        let z = Vec3::zero();
         return match self {
             Material::Matte(_) => z,
             Material::Phong(m) => m.specular_brdf.f(hit, wo, wi),
@@ -81,7 +81,7 @@ impl Material {
     }
 
     fn reflective_color(&self, hit: &RayHit, wo: &Vec3) -> Color {
-        let z = Vec3::new(0.0, 0.0, 0.0);
+        let z = Vec3::zero();
         return match self {
             Material::Matte(_) => z,
             Material::Phong(_) => z,

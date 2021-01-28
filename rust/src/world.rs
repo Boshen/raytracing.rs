@@ -1,9 +1,11 @@
+use nalgebra::{Dot, Norm};
+use num_traits::identities::Zero;
+use std::ops::{Add, Mul};
+
 use crate::color::Color;
 use crate::light::Light;
 use crate::model::{Model, Vec3};
 use crate::ray::{Ray, RayHit};
-use nalgebra::{Dot, Norm};
-use std::ops::{Add, Mul};
 
 pub struct World {
     pub width: u32,
@@ -16,7 +18,7 @@ pub struct World {
 impl World {
     pub fn trace(&self, ray: &Ray, depth: i32) -> Color {
         if depth >= 15 {
-            return Color::new(0.0, 0.0, 0.0);
+            return Color::zero();
         }
         let intersection = self
             .models
@@ -33,7 +35,7 @@ impl World {
             })
             .min_by(|t1, t2| (t1.0).partial_cmp(&t2.0).expect("Tried to compare a NaN"));
 
-        return intersection.map_or(Color::new(0.0, 0.0, 0.0), |(distance, model, hittable)| {
+        return intersection.map_or(Color::zero(), |(distance, model, hittable)| {
             let point = ray.get_point(distance);
 
             let normal = hittable.normal(&point);
