@@ -6,7 +6,15 @@ use crate::ray::Ray;
 
 use crate::hittable::Hittable;
 
-pub struct Triangle(pub Vec3, pub Vec3, pub Vec3);
+pub struct Triangle(Vec3, Vec3, Vec3);
+
+impl Triangle {
+    pub fn new(x: Vec3, y: Vec3, z: Vec3, scale: f64) -> Triangle {
+        let mut triangle = Triangle(x, y, z);
+        triangle.scale(scale);
+        return triangle;
+    }
+}
 
 impl Hittable for Triangle {
     fn intersects(&self, ray: &Ray) -> Option<f64> {

@@ -7,16 +7,18 @@ use crate::ray::Ray;
 use crate::hittable::Hittable;
 
 pub struct Sphere {
-    pub radius: f64,
-    pub center: Vec3,
+    radius: f64,
+    center: Vec3,
 }
 
 impl Sphere {
-    pub fn new(radius: f64, center: Vec3) -> Sphere {
-        Sphere {
+    pub fn new(radius: f64, center: Vec3, scale: f64) -> Sphere {
+        let mut sphere = Sphere {
             radius: radius,
             center: center,
-        }
+        };
+        sphere.scale(scale);
+        return sphere;
     }
 }
 

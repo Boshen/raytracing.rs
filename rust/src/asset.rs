@@ -27,6 +27,8 @@ impl Asset {
 
         let (models, materials) = tobj::load_obj(&file_name, true).expect("Failed to load file");
 
+        let scale = 555.0;
+
         for m in models.iter() {
             let mesh = &m.mesh;
             let mut vertices: Vec<Vec3> = vec![];
@@ -44,10 +46,11 @@ impl Asset {
             for f in 0..mesh.num_face_indices.len() {
                 let end = next_face + mesh.num_face_indices[f] as usize;
                 let face_indices: Vec<_> = mesh.indices[next_face..end].iter().collect();
-                let triangle = Triangle(
+                let triangle = Triangle::new(
                     vertices[*face_indices[0] as usize],
                     vertices[*face_indices[1] as usize],
                     vertices[*face_indices[2] as usize],
+                    scale,
                 );
                 triangles.push(Box::new(triangle) as Box<dyn Hittable>);
                 next_face = end;
@@ -74,11 +77,9 @@ impl Asset {
                         ),
                     );
                     let matte = Matte::new(ambient_brdf, diffuse_brdf);
-                    asset.models.push(Model::new(
-                        555.0,
-                        Box::new(Material::Matte(matte)),
-                        triangles,
-                    ));
+                    asset
+                        .models
+                        .push(Model::new(Box::new(Material::Matte(matte)), triangles));
                 }
             };
         }
