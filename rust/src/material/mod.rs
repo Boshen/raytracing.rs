@@ -1,4 +1,5 @@
-use nalgebra::{Dot, Norm};
+use nalgebra::{Dot, Norm, PartialOrder};
+use num_traits::identities::Zero;
 use std::ops::{Add, Mul, Sub};
 
 use crate::brdf::*;
@@ -34,14 +35,18 @@ impl Material {
                 let ndotwi = hit.normal.dot(&wi);
                 // not hit by light
                 if ndotwi <= 0.0 {
-                    return Color::new(0.0, 0.0, 0.0);
+                    return Color::zero();
+                }
+                let radiance = light.radiance(hit);
+                if radiance.partial_le(&Vec3::zero()) {
+                    return Color::zero();
                 }
                 // wo: reflected direction
                 let wo = hit.ray.dir.mul(-1.0).normalize();
                 return self
                     .diffuse_color(hit, &wo, &wi)
                     .add(self.specular_color(hit, &wo, &wi))
-                    .mul(light.radiance(hit))
+                    .mul(radiance)
                     .mul(ndotwi)
                     .add(self.reflective_color(hit, &wo));
             })

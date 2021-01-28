@@ -474,6 +474,7 @@ version = "0.1.0"
 dependencies = [
  "image",
  "nalgebra",
+ "num-traits",
  "rand 0.7.3",
  "rayon",
  "tobj",
