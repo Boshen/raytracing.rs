@@ -2,8 +2,8 @@ use crate::color::Color;
 use std::ops::Mul;
 
 pub struct Emissive {
-    ls: f64, // radiance scaling factor
-    ce: Color,
+    pub ls: f64, // radiance scaling factor
+    pub ce: Color,
 }
 
 impl Emissive {

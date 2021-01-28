@@ -3,6 +3,7 @@ extern crate tobj;
 use crate::brdf::Lambertian;
 use crate::color::Color;
 use crate::hittable::{Hittable, Triangle};
+use crate::light::{AreaLight, Light};
 use crate::material::{Emissive, Material, Matte};
 use crate::model::{Model, Vec3};
 
@@ -16,6 +17,7 @@ pub struct Object {
 pub struct Asset {
     pub objects: Vec<Box<Object>>,
     pub models: Vec<Model>,
+    pub lights: Vec<Box<dyn Light>>,
 }
 
 impl Asset {
@@ -23,6 +25,7 @@ impl Asset {
         let mut asset = Asset {
             objects: vec![],
             models: vec![],
+            lights: vec![],
         };
 
         let (models, materials) = tobj::load_obj(&file_name, true).expect("Failed to load file");
@@ -77,6 +80,18 @@ impl Asset {
                         let diffuse_brdf = Lambertian::new(1.0, diffuse);
                         Material::Matte(Matte::new(ambient_brdf, diffuse_brdf))
                     };
+                    if let Material::Emissive(ref e) = material {
+                        let arealight = AreaLight {
+                            ls: e.ls,
+                            cl: e.ce,
+                            location: Vec3::new(0.0, -1.0, 0.0),
+                            width: 75.0 / 255.0,
+                            height: 75.0 / 255.0,
+                            sample_points_sqrt: 5,
+                        };
+                        asset.lights.push(Box::new(arealight));
+                    }
+
                     asset.models.push(Model::new(Box::new(material), triangles));
                 }
             };

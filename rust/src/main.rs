@@ -36,31 +36,31 @@ fn main() -> Result<(), Box<dyn Error>> {
             cl: Vec3::new(1.0, 1.0, 1.0),
             sample_points_sqrt: 16,
         }),
-        Box::new(DirectionalLight {
-            ls: 1.0,
-            cl: Vec3::new(1.0, 1.0, 1.0),
-            direction: Vec3::new(0.0, 1.0, 0.0),
-        }),
-        Box::new(PointLight {
-            ls: 1.0,
-            cl: Vec3::new(1.0, 1.0, 1.0),
-            location: Vec3::new(0.0, -1.0, 0.0),
-        }),
-        Box::new(AreaLight {
-            ls: 2.0,
-            cl: Vec3::new(1.0, 1.0, 1.0),
-            location: Vec3::new(0.0, -1.0, 0.0),
-            width: 75.0 / 255.0,
-            height: 75.0 / 255.0,
-            sample_points_sqrt: 5,
-        }),
+        // Box::new(DirectionalLight {
+        // ls: 1.0,
+        // cl: Vec3::new(1.0, 1.0, 1.0),
+        // direction: Vec3::new(0.0, 1.0, 0.0),
+        // }),
+        // Box::new(PointLight {
+        // ls: 1.0,
+        // cl: Vec3::new(1.0, 1.0, 1.0),
+        // location: Vec3::new(0.0, -1.0, 0.0),
+        // }),
+        // Box::new(AreaLight {
+        // ls: 2.0,
+        // cl: Vec3::new(1.0, 1.0, 1.0),
+        // location: Vec3::new(0.0, -1.0, 0.0),
+        // width: 75.0 / 255.0,
+        // height: 75.0 / 255.0,
+        // sample_points_sqrt: 5,
+        // }),
     ];
 
     let world = World {
         width: 500,
         height: 500,
         models: asset.models,
-        lights,
+        lights: lights.into_iter().chain(asset.lights.into_iter()).collect(),
         ambient_light,
     };
 
