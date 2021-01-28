@@ -50,7 +50,7 @@ impl Camera {
         };
     }
 
-    pub fn render_scence(&self, world: &World) -> Vec<(u32, u32, (u8, u8, u8))> {
+    pub fn render_scence(&self, world: &World) -> Vec<(u8, u8, u8)> {
         let width = world.width;
         let height = world.height;
         return (0..(width * height))
@@ -60,12 +60,11 @@ impl Camera {
                 let x = (i as f64) - (width as f64) / 2.0;
                 let y = (j as f64) - (height as f64) / 2.0;
                 let color = self.tone_mapping(self.antialias(world, x, y));
-                let rgb = (
+                return (
                     self.to_rgb(color.x),
                     self.to_rgb(color.y),
                     self.to_rgb(color.z),
                 );
-                return (i, j, rgb);
             })
             .collect();
     }

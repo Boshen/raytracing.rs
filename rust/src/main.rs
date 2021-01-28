@@ -1,5 +1,5 @@
-use image::{Rgb, RgbImage};
-use std::io;
+use image::RgbImage;
+use std::error::Error;
 
 mod aabb;
 mod asset;
@@ -21,7 +21,7 @@ use crate::light::{
 use crate::model::Vec3;
 use crate::world::World;
 
-fn main() -> io::Result<()> {
+fn main() -> Result<(), Box<dyn Error>> {
     let asset = Asset::new("../assets/cornell_box.obj");
 
     let ambient_light = Box::new(AmbientLight {
@@ -65,12 +65,15 @@ fn main() -> io::Result<()> {
 
     let camera = Camera::new(Vec3::new(0.0, 0.0, -3.0), Vec3::new(0.0, 0.0, 0.0), 500.0);
 
-    let mut image = RgbImage::new(world.width, world.height);
-    camera
+    let pixels = camera
         .render_scence(&world)
         .into_iter()
-        .for_each(|(i, j, (r, g, b))| image.put_pixel(i, j, Rgb([r, g, b])));
-    image.save("output.png").unwrap();
+        .flat_map(|(r, g, b)| vec![r, g, b])
+        .collect();
+
+    RgbImage::from_vec(world.width, world.height, pixels)
+        .unwrap()
+        .save("output.png")?;
 
     Ok(())
 }
