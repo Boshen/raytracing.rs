@@ -4,6 +4,7 @@ use std::ops::{Add, Mul};
 
 use crate::color::Color;
 use crate::light::Light;
+use crate::material::Material;
 use crate::model::{Model, Vec3};
 use crate::ray::{Ray, RayHit};
 
@@ -64,6 +65,13 @@ impl World {
         return self
             .models
             .iter()
+            .filter(|m| {
+                if let Material::Emissive(_) = *m.material {
+                    false
+                } else {
+                    true
+                }
+            })
             .filter(|m| m.aabb.intersects(&shadow_ray))
             .flat_map(|m| m.hittables.iter())
             .any(|h| h.intersects(&shadow_ray).is_some());

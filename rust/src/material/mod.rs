@@ -53,13 +53,16 @@ impl Material {
                 if ndotwi <= 0.0 {
                     return Color::zero();
                 }
+
                 let radiance = light.radiance(hit);
                 if radiance.partial_le(&Vec3::zero()) {
                     return Color::zero();
                 }
+
                 // wo: reflected direction
-                let wo = hit.ray.dir.mul(-1.0).normalize();
                 let shadow_amount = light.shadow_amount(&hit);
+
+                let wo = hit.ray.dir.mul(-1.0).normalize();
                 return self
                     .diffuse_color(hit, &wo, &wi)
                     .add(self.specular_color(hit, &wo, &wi))
