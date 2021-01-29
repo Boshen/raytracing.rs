@@ -29,7 +29,7 @@ impl Light for AmbientOcculuder {
         return u.add(v).add(w);
     }
 
-    fn radiance(&self, hit: &RayHit) -> Color {
+    fn radiance(&self, _hit: &RayHit) -> Color {
         return self.cl.mul(self.ls);
     }
 

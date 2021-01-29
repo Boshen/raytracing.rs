@@ -16,9 +16,7 @@ mod world;
 
 use crate::asset::Asset;
 use crate::camera::Camera;
-use crate::light::{
-    AmbientLight, AmbientOcculuder, AreaLight, DirectionalLight, Light, PointLight,
-};
+use crate::light::{AmbientLight, AmbientOcculuder, Light};
 use crate::model::Vec3;
 use crate::world::World;
 
@@ -30,31 +28,11 @@ fn main() -> Result<(), Box<dyn Error>> {
         cl: Vec3::new(1.0, 1.0, 1.0),
     });
 
-    let lights: Vec<Box<dyn Light>> = vec![
-        Box::new(AmbientOcculuder {
-            ls: 1.0,
-            cl: Vec3::new(1.0, 1.0, 1.0),
-            sample_points_sqrt: 16,
-        }),
-        // Box::new(DirectionalLight {
-        // ls: 1.0,
-        // cl: Vec3::new(1.0, 1.0, 1.0),
-        // direction: Vec3::new(0.0, 1.0, 0.0),
-        // }),
-        // Box::new(PointLight {
-        // ls: 1.0,
-        // cl: Vec3::new(1.0, 1.0, 1.0),
-        // location: Vec3::new(0.0, -1.0, 0.0),
-        // }),
-        // Box::new(AreaLight {
-        // ls: 2.0,
-        // cl: Vec3::new(1.0, 1.0, 1.0),
-        // location: Vec3::new(0.0, -1.0, 0.0),
-        // width: 75.0 / 255.0,
-        // height: 75.0 / 255.0,
-        // sample_points_sqrt: 5,
-        // }),
-    ];
+    let lights: Vec<Box<dyn Light>> = vec![Box::new(AmbientOcculuder {
+        ls: 1.0,
+        cl: Vec3::new(1.0, 1.0, 1.0),
+        sample_points_sqrt: 16,
+    })];
 
     let world = World {
         width: 500,

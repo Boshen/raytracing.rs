@@ -25,15 +25,6 @@ pub enum Material {
 }
 
 impl Material {
-    pub fn has_shadow(&self) -> bool {
-        return match self {
-            Material::Matte(_) => true,
-            Material::Phong(_) => true,
-            Material::Reflective(_) => true,
-            Material::Emissive(_) => false,
-        };
-    }
-
     pub fn shade(&self, hit: &RayHit) -> Color {
         if let Material::Emissive(emissive) = self {
             return emissive.radiance();
