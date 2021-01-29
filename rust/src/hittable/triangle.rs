@@ -6,7 +6,8 @@ use crate::ray::Ray;
 
 use crate::hittable::Hittable;
 
-pub struct Triangle(Vec3, Vec3, Vec3);
+#[derive(Copy, Clone)]
+pub struct Triangle(pub Vec3, pub Vec3, pub Vec3);
 
 impl Triangle {
     pub fn new(x: Vec3, y: Vec3, z: Vec3, scale: f64) -> Triangle {

@@ -1,5 +1,7 @@
 use rand::Rng;
+use std::ops::{Add, Mul, Sub};
 
+use crate::hittable::Triangle;
 use crate::model::Vec3;
 
 pub fn get_unit_square_sampler(n: u32) -> impl Iterator<Item = (f64, f64)> {
@@ -8,6 +10,19 @@ pub fn get_unit_square_sampler(n: u32) -> impl Iterator<Item = (f64, f64)> {
         let dx = ((i / n) as f64 + rng.gen_range(0.0, 1.0)) / n as f64;
         let dy = ((i % n) as f64 + rng.gen_range(0.0, 1.0)) / n as f64;
         return (dx, dy);
+    });
+}
+
+pub fn get_triangle_sampler(n: u32, t: &Triangle) -> impl Iterator<Item = Vec3> {
+    let x = t.0;
+    let y = t.1;
+    let z = t.2;
+    return get_unit_square_sampler(n).map(move |(mut a, mut b)| {
+        if a + b >= 1.0 {
+            a = 1.0 - a;
+            b = 1.0 - b;
+        }
+        return x.add(y.sub(x).mul(a)).add(z.sub(x).mul(b));
     });
 }
 

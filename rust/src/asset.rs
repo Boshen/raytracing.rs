@@ -43,7 +43,7 @@ impl Asset {
                 ));
             }
 
-            let mut triangles: Vec<Box<dyn Hittable>> = vec![];
+            let mut triangles: Vec<Triangle> = vec![];
             let mut next_face = 0;
 
             for f in 0..mesh.num_face_indices.len() {
@@ -55,7 +55,7 @@ impl Asset {
                     vertices[*face_indices[2] as usize],
                     scale,
                 );
-                triangles.push(Box::new(triangle) as Box<dyn Hittable>);
+                triangles.push(triangle);
                 next_face = end;
             }
 
@@ -81,17 +81,17 @@ impl Asset {
                         Material::Matte(Matte::new(ambient_brdf, diffuse_brdf))
                     };
                     if let Material::Emissive(emissive) = material {
-                        let arealight = AreaLight {
-                            location: Vec3::new(0.0, -1.0, 0.0),
-                            width: 75.0 / 255.0,
-                            height: 75.0 / 255.0,
-                            sample_points_sqrt: 5,
-                            material: emissive,
-                        };
+                        let arealight = AreaLight::new(triangles.clone(), emissive);
                         asset.lights.push(Box::new(arealight));
                     }
 
-                    asset.models.push(Model::new(Box::new(material), triangles));
+                    asset.models.push(Model::new(
+                        Box::new(material),
+                        triangles
+                            .into_iter()
+                            .map(|t| Box::new(t) as Box<dyn Hittable>)
+                            .collect(),
+                    ));
                 }
             };
         }
