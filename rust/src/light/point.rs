@@ -1,4 +1,4 @@
-use nalgebra::Norm;
+use nalgebra::{distance, Norm};
 use std::ops::{Mul, Sub};
 
 use crate::color::Color;
@@ -23,7 +23,11 @@ impl Light for PointLight {
 
     fn shadow_amount(&self, hit: &RayHit) -> f64 {
         let direction = self.location.sub(hit.hit_point).normalize();
-        return if hit.world.is_in_shadow(&hit.hit_point, &direction) {
+        let d = distance(&self.location.to_point(), &hit.hit_point.to_point());
+        return if hit
+            .world
+            .is_in_shadow(&hit.hit_point, &direction, &|t| t < d)
+        {
             0.0
         } else {
             1.0

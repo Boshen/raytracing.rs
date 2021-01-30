@@ -1,4 +1,4 @@
-use nalgebra::Norm;
+use nalgebra::{distance, Norm};
 use num_traits::identities::Zero;
 use std::ops::{Add, Div, Sub};
 
@@ -48,20 +48,16 @@ impl Light for AreaLight {
     fn shadow_amount(&self, hit: &RayHit) -> f64 {
         let sqrt = self.sample_points_sqrt as f64;
         let weight = sqrt * sqrt * self.triangles.len() as f64;
-        return self
+        let total = self
             .triangles
             .iter()
-            .flat_map(|t| {
-                return get_triangle_sampler(self.sample_points_sqrt, t).map(|v| {
-                    let dir = v.sub(hit.hit_point).normalize();
-                    return if hit.world.is_in_shadow(&hit.hit_point, &dir) {
-                        0.0
-                    } else {
-                        1.0
-                    };
-                });
+            .flat_map(|t| get_triangle_sampler(self.sample_points_sqrt, t))
+            .filter(|v| {
+                let dir = v.sub(hit.hit_point).normalize();
+                let d = distance(&self.location.to_point(), &hit.hit_point.to_point());
+                return !hit.world.is_in_shadow(&hit.hit_point, &dir, &|t| t < d);
             })
-            .sum::<f64>()
-            / weight;
+            .count() as f64;
+        return total / weight;
     }
 }

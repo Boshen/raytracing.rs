@@ -60,7 +60,12 @@ impl World {
         });
     }
 
-    pub fn is_in_shadow(&self, point: &Vec3, dir: &Vec3) -> bool {
+    pub fn is_in_shadow(
+        &self,
+        point: &Vec3,
+        dir: &Vec3,
+        test_distance: &dyn Fn(f64) -> bool,
+    ) -> bool {
         let shadow_ray = Ray::new(point.add(dir.mul(0.00001)), *dir);
         return self
             .models
@@ -74,6 +79,6 @@ impl World {
             })
             .filter(|m| m.aabb.intersects(&shadow_ray))
             .flat_map(|m| m.hittables.iter())
-            .any(|h| h.intersects(&shadow_ray).is_some());
+            .any(|h| h.intersects(&shadow_ray).map_or(false, test_distance));
     }
 }
