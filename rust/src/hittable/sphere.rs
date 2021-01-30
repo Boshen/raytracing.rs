@@ -13,10 +13,7 @@ pub struct Sphere {
 
 impl Sphere {
     pub fn new(radius: f64, center: Vec3, scale: f64) -> Sphere {
-        let mut sphere = Sphere {
-            radius: radius,
-            center: center,
-        };
+        let mut sphere = Sphere { radius, center };
         sphere.scale(scale);
         return sphere;
     }

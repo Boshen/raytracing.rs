@@ -48,13 +48,13 @@ impl World {
                 normal
             };
             let rayhit = RayHit {
-                ray: ray,
+                ray,
                 hit_point: point,
                 material: &model.material,
                 hittable: &hittable,
                 world: &self,
                 normal: adjusted_normal,
-                depth: depth,
+                depth,
             };
             return model.material.shade(&rayhit);
         });

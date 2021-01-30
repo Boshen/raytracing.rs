@@ -29,7 +29,7 @@ impl AreaLight {
             .div(points.len() as f64);
         return AreaLight {
             location,
-            triangles: triangles,
+            triangles,
             sample_points_sqrt: 5,
             material,
         };

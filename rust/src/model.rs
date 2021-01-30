@@ -19,8 +19,8 @@ impl Model {
             .map(|h| (h.get_min_point(), h.get_max_point()))
             .unzip();
         return Model {
-            material: material,
-            hittables: hittables,
+            material,
+            hittables,
             aabb: AABB::new(mins, maxs),
         };
     }
