@@ -7,18 +7,20 @@ use crate::material::Material;
 pub type Vec3 = Vector3<f64>;
 
 pub struct Model {
+    pub name: String,
     pub material: Box<Material>,
     pub hittables: Vec<Box<dyn Hittable>>,
     pub aabb: AABB,
 }
 
 impl Model {
-    pub fn new(material: Box<Material>, hittables: Vec<Box<dyn Hittable>>) -> Model {
+    pub fn new(name: String, material: Box<Material>, hittables: Vec<Box<dyn Hittable>>) -> Model {
         let (mins, maxs) = hittables
             .iter()
             .map(|h| (h.get_min_point(), h.get_max_point()))
             .unzip();
         return Model {
+            name,
             material,
             hittables,
             aabb: AABB::new(mins, maxs),

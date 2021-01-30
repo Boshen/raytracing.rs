@@ -32,8 +32,8 @@ impl Asset {
 
         let scale = 555.0;
 
-        for m in models.iter() {
-            let mesh = &m.mesh;
+        for model in models.iter() {
+            let mesh = &model.mesh;
             let mut vertices: Vec<Vec3> = vec![];
             for v in 0..mesh.positions.len() / 3 {
                 vertices.push(Vec3::new(
@@ -86,6 +86,7 @@ impl Asset {
                     }
 
                     asset.models.push(Model::new(
+                        model.name.clone(),
                         Box::new(material),
                         triangles
                             .into_iter()
