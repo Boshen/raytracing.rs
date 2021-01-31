@@ -81,7 +81,13 @@ impl Asset {
                         Material::Matte(Matte::new(ambient_brdf, diffuse_brdf))
                     };
                     if let Material::Emissive(emissive) = material {
-                        let arealight = AreaLight::new(triangles.clone(), emissive);
+                        let arealight = AreaLight::new(
+                            triangles
+                                .iter()
+                                .map(|t| Box::new(t.clone()) as Box<dyn Hittable>)
+                                .collect(),
+                            emissive,
+                        );
                         asset.lights.push(Box::new(arealight));
                     }
 
@@ -89,8 +95,8 @@ impl Asset {
                         model.name.clone(),
                         Box::new(material),
                         triangles
-                            .into_iter()
-                            .map(|t| Box::new(t) as Box<dyn Hittable>)
+                            .iter()
+                            .map(|t| Box::new(t.clone()) as Box<dyn Hittable>)
                             .collect(),
                     ));
                 }

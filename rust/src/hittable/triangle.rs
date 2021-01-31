@@ -1,5 +1,6 @@
+use crate::sampler::get_triangle_sampler;
 use nalgebra::{Cross, Dot, Norm};
-use std::ops::{Mul, Sub};
+use std::ops::{Add, Div, Mul, Sub};
 
 use crate::model::Vec3;
 use crate::ray::Ray;
@@ -56,6 +57,10 @@ impl Hittable for Triangle {
         return e2.cross(&e1).normalize();
     }
 
+    fn get_center(&self) -> Vec3 {
+        return self.0.add(self.1).add(self.2).div(3.0);
+    }
+
     fn get_min_point(&self) -> Vec3 {
         return Vec3::new(
             self.0.x.min(self.1.x).min(self.2.x),
@@ -70,6 +75,10 @@ impl Hittable for Triangle {
             self.0.y.max(self.1.y).max(self.2.y),
             self.0.z.max(self.1.z).max(self.2.z),
         );
+    }
+
+    fn get_samples(&self, sample_points_sqrt: u32) -> Vec<Vec3> {
+        return get_triangle_sampler(sample_points_sqrt, &self).collect();
     }
 
     fn scale(&mut self, l: f64) {

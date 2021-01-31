@@ -59,12 +59,20 @@ impl Hittable for Sphere {
         return p.sub(self.center).mul(1.0 / self.radius).normalize();
     }
 
+    fn get_center(&self) -> Vec3 {
+        return self.center;
+    }
+
     fn get_min_point(&self) -> Vec3 {
         return self.center.sub(self.radius);
     }
 
     fn get_max_point(&self) -> Vec3 {
         return self.center.add(self.radius);
+    }
+
+    fn get_samples(&self, _sample_points_sqrt: u32) -> Vec<Vec3> {
+        return vec![];
     }
 
     fn scale(&mut self, l: f64) {

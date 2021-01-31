@@ -11,6 +11,8 @@ pub trait Hittable: Send + Sync {
     fn scale(&mut self, l: f64) -> ();
     fn intersects(&self, ray: &Ray) -> Option<f64>;
     fn normal(&self, p: &Vec3) -> Vec3;
+    fn get_center(&self) -> Vec3;
     fn get_min_point(&self) -> Vec3;
     fn get_max_point(&self) -> Vec3;
+    fn get_samples(&self, sample_points_sqrt: u32) -> Vec<Vec3>;
 }
