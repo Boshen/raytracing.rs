@@ -3,6 +3,7 @@ use num_traits::identities::Zero;
 use std::ops::{Add, Mul};
 
 use crate::color::Color;
+use crate::geometric_object::GeometricObject;
 use crate::light::Light;
 use crate::material::Material;
 use crate::model::{Model, Vec3};
@@ -32,7 +33,9 @@ impl World {
                     .map(move |geometric_object| (model, geometric_object))
             })
             .filter_map(|(model, geometric_object)| {
-                geometric_object.intersects(ray).map(|dist| (dist, model, geometric_object))
+                geometric_object
+                    .intersects(ray)
+                    .map(|dist| (dist, model, geometric_object))
             })
             .min_by(|t1, t2| (t1.0).partial_cmp(&t2.0).expect("Tried to compare a NaN"));
 

@@ -2,7 +2,7 @@ extern crate tobj;
 
 use crate::brdf::Lambertian;
 use crate::color::Color;
-use crate::geometric_object::{GeometricObject, Triangle};
+use crate::geometric_object::{Geometry, Triangle};
 use crate::light::{AreaLight, Light};
 use crate::material::{Emissive, Material, Matte};
 use crate::model::{Model, Vec3};
@@ -43,7 +43,7 @@ impl Asset {
                 ));
             }
 
-            let mut triangles: Vec<Triangle> = vec![];
+            let mut triangles: Vec<Geometry> = vec![];
             let mut next_face = 0;
 
             for f in 0..mesh.num_face_indices.len() {
@@ -55,7 +55,7 @@ impl Asset {
                     vertices[*face_indices[2] as usize],
                     scale,
                 );
-                triangles.push(triangle);
+                triangles.push(Geometry::from(triangle));
                 next_face = end;
             }
 
@@ -81,23 +81,14 @@ impl Asset {
                         Material::Matte(Matte::new(ambient_brdf, diffuse_brdf))
                     };
                     if let Material::Emissive(emissive) = material {
-                        let arealight = AreaLight::new(
-                            triangles
-                                .iter()
-                                .map(|t| Box::new(*t) as Box<dyn GeometricObject>)
-                                .collect(),
-                            emissive,
-                        );
+                        let arealight = AreaLight::new(triangles.clone(), emissive);
                         asset.lights.push(Box::new(arealight));
                     }
 
                     asset.models.push(Model::new(
                         model.name.clone(),
                         Box::new(material),
-                        triangles
-                            .iter()
-                            .map(|t| Box::new(*t) as Box<dyn GeometricObject>)
-                            .collect(),
+                        triangles.clone(),
                     ));
                 }
             };

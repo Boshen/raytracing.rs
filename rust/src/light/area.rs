@@ -3,7 +3,7 @@ use num_traits::identities::Zero;
 use std::ops::{Add, Div, Sub};
 
 use crate::color::Color;
-use crate::geometric_object::GeometricObject;
+use crate::geometric_object::{GeometricObject, Geometry};
 use crate::light::Light;
 use crate::material::Emissive;
 use crate::model::Vec3;
@@ -11,13 +11,13 @@ use crate::ray::RayHit;
 
 pub struct AreaLight {
     center: Vec3,
-    geometric_objects: Vec<Box<dyn GeometricObject>>,
+    geometric_objects: Vec<Geometry>,
     sample_points_sqrt: u32,
     pub material: Emissive,
 }
 
 impl AreaLight {
-    pub fn new(geometric_objects: Vec<Box<dyn GeometricObject>>, material: Emissive) -> AreaLight {
+    pub fn new(geometric_objects: Vec<Geometry>, material: Emissive) -> AreaLight {
         let center = geometric_objects
             .iter()
             .map(|h| h.get_center())

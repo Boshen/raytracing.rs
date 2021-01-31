@@ -6,6 +6,7 @@ use crate::ray::Ray;
 
 use crate::geometric_object::GeometricObject;
 
+#[derive(Copy, Clone)]
 pub struct Sphere {
     radius: f64,
     center: Vec3,
