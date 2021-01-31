@@ -50,7 +50,7 @@ impl Light for AreaLight {
             .flat_map(|t| t.get_samples(self.sample_points_sqrt))
             .filter(|point_on_light| {
                 let wi = point_on_light.sub(hit.hit_point).normalize(); // light direction
-                let d = distance(&point_on_light.to_point(), &hit.hit_point.to_point());
+                let d = distance(point_on_light.as_point(), hit.hit_point.as_point());
                 return !hit.world.is_in_shadow(&hit.hit_point, &wi, &|t| t < d);
             })
             .count() as f64;

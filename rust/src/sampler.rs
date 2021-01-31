@@ -30,7 +30,7 @@ pub fn get_hemisphere_sampler(n: u32) -> impl Iterator<Item = Vec3> {
         let phi = 2.0 * std::f64::consts::PI * x;
         let cos_phi = phi.cos();
         let sin_phi = phi.sin();
-        let cos_theta = (1.0 - y).powf(1.0 / (e + 1.0));
+        let cos_theta = (1.0 - y).powf((e + 1.0 as f64).recip());
         let sin_theta = (1.0 - cos_theta * cos_theta).sqrt();
         return Vec3::new(sin_theta * cos_phi, sin_theta * sin_phi, cos_theta);
     });

@@ -37,19 +37,15 @@ impl World {
             .min_by(|t1, t2| (t1.0).partial_cmp(&t2.0).expect("Tried to compare a NaN"));
 
         return intersection.map_or(Color::zero(), |(distance, model, hittable)| {
-            let point = ray.get_point(distance);
+            let hit_point = ray.get_point(distance);
 
-            let normal = hittable.normal(&point);
-            // revert normal if we hit the inside surface
+            let normal = hittable.normal(&hit_point);
             let wo = ray.dir.mul(-1.0).normalize();
-            let adjusted_normal = if normal.dot(&wo) < 1.0 {
-                normal.mul(-1.0)
-            } else {
-                normal
-            };
+            // revert normal if we hit the inside surface
+            let adjusted_normal = normal.mul(normal.dot(&wo).signum());
             let rayhit = RayHit {
                 ray,
-                hit_point: point,
+                hit_point,
                 material: &model.material,
                 hittable: &hittable,
                 world: &self,

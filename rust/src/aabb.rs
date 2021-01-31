@@ -25,7 +25,7 @@ impl AABB {
     // https://tavianator.com/2015/ray_box_nan.html
     pub fn intersects(&self, ray: &Ray) -> bool {
         let origin = [ray.origin.x, ray.origin.y, ray.origin.z];
-        let inv_dir = [1.0 / ray.dir.x, 1.0 / ray.dir.y, 1.0 / ray.dir.z];
+        let inv_dir = [ray.dir.x.recip(), ray.dir.y.recip(), ray.dir.z.recip()];
 
         let mut t1 = (self.min[0] - origin[0]) * inv_dir[0];
         let mut t2 = (self.max[0] - origin[0]) * inv_dir[0];
