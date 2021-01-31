@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+
 use image::RgbImage;
 use std::error::Error;
 
