@@ -4,7 +4,7 @@ use std::ops::{Add, Mul, Sub};
 use crate::model::Vec3;
 use crate::ray::Ray;
 
-use crate::hittable::Hittable;
+use crate::geometric_object::GeometricObject;
 
 pub struct Sphere {
     radius: f64,
@@ -19,7 +19,7 @@ impl Sphere {
     }
 }
 
-impl Hittable for Sphere {
+impl GeometricObject for Sphere {
     fn intersects(&self, ray: &Ray) -> Option<f64> {
         let center = self.center;
         let radius = self.radius;

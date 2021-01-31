@@ -2,7 +2,7 @@ use rand::distributions::Standard;
 use rand::{thread_rng, Rng};
 use std::ops::{Add, Mul, Sub};
 
-use crate::hittable::Triangle;
+use crate::geometric_object::Triangle;
 use crate::model::Vec3;
 
 pub fn get_unit_square_sampler(n: u32) -> impl Iterator<Item = (f64, f64)> {

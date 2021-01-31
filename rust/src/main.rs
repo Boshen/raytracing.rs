@@ -9,7 +9,7 @@ mod asset;
 mod brdf;
 mod camera;
 mod color;
-mod hittable;
+mod geometric_object;
 mod light;
 mod material;
 mod model;

@@ -1,7 +1,7 @@
 use std::ops::Add;
 use std::ops::Mul;
 
-use crate::hittable::Hittable;
+use crate::geometric_object::GeometricObject;
 use crate::material::Material;
 use crate::model::Vec3;
 use crate::world::World;
@@ -25,7 +25,7 @@ pub struct RayHit<'a> {
     pub ray: &'a Ray,
     pub hit_point: Vec3,
     pub material: &'a Material,
-    pub hittable: &'a Box<dyn Hittable>,
+    pub geometric_object: &'a Box<dyn GeometricObject>,
     pub world: &'a World,
     pub normal: Vec3,
     pub depth: i32,

@@ -2,7 +2,7 @@ extern crate tobj;
 
 use crate::brdf::Lambertian;
 use crate::color::Color;
-use crate::hittable::{Hittable, Triangle};
+use crate::geometric_object::{GeometricObject, Triangle};
 use crate::light::{AreaLight, Light};
 use crate::material::{Emissive, Material, Matte};
 use crate::model::{Model, Vec3};
@@ -84,7 +84,7 @@ impl Asset {
                         let arealight = AreaLight::new(
                             triangles
                                 .iter()
-                                .map(|t| Box::new(*t) as Box<dyn Hittable>)
+                                .map(|t| Box::new(*t) as Box<dyn GeometricObject>)
                                 .collect(),
                             emissive,
                         );
@@ -96,7 +96,7 @@ impl Asset {
                         Box::new(material),
                         triangles
                             .iter()
-                            .map(|t| Box::new(*t) as Box<dyn Hittable>)
+                            .map(|t| Box::new(*t) as Box<dyn GeometricObject>)
                             .collect(),
                     ));
                 }

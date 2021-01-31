@@ -27,19 +27,19 @@ impl World {
             .filter(|model| model.aabb.intersects(&ray))
             .flat_map(|model| {
                 model
-                    .hittables
+                    .geometric_objects
                     .iter()
-                    .map(move |hittable| (model, hittable))
+                    .map(move |geometric_object| (model, geometric_object))
             })
-            .filter_map(|(model, hittable)| {
-                hittable.intersects(ray).map(|dist| (dist, model, hittable))
+            .filter_map(|(model, geometric_object)| {
+                geometric_object.intersects(ray).map(|dist| (dist, model, geometric_object))
             })
             .min_by(|t1, t2| (t1.0).partial_cmp(&t2.0).expect("Tried to compare a NaN"));
 
-        intersection.map_or(Color::zero(), |(distance, model, hittable)| {
+        intersection.map_or(Color::zero(), |(distance, model, geometric_object)| {
             let hit_point = ray.get_point(distance);
 
-            let normal = hittable.normal(&hit_point);
+            let normal = geometric_object.normal(&hit_point);
             let wo = ray.dir.mul(-1.0).normalize();
             // revert normal if we hit the inside surface
             let adjusted_normal = normal.mul(normal.dot(&wo).signum());
@@ -47,7 +47,7 @@ impl World {
                 ray,
                 hit_point,
                 material: &model.material,
-                hittable,
+                geometric_object,
                 world: &self,
                 normal: adjusted_normal,
                 depth,
@@ -68,7 +68,7 @@ impl World {
             .iter()
             .filter(|m| !matches!(*m.material, Material::Emissive(_)))
             .filter(|m| m.aabb.intersects(&shadow_ray))
-            .flat_map(|m| m.hittables.iter())
+            .flat_map(|m| m.geometric_objects.iter())
             .any(|h| h.intersects(&shadow_ray).map_or(false, test_distance));
     }
 }

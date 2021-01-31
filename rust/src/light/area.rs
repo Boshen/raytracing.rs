@@ -3,7 +3,7 @@ use num_traits::identities::Zero;
 use std::ops::{Add, Div, Sub};
 
 use crate::color::Color;
-use crate::hittable::Hittable;
+use crate::geometric_object::GeometricObject;
 use crate::light::Light;
 use crate::material::Emissive;
 use crate::model::Vec3;
@@ -11,21 +11,21 @@ use crate::ray::RayHit;
 
 pub struct AreaLight {
     center: Vec3,
-    hittables: Vec<Box<dyn Hittable>>,
+    geometric_objects: Vec<Box<dyn GeometricObject>>,
     sample_points_sqrt: u32,
     pub material: Emissive,
 }
 
 impl AreaLight {
-    pub fn new(hittables: Vec<Box<dyn Hittable>>, material: Emissive) -> AreaLight {
-        let center = hittables
+    pub fn new(geometric_objects: Vec<Box<dyn GeometricObject>>, material: Emissive) -> AreaLight {
+        let center = geometric_objects
             .iter()
             .map(|h| h.get_center())
             .fold(Vec3::zero(), |a, b| a.add(b))
-            .div(hittables.len() as f64);
+            .div(geometric_objects.len() as f64);
         return AreaLight {
             center,
-            hittables,
+            geometric_objects,
             sample_points_sqrt: 5,
             material,
         };
@@ -43,9 +43,9 @@ impl Light for AreaLight {
 
     fn shadow_amount(&self, hit: &RayHit) -> f64 {
         let sqrt = self.sample_points_sqrt as f64;
-        let weight = sqrt * sqrt * self.hittables.len() as f64;
+        let weight = sqrt * sqrt * self.geometric_objects.len() as f64;
         let total = self
-            .hittables
+            .geometric_objects
             .iter()
             .flat_map(|t| t.get_samples(self.sample_points_sqrt))
             .filter(|point_on_light| {

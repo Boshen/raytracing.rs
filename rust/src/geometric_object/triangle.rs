@@ -5,7 +5,7 @@ use std::ops::{Add, Div, Mul, Sub};
 use crate::model::Vec3;
 use crate::ray::Ray;
 
-use crate::hittable::Hittable;
+use crate::geometric_object::GeometricObject;
 
 #[derive(Copy, Clone)]
 pub struct Triangle(pub Vec3, pub Vec3, pub Vec3);
@@ -18,7 +18,7 @@ impl Triangle {
     }
 }
 
-impl Hittable for Triangle {
+impl GeometricObject for Triangle {
     fn intersects(&self, ray: &Ray) -> Option<f64> {
         let epsilon = 0.000001;
         let e1 = self.1.sub(self.0);
