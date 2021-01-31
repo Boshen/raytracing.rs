@@ -15,7 +15,7 @@ pub struct Object {
 }
 
 pub struct Asset {
-    pub objects: Vec<Box<Object>>,
+    pub objects: Vec<Object>,
     pub models: Vec<Model>,
     pub lights: Vec<Box<dyn Light>>,
 }
@@ -84,7 +84,7 @@ impl Asset {
                         let arealight = AreaLight::new(
                             triangles
                                 .iter()
-                                .map(|t| Box::new(t.clone()) as Box<dyn Hittable>)
+                                .map(|t| Box::new(*t) as Box<dyn Hittable>)
                                 .collect(),
                             emissive,
                         );
@@ -96,7 +96,7 @@ impl Asset {
                         Box::new(material),
                         triangles
                             .iter()
-                            .map(|t| Box::new(t.clone()) as Box<dyn Hittable>)
+                            .map(|t| Box::new(*t) as Box<dyn Hittable>)
                             .collect(),
                     ));
                 }

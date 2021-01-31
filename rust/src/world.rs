@@ -36,7 +36,7 @@ impl World {
             })
             .min_by(|t1, t2| (t1.0).partial_cmp(&t2.0).expect("Tried to compare a NaN"));
 
-        return intersection.map_or(Color::zero(), |(distance, model, hittable)| {
+        intersection.map_or(Color::zero(), |(distance, model, hittable)| {
             let hit_point = ray.get_point(distance);
 
             let normal = hittable.normal(&hit_point);
@@ -47,13 +47,13 @@ impl World {
                 ray,
                 hit_point,
                 material: &model.material,
-                hittable: &hittable,
+                hittable,
                 world: &self,
                 normal: adjusted_normal,
                 depth,
             };
-            return model.material.shade(&rayhit);
-        });
+            model.material.shade(&rayhit)
+        })
     }
 
     pub fn is_in_shadow(
@@ -66,13 +66,7 @@ impl World {
         return self
             .models
             .iter()
-            .filter(|m| {
-                if let Material::Emissive(_) = *m.material {
-                    false
-                } else {
-                    true
-                }
-            })
+            .filter(|m| !matches!(*m.material, Material::Emissive(_)))
             .filter(|m| m.aabb.intersects(&shadow_ray))
             .flat_map(|m| m.hittables.iter())
             .any(|h| h.intersects(&shadow_ray).map_or(false, test_distance));

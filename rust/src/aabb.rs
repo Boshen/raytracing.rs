@@ -44,7 +44,7 @@ impl AABB {
     }
 }
 
-fn f(xs: &Vec<Vec3>, acc: &dyn Fn(&Vec3) -> f64, map: &dyn Fn(f64, f64) -> f64) -> f64 {
+fn f(xs: &[Vec3], acc: &dyn Fn(&Vec3) -> f64, map: &dyn Fn(f64, f64) -> f64) -> f64 {
     return xs
         .iter()
         .map(|x| acc(&x))
