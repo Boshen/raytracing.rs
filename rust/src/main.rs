@@ -19,19 +19,19 @@ mod world;
 
 use crate::asset::Asset;
 use crate::camera::Camera;
-use crate::light::{AmbientLight, AmbientOcculuder, Light};
+use crate::light::{AmbientLight, AmbientOcculuder, LightEnum};
 use crate::model::Vec3;
 use crate::world::World;
 
 fn main() -> Result<(), Box<dyn Error>> {
     let asset = Asset::new("../assets/cornell_box.obj");
 
-    let ambient_light = Box::new(AmbientLight {
+    let ambient_light = AmbientLight {
         ls: 0.1,
         cl: Vec3::new(1.0, 1.0, 1.0),
-    });
+    };
 
-    let lights: Vec<Box<dyn Light>> = vec![Box::new(AmbientOcculuder {
+    let lights: Vec<LightEnum> = vec![LightEnum::from(AmbientOcculuder {
         ls: 1.0,
         cl: Vec3::new(1.0, 1.0, 1.0),
         sample_points_sqrt: 16,
@@ -41,7 +41,10 @@ fn main() -> Result<(), Box<dyn Error>> {
         width: 500,
         height: 500,
         models: asset.models,
-        lights: lights.into_iter().chain(asset.lights.into_iter()).collect(),
+        lights: lights
+            .into_iter()
+            .chain(asset.lights.into_iter())
+            .collect::<Vec<LightEnum>>(),
         ambient_light,
     };
 

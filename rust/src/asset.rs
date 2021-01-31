@@ -3,7 +3,7 @@ extern crate tobj;
 use crate::brdf::Lambertian;
 use crate::color::Color;
 use crate::geometric_object::{Geometry, Triangle};
-use crate::light::{AreaLight, Light};
+use crate::light::{AreaLight, LightEnum};
 use crate::material::{Emissive, Material, Matte};
 use crate::model::{Model, Vec3};
 
@@ -17,7 +17,7 @@ pub struct Object {
 pub struct Asset {
     pub objects: Vec<Object>,
     pub models: Vec<Model>,
-    pub lights: Vec<Box<dyn Light>>,
+    pub lights: Vec<LightEnum>,
 }
 
 impl Asset {
@@ -82,7 +82,7 @@ impl Asset {
                     };
                     if let Material::Emissive(emissive) = material {
                         let arealight = AreaLight::new(triangles.clone(), emissive);
-                        asset.lights.push(Box::new(arealight));
+                        asset.lights.push(LightEnum::from(arealight));
                     }
 
                     asset.models.push(Model::new(

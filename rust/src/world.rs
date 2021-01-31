@@ -4,7 +4,7 @@ use std::ops::{Add, Mul};
 
 use crate::color::Color;
 use crate::geometric_object::GeometricObject;
-use crate::light::Light;
+use crate::light::{AmbientLight, LightEnum};
 use crate::material::Material;
 use crate::model::{Model, Vec3};
 use crate::ray::{Ray, RayHit};
@@ -12,9 +12,9 @@ use crate::ray::{Ray, RayHit};
 pub struct World {
     pub width: u32,
     pub height: u32,
-    pub lights: Vec<Box<dyn Light>>,
+    pub lights: Vec<LightEnum>,
     pub models: Vec<Model>,
-    pub ambient_light: Box<dyn Light>,
+    pub ambient_light: AmbientLight,
 }
 
 impl World {
