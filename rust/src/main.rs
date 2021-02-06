@@ -57,11 +57,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let camera = Camera::new(Vec3::new(0.0, 0.0, -3.0), Vec3::new(0.0, 0.0, 0.0), 500.0);
 
-    let pixels = camera
-        .render_scence(&world)
-        .into_iter()
-        .flat_map(|(r, g, b)| vec![r, g, b])
-        .collect();
+    let pixels = camera.render_scence(&world);
 
     RgbImage::from_vec(vp.hres, vp.vres, pixels)
         .unwrap()
