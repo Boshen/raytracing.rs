@@ -19,7 +19,7 @@ mod view_plane;
 mod world;
 
 use crate::asset::Asset;
-use crate::camera::Camera;
+use crate::camera::{Camera, SimpleCamera};
 use crate::light::{AmbientLight, AmbientOcculuder, LightEnum};
 use crate::model::Vec3;
 use crate::view_plane::ViewPlane;
@@ -55,9 +55,9 @@ fn main() -> Result<(), Box<dyn Error>> {
         ambient_light,
     };
 
-    let camera = Camera::new(Vec3::new(0.0, 0.0, -3.0), Vec3::new(0.0, 0.0, 0.0), 500.0);
+    let camera = SimpleCamera::new(Vec3::new(0.0, 0.0, -3.0), Vec3::new(0.0, 0.0, 0.0), 500.0);
 
-    let pixels = camera.render_scence(&world);
+    let pixels = camera.render_scene(&world);
 
     RgbImage::from_vec(vp.hres, vp.vres, pixels)
         .unwrap()

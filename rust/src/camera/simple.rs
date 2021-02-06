@@ -3,13 +3,14 @@ use num_traits::identities::Zero;
 use rayon::prelude::*;
 use std::ops::{Add, Div, Mul, Sub};
 
+use crate::camera::Camera;
 use crate::color::{to_rgb, Color};
 use crate::model::Vec3;
 use crate::ray::Ray;
 use crate::sampler::get_unit_square_sampler;
 use crate::world::World;
 
-pub struct Camera {
+pub struct SimpleCamera {
     sample_points_sqrt: u32,
     up: Vec3,
     eye: Vec3,
@@ -19,40 +20,8 @@ pub struct Camera {
     view_distance: f64,
 }
 
-impl Default for Camera {
-    fn default() -> Camera {
-        let empty = Vec3::zero();
-        Camera {
-            sample_points_sqrt: 1,
-            up: Vec3::new(0.0, 1.0, 0.0),
-            eye: empty,
-            u: empty,
-            v: empty,
-            w: empty,
-            view_distance: 500.0,
-        }
-    }
-}
-
-impl Camera {
-    pub fn new(eye: Vec3, lookat: Vec3, view_distance: f64) -> Camera {
-        let camera = Camera {
-            ..Default::default()
-        };
-        let w = eye.sub(lookat).normalize();
-        let u = camera.up.cross(&w).normalize();
-        let v = w.cross(&u).normalize();
-        Camera {
-            eye,
-            w,
-            u,
-            v,
-            view_distance,
-            ..camera
-        }
-    }
-
-    pub fn render_scence(&self, world: &World) -> Vec<u8> {
+impl Camera for SimpleCamera {
+    fn render_scene(&self, world: &World) -> Vec<u8> {
         let hres = world.vp.hres;
         let vres = world.vp.vres;
         let pixel_size = world.vp.pixel_size;
@@ -65,6 +34,24 @@ impl Camera {
                 to_rgb(&self.antialias(world, x, y))
             })
             .collect()
+    }
+}
+
+impl SimpleCamera {
+    pub fn new(eye: Vec3, lookat: Vec3, view_distance: f64) -> SimpleCamera {
+        let up = Vec3::new(0.0, 1.0, 0.0);
+        let w = eye.sub(lookat).normalize();
+        let u = up.cross(&w).normalize();
+        let v = w.cross(&u).normalize();
+        SimpleCamera {
+            eye,
+            w,
+            u,
+            v,
+            up,
+            view_distance,
+            sample_points_sqrt: 1,
+        }
     }
 
     fn antialias(&self, world: &World, x: f64, y: f64) -> Color {
