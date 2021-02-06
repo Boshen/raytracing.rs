@@ -24,13 +24,9 @@ impl Light for PointLight {
     fn shadow_amount(&self, hit: &RayHit) -> f64 {
         let direction = self.location.sub(hit.hit_point).normalize();
         let d = distance(&self.location.to_point(), &hit.hit_point.to_point());
-        if hit
+        let b = hit
             .world
-            .is_in_shadow(&hit.hit_point, &direction, &|t| t < d)
-        {
-            0.0
-        } else {
-            1.0
-        }
+            .is_in_shadow(&hit.hit_point, &direction, &|t| t < d);
+        f64::from(u32::from(!b))
     }
 }

@@ -35,11 +35,11 @@ impl Light for AmbientOcculuder {
 
     fn shadow_amount(&self, hit: &RayHit) -> f64 {
         let (u, v, w) = self.uvw(hit);
-        let sample_points = self.sample_points_sqrt * self.sample_points_sqrt;
-        get_hemisphere_sampler(self.sample_points_sqrt)
+        let sample_points = (self.sample_points_sqrt * self.sample_points_sqrt) as f64;
+        let total = get_hemisphere_sampler(self.sample_points_sqrt)
             .map(|sp| u.mul(sp.x).add(v.mul(sp.y)).add(w.mul(sp.z)).normalize())
             .filter(|dir| !hit.world.is_in_shadow(&hit.hit_point, &dir, &|_| true))
-            .count() as f64
-            / sample_points as f64
+            .count() as f64;
+        total / sample_points
     }
 }

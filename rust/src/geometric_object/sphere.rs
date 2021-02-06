@@ -1,10 +1,10 @@
 use nalgebra::Norm;
-use std::ops::{Add, Mul, Sub};
-
-use crate::model::Vec3;
-use crate::ray::Ray;
+use num_traits::One;
+use std::ops::{Add, Mul, MulAssign, Sub, SubAssign};
 
 use crate::geometric_object::GeometricObject;
+use crate::model::Vec3;
+use crate::ray::Ray;
 
 #[derive(Copy, Clone)]
 pub struct Sphere {
@@ -77,10 +77,9 @@ impl GeometricObject for Sphere {
     }
 
     fn scale(&mut self, l: f64) {
-        self.center = self.center.mul(2.0 / l);
-        self.center = self.center.sub(Vec3::new(1.0, 1.0, 1.0));
-        self.center.x = -self.center.x;
-        self.center.y = -self.center.y;
+        self.center.mul_assign(2.0 / l);
+        self.center.sub_assign(Vec3::one());
+        self.center.mul_assign(-1.0);
         self.radius = (self.radius * 2.0) / l;
     }
 }
