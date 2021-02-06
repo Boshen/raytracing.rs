@@ -1,10 +1,10 @@
 extern crate tobj;
 
-use crate::brdf::Lambertian;
+use crate::brdf::{GlossySpecular, Lambertian, PerfectSpecular};
 use crate::color::Color;
-use crate::geometric_object::{Geometry, Triangle};
+use crate::geometric_object::{Geometry, Sphere, Triangle};
 use crate::light::{AreaLight, LightEnum};
-use crate::material::{Emissive, Material, Matte};
+use crate::material::{Emissive, Material, Matte, Reflective};
 use crate::model::{Model, Vec3};
 
 #[derive(Clone)]
@@ -93,6 +93,21 @@ impl Asset {
                 }
             };
         }
+
+        asset.models.push(Model::new(
+            "sphere".to_string(),
+            Box::new(Material::Reflective(Reflective::new(
+                Lambertian::new(0.1, Color::new(1.0, 1.0, 1.0)),
+                Lambertian::new(0.1, Color::new(1.0, 1.0, 1.0)),
+                GlossySpecular::new(0.2, 2.0),
+                PerfectSpecular::new(0.5, Color::new(1.0, 1.0, 1.0)),
+            ))),
+            vec![Geometry::from(Sphere::new(
+                40.0,
+                Vec3::new(400.0, 40.0, 500.0),
+                scale,
+            ))],
+        ));
         asset
     }
 }

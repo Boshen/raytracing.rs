@@ -46,7 +46,7 @@ impl CameraSetting {
             v,
             up,
             view_plane_distance,
-            sample_points_sqrt: 2,
+            sample_points_sqrt: 4,
         }
     }
 }
