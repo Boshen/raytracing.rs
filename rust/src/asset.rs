@@ -93,6 +93,6 @@ impl Asset {
                 }
             };
         }
-        return asset;
+        asset
     }
 }

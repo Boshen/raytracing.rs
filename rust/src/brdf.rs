@@ -31,33 +31,33 @@ pub struct PerfectSpecular {
 
 impl Lambertian {
     pub fn new(kd: f64, cd: Color) -> Lambertian {
-        return Lambertian { kd, cd };
+        Lambertian { kd, cd }
     }
 }
 
 impl PerfectSpecular {
     pub fn new(kr: f64, cr: Color) -> PerfectSpecular {
-        return PerfectSpecular { kr, cr };
+        PerfectSpecular { kr, cr }
     }
 }
 
 impl GlossySpecular {
     pub fn new(ks: f64, exp: f64) -> GlossySpecular {
-        return GlossySpecular { ks, exp };
+        GlossySpecular { ks, exp }
     }
 }
 
 impl BRDF for Lambertian {
     fn f(&self, _hit: &RayHit, _wo: &Vec3, _wi: &Vec3) -> Color {
-        return self.rho().div(std::f64::consts::PI);
+        self.rho().div(std::f64::consts::PI)
     }
 
     fn rho(&self) -> Color {
-        return self.cd.mul(self.kd);
+        self.cd.mul(self.kd)
     }
 
     fn sample_f(&self, _hit: &RayHit, _wo: &Vec3, _wi: &Vec3) -> Color {
-        return Color::zero();
+        Color::zero()
     }
 }
 
@@ -70,28 +70,28 @@ impl BRDF for GlossySpecular {
             return Color::zero();
         }
         let s = self.ks * rdotwo.powf(self.exp);
-        return Color::new(s, s, s);
+        Color::new(s, s, s)
     }
 
     fn rho(&self) -> Color {
-        return Color::zero(); // is black for GlossySpecular
+        Color::zero() // is black for GlossySpecular
     }
 
     fn sample_f(&self, _hit: &RayHit, _wo: &Vec3, _wi: &Vec3) -> Color {
-        return Color::zero();
+        Color::zero()
     }
 }
 
 impl BRDF for PerfectSpecular {
     fn f(&self, _hit: &RayHit, _wo: &Vec3, _wi: &Vec3) -> Color {
-        return Color::zero(); // is black for PerfectSpecular
+        Color::zero() // is black for PerfectSpecular
     }
 
     fn rho(&self) -> Color {
-        return Color::zero(); // is black for PerfectSpecular
+        Color::zero() // is black for PerfectSpecular
     }
 
     fn sample_f(&self, hit: &RayHit, _wo: &Vec3, wi: &Vec3) -> Color {
-        return self.cr.mul(self.kr).div(hit.normal.dot(&wi));
+        self.cr.mul(self.kr).div(hit.normal.dot(&wi))
     }
 }

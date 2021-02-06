@@ -66,12 +66,11 @@ impl World {
         test_distance: &dyn Fn(f64) -> bool,
     ) -> bool {
         let shadow_ray = Ray::new(point.add(dir.mul(0.00001)), *dir);
-        return self
-            .models
+        self.models
             .iter()
             .filter(|m| !matches!(*m.material, Material::Emissive(_)))
             .filter(|m| m.aabb.intersects(&shadow_ray))
             .flat_map(|m| m.geometric_objects.iter())
-            .any(|h| h.intersects(&shadow_ray).map_or(false, test_distance));
+            .any(|h| h.intersects(&shadow_ray).map_or(false, test_distance))
     }
 }

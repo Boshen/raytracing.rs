@@ -14,7 +14,7 @@ impl Triangle {
     pub fn new(x: Vec3, y: Vec3, z: Vec3, scale: f64) -> Triangle {
         let mut triangle = Triangle(x, y, z);
         triangle.scale(scale);
-        return triangle;
+        triangle
     }
 }
 
@@ -48,37 +48,37 @@ impl GeometricObject for Triangle {
             return None;
         }
 
-        return Some(t);
+        Some(t)
     }
 
     fn normal(&self, _p: &Vec3) -> Vec3 {
         let e1 = self.1.sub(self.0);
         let e2 = self.2.sub(self.0);
-        return e2.cross(&e1).normalize();
+        e2.cross(&e1).normalize()
     }
 
     fn get_center(&self) -> Vec3 {
-        return self.0.add(self.1).add(self.2).div(3.0);
+        self.0.add(self.1).add(self.2).div(3.0)
     }
 
     fn get_min_point(&self) -> Vec3 {
-        return Vec3::new(
+        Vec3::new(
             self.0.x.min(self.1.x).min(self.2.x),
             self.0.y.min(self.1.y).min(self.2.y),
             self.0.z.min(self.1.z).min(self.2.z),
-        );
+        )
     }
 
     fn get_max_point(&self) -> Vec3 {
-        return Vec3::new(
+        Vec3::new(
             self.0.x.max(self.1.x).max(self.2.x),
             self.0.y.max(self.1.y).max(self.2.y),
             self.0.z.max(self.1.z).max(self.2.z),
-        );
+        )
     }
 
     fn get_samples(&self, sample_points_sqrt: u32) -> Vec<Vec3> {
-        return get_triangle_sampler(sample_points_sqrt, &self).collect();
+        get_triangle_sampler(sample_points_sqrt, &self).collect()
     }
 
     fn scale(&mut self, l: f64) {

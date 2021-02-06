@@ -14,23 +14,23 @@ pub struct PointLight {
 
 impl Light for PointLight {
     fn get_direction(&self, hit: &RayHit) -> Vec3 {
-        return self.location.sub(hit.hit_point).normalize();
+        self.location.sub(hit.hit_point).normalize()
     }
 
     fn radiance(&self, _hit: &RayHit) -> Color {
-        return self.cl.mul(self.ls);
+        self.cl.mul(self.ls)
     }
 
     fn shadow_amount(&self, hit: &RayHit) -> f64 {
         let direction = self.location.sub(hit.hit_point).normalize();
         let d = distance(&self.location.to_point(), &hit.hit_point.to_point());
-        return if hit
+        if hit
             .world
             .is_in_shadow(&hit.hit_point, &direction, &|t| t < d)
         {
             0.0
         } else {
             1.0
-        };
+        }
     }
 }

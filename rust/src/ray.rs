@@ -13,11 +13,11 @@ pub struct Ray {
 
 impl Ray {
     pub fn new(origin: Vec3, dir: Vec3) -> Ray {
-        return Ray { origin, dir };
+        Ray { origin, dir }
     }
 
     pub fn get_point(&self, distance: f64) -> Vec3 {
-        return self.origin.add(self.dir.mul(distance));
+        self.origin.add(self.dir.mul(distance))
     }
 }
 

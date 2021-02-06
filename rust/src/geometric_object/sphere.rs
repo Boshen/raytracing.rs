@@ -16,7 +16,7 @@ impl Sphere {
     pub fn new(radius: f64, center: Vec3, scale: f64) -> Sphere {
         let mut sphere = Sphere { radius, center };
         sphere.scale(scale);
-        return sphere;
+        sphere
     }
 }
 
@@ -53,27 +53,27 @@ impl GeometricObject for Sphere {
             return None;
         }
 
-        return Some(t);
+        Some(t)
     }
 
     fn normal(&self, p: &Vec3) -> Vec3 {
-        return p.sub(self.center).mul(1.0 / self.radius).normalize();
+        p.sub(self.center).mul(1.0 / self.radius).normalize()
     }
 
     fn get_center(&self) -> Vec3 {
-        return self.center;
+        self.center
     }
 
     fn get_min_point(&self) -> Vec3 {
-        return self.center.sub(self.radius);
+        self.center.sub(self.radius)
     }
 
     fn get_max_point(&self) -> Vec3 {
-        return self.center.add(self.radius);
+        self.center.add(self.radius)
     }
 
     fn get_samples(&self, _sample_points_sqrt: u32) -> Vec<Vec3> {
-        return vec![];
+        vec![]
     }
 
     fn scale(&mut self, l: f64) {

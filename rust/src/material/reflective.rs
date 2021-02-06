@@ -14,11 +14,11 @@ impl Reflective {
         specular_brdf: GlossySpecular,
         reflective_brdf: PerfectSpecular,
     ) -> Reflective {
-        return Reflective {
+        Reflective {
             ambient_brdf,
             diffuse_brdf,
             specular_brdf,
             reflective_brdf,
-        };
+        }
     }
 }

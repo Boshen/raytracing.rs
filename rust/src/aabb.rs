@@ -8,7 +8,7 @@ pub struct AABB {
 
 impl AABB {
     pub fn new(mins: Vec<Vec3>, maxs: Vec<Vec3>) -> AABB {
-        return AABB {
+        AABB {
             min: [
                 f(&mins, &|v| v.x, &|a, b| a.min(b)),
                 f(&mins, &|v| v.y, &|a, b| a.min(b)),
@@ -19,7 +19,7 @@ impl AABB {
                 f(&maxs, &|v| v.y, &|a, b| a.max(b)),
                 f(&maxs, &|v| v.z, &|a, b| a.max(b)),
             ],
-        };
+        }
     }
 
     // https://tavianator.com/2015/ray_box_nan.html
@@ -40,13 +40,12 @@ impl AABB {
             tmax = tmax.min(t1.max(t2));
         }
 
-        return tmax >= tmin.max(0.0);
+        tmax >= tmin.max(0.0)
     }
 }
 
 fn f(xs: &[Vec3], acc: &dyn Fn(&Vec3) -> f64, map: &dyn Fn(f64, f64) -> f64) -> f64 {
-    return xs
-        .iter()
+    xs.iter()
         .map(|x| acc(&x))
-        .fold(f64::INFINITY, |a, b| map(a, b));
+        .fold(f64::INFINITY, |a, b| map(a, b))
 }

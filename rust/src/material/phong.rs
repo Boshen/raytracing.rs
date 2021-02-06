@@ -15,10 +15,10 @@ impl Phong {
         if diffuse_brdf.kd + specular_brdf.ks >= 1.0 {
             panic!("kd + ks >= 1.0 in Phong Constructor");
         }
-        return Phong {
+        Phong {
             ambient_brdf,
             diffuse_brdf,
             specular_brdf,
-        };
+        }
     }
 }

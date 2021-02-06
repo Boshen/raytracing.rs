@@ -1,5 +1,5 @@
 #![allow(dead_code)]
-#![allow(clippy::needless_return, clippy::many_single_char_names)]
+#![allow(clippy::many_single_char_names)]
 
 use image::RgbImage;
 use std::error::Error;

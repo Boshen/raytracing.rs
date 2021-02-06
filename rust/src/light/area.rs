@@ -23,22 +23,22 @@ impl AreaLight {
             .map(|h| h.get_center())
             .fold(Vec3::zero(), |a, b| a.add(b))
             .div(geometric_objects.len() as f64);
-        return AreaLight {
+        AreaLight {
             center,
             geometric_objects,
             sample_points_sqrt: 5,
             material,
-        };
+        }
     }
 }
 
 impl Light for AreaLight {
     fn get_direction(&self, hit: &RayHit) -> Vec3 {
-        return self.center.sub(hit.hit_point).normalize();
+        self.center.sub(hit.hit_point).normalize()
     }
 
     fn radiance(&self, _hit: &RayHit) -> Color {
-        return self.material.radiance();
+        self.material.radiance()
     }
 
     fn shadow_amount(&self, hit: &RayHit) -> f64 {
@@ -51,9 +51,9 @@ impl Light for AreaLight {
             .filter(|point_on_light| {
                 let wi = point_on_light.sub(hit.hit_point).normalize(); // light direction
                 let d = distance(point_on_light.as_point(), hit.hit_point.as_point());
-                return !hit.world.is_in_shadow(&hit.hit_point, &wi, &|t| t < d);
+                !hit.world.is_in_shadow(&hit.hit_point, &wi, &|t| t < d)
             })
             .count() as f64;
-        return total / weight;
+        total / weight
     }
 }

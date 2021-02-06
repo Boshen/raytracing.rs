@@ -19,11 +19,11 @@ impl Model {
             .iter()
             .map(|h| (h.get_min_point(), h.get_max_point()))
             .unzip();
-        return Model {
+        Model {
             name,
             material,
             geometric_objects,
             aabb: AABB::new(mins, maxs),
-        };
+        }
     }
 }

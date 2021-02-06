@@ -9,10 +9,10 @@ pub struct Emissive {
 
 impl Emissive {
     pub fn new(ls: f64, ce: Color) -> Emissive {
-        return Emissive { ls, ce };
+        Emissive { ls, ce }
     }
 
     pub fn radiance(&self) -> Color {
-        return self.ce.mul(self.ls);
+        self.ce.mul(self.ls)
     }
 }
