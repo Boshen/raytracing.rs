@@ -53,14 +53,15 @@ impl Camera {
     }
 
     pub fn render_scence(&self, world: &World) -> Vec<(u8, u8, u8)> {
-        let width = world.width;
-        let height = world.height;
-        (0..(width * height))
+        let hres = world.vp.hres;
+        let vres = world.vp.vres;
+        let pixel_size = world.vp.pixel_size;
+        (0..(world.vp.hres * world.vp.vres))
             .into_par_iter()
             .map(|n| {
-                let (i, j) = (n % width, n / width);
-                let x = (i as f64) - (width as f64) / 2.0;
-                let y = (j as f64) - (height as f64) / 2.0;
+                let (i, j) = (n % hres, n / hres);
+                let x = pixel_size * (i as f64 - 0.5 * (hres as f64 - 1.0));
+                let y = pixel_size * (j as f64 - 0.5 * (vres as f64 - 1.0));
                 let color = tone_mapping(&self.antialias(world, x, y));
                 (
                     self.to_rgb(color.x),

@@ -8,10 +8,10 @@ use crate::light::{AmbientLight, LightEnum};
 use crate::material::Material;
 use crate::model::{Model, Vec3};
 use crate::ray::{Ray, RayHit};
+use crate::view_plane::ViewPlane;
 
 pub struct World {
-    pub width: u32,
-    pub height: u32,
+    pub vp: ViewPlane,
     pub lights: Vec<LightEnum>,
     pub models: Vec<Model>,
     pub ambient_light: AmbientLight,

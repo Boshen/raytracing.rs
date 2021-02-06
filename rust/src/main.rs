@@ -15,12 +15,14 @@ mod material;
 mod model;
 mod ray;
 mod sampler;
+mod view_plane;
 mod world;
 
 use crate::asset::Asset;
 use crate::camera::Camera;
 use crate::light::{AmbientLight, AmbientOcculuder, LightEnum};
 use crate::model::Vec3;
+use crate::view_plane::ViewPlane;
 use crate::world::World;
 
 fn main() -> Result<(), Box<dyn Error>> {
@@ -37,9 +39,14 @@ fn main() -> Result<(), Box<dyn Error>> {
         sample_points_sqrt: 16,
     })];
 
+    let vp = ViewPlane {
+        hres: 500,
+        vres: 500,
+        pixel_size: 1.0,
+    };
+
     let world = World {
-        width: 500,
-        height: 500,
+        vp,
         models: asset.models,
         lights: lights
             .into_iter()
@@ -56,7 +63,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         .flat_map(|(r, g, b)| vec![r, g, b])
         .collect();
 
-    RgbImage::from_vec(world.width, world.height, pixels)
+    RgbImage::from_vec(vp.hres, vp.vres, pixels)
         .unwrap()
         .save("output.png")?;
 
