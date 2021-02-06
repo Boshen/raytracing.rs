@@ -19,7 +19,7 @@ mod view_plane;
 mod world;
 
 use crate::asset::Asset;
-use crate::camera::{Camera, ThinLensCamera};
+use crate::camera::{Camera, CameraSetting, ThinLensCamera};
 use crate::color::to_rgb;
 use crate::light::{AmbientLight, AmbientOcculuder, LightEnum};
 use crate::model::Vec3;
@@ -56,7 +56,11 @@ fn main() -> Result<(), Box<dyn Error>> {
         ambient_light,
     };
 
-    let camera = ThinLensCamera::new(Vec3::new(0.0, 0.0, -3.0), Vec3::new(0.0, 0.0, 0.0), 500.0);
+    let camera = ThinLensCamera {
+        setting: CameraSetting::new(Vec3::new(0.0, 0.0, -3.0), Vec3::new(0.0, 0.0, 0.0), 500.0),
+        lens_radius: 0.001, // 0 = simple camera with no blur
+        focal_plane_distance: 100000.0,
+    };
 
     let pixels = camera
         .render_scene(&world)

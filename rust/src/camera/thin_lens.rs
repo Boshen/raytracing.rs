@@ -1,26 +1,19 @@
 use crate::model::Vec3;
-use nalgebra::{Cross, Norm, Point2};
+use nalgebra::{Norm, Point2, Vector2};
 use num_traits::identities::Zero;
 use rayon::prelude::*;
 use std::ops::{Add, Div, Mul, Sub};
 
-use crate::camera::Camera;
+use crate::camera::{Camera, CameraSetting};
 use crate::color::Color;
 use crate::ray::Ray;
 use crate::sampler::get_disk_sampler;
 use crate::world::World;
 
 pub struct ThinLensCamera {
-    lens_radius: f64,
-    focal_plane_distance: f64, // f
-
-    sample_points_sqrt: usize,
-    up: Vec3,
-    eye: Vec3,
-    u: Vec3,
-    v: Vec3,
-    w: Vec3,
-    view_plane_distance: f64, // d
+    pub lens_radius: f64,
+    pub focal_plane_distance: f64, // f
+    pub setting: CameraSetting,
 }
 
 impl Camera for ThinLensCamera {
@@ -32,63 +25,44 @@ impl Camera for ThinLensCamera {
             .into_par_iter()
             .map(|n| {
                 let (i, j) = (n % hres, n / hres);
-                let x = pixel_size * (i as f64 - (hres as f64) / 2.0);
-                let y = pixel_size * (j as f64 - (vres as f64) / 2.0);
-                self.antialias(world, Point2::new(x, y))
+                get_disk_sampler(self.setting.sample_points_sqrt)
+                    .map(|(sp, dp)| {
+                        let p = sp
+                            .add(Vector2::new(
+                                i as f64 - hres as f64 / 2.0,
+                                j as f64 - vres as f64 / 2.0,
+                            ))
+                            .mul(pixel_size);
+                        let ray = self.get_ray(
+                            p.add(sp.to_vector()),
+                            Point2::new(dp.x * self.lens_radius, dp.y * self.lens_radius),
+                        );
+                        world.trace(&ray, 0)
+                    })
+                    .fold(Vec3::zero(), |v1, v2| v1.add(v2))
+                    .div((self.setting.sample_points_sqrt * self.setting.sample_points_sqrt) as f64)
             })
             .collect()
     }
 }
 
 impl ThinLensCamera {
-    pub fn new(eye: Vec3, lookat: Vec3, view_plane_distance: f64) -> ThinLensCamera {
-        let up = Vec3::new(0.0, 1.0, 0.0);
-        let w = eye.sub(lookat).normalize();
-        let u = up.cross(&w).normalize();
-        let v = w.cross(&u).normalize();
-        ThinLensCamera {
-            lens_radius: 0.01,
-            focal_plane_distance: 1000.0,
-
-            eye,
-            w,
-            u,
-            v,
-            up,
-            view_plane_distance,
-            sample_points_sqrt: 10,
-        }
-    }
-
-    fn antialias(&self, world: &World, p: Point2<f64>) -> Color {
-        get_disk_sampler(self.sample_points_sqrt)
-            .map(|(sp, dp)| {
-                world.trace(
-                    &self.get_ray(
-                        p.add(sp.to_vector()),
-                        Point2::new(dp.x * self.lens_radius, dp.y * self.lens_radius),
-                    ),
-                    0,
-                )
-            })
-            .fold(Vec3::zero(), |v1, v2| v1.add(v2))
-            .div(self.sample_points_sqrt as f64 * self.sample_points_sqrt as f64)
-    }
-
     fn get_ray(&self, p: Point2<f64>, lens_point: Point2<f64>) -> Ray {
         let origin = self
+            .setting
             .eye
-            .add(self.u.mul(lens_point.x))
-            .add(self.v.mul(lens_point.y));
+            .add(self.setting.u.mul(lens_point.x))
+            .add(self.setting.v.mul(lens_point.y));
         let dp = p
             .mul(self.focal_plane_distance)
-            .div(self.view_plane_distance)
+            .div(self.setting.view_plane_distance)
             .sub(lens_point);
         let dir = self
+            .setting
             .u
             .mul(dp.x)
-            .add(self.v.mul(dp.y))
-            .sub(self.w.mul(self.focal_plane_distance))
+            .add(self.setting.v.mul(dp.y))
+            .sub(self.setting.w.mul(self.focal_plane_distance))
             .normalize();
         Ray::new(origin, dir)
     }

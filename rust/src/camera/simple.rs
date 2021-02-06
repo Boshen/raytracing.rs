@@ -1,9 +1,9 @@
-use nalgebra::{Cross, Norm, Point2};
+use nalgebra::{Norm, Point2};
 use num_traits::identities::Zero;
 use rayon::prelude::*;
 use std::ops::{Add, Div, Mul, Sub};
 
-use crate::camera::Camera;
+use crate::camera::{Camera, CameraSetting};
 use crate::color::Color;
 use crate::model::Vec3;
 use crate::ray::Ray;
@@ -11,13 +11,7 @@ use crate::sampler::get_square_sampler;
 use crate::world::World;
 
 pub struct SimpleCamera {
-    sample_points_sqrt: usize,
-    up: Vec3,
-    eye: Vec3,
-    u: Vec3,
-    v: Vec3,
-    w: Vec3,
-    view_plane_distance: f64,
+    pub setting: CameraSetting,
 }
 
 impl Camera for SimpleCamera {
@@ -29,45 +23,31 @@ impl Camera for SimpleCamera {
             .into_par_iter()
             .map(|n| {
                 let (i, j) = (n % hres, n / hres);
-                let x = pixel_size * (i as f64 - 0.5 * (hres as f64 - 1.0));
-                let y = pixel_size * (j as f64 - 0.5 * (vres as f64 - 1.0));
-                self.antialias(world, Point2::new(x, y))
+                let p = Point2::new(
+                    pixel_size * (i as f64 - (hres as f64) / 2.0),
+                    pixel_size * (j as f64 - (vres as f64) / 2.0),
+                );
+                get_square_sampler(self.setting.sample_points_sqrt)
+                    .map(|dp| {
+                        let ray = self.get_ray(p.add(dp.to_vector()));
+                        world.trace(&ray, 0)
+                    })
+                    .fold(Vec3::zero(), |v1, v2| v1.add(v2))
+                    .div((self.setting.sample_points_sqrt * self.setting.sample_points_sqrt) as f64)
             })
             .collect()
     }
 }
 
 impl SimpleCamera {
-    pub fn new(eye: Vec3, lookat: Vec3, view_plane_distance: f64) -> SimpleCamera {
-        let up = Vec3::new(0.0, 1.0, 0.0);
-        let w = eye.sub(lookat).normalize();
-        let u = up.cross(&w).normalize();
-        let v = w.cross(&u).normalize();
-        SimpleCamera {
-            eye,
-            w,
-            u,
-            v,
-            up,
-            view_plane_distance,
-            sample_points_sqrt: 1,
-        }
-    }
-
-    fn antialias(&self, world: &World, p: Point2<f64>) -> Color {
-        get_square_sampler(self.sample_points_sqrt)
-            .map(|dp| world.trace(&self.get_ray(p.add(dp.to_vector())), 0))
-            .fold(Vec3::zero(), |v1, v2| v1.add(v2))
-            .div(self.sample_points_sqrt as f64 * self.sample_points_sqrt as f64)
-    }
-
     fn get_ray(&self, p: Point2<f64>) -> Ray {
         let dir = self
+            .setting
             .u
             .mul(p.x)
-            .add(self.v.mul(p.y))
-            .sub(self.w.mul(self.view_plane_distance))
+            .add(self.setting.v.mul(p.y))
+            .sub(self.setting.w.mul(self.setting.view_plane_distance))
             .normalize();
-        Ray::new(self.eye, dir)
+        Ray::new(self.setting.eye, dir)
     }
 }
