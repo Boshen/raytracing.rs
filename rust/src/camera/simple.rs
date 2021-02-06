@@ -1,4 +1,4 @@
-use nalgebra::{Cross, Norm};
+use nalgebra::{Cross, Norm, Point2, Vector2};
 use num_traits::identities::Zero;
 use rayon::prelude::*;
 use std::ops::{Add, Div, Mul, Sub};
@@ -17,7 +17,7 @@ pub struct SimpleCamera {
     u: Vec3,
     v: Vec3,
     w: Vec3,
-    view_distance: f64,
+    view_plane_distance: f64,
 }
 
 impl Camera for SimpleCamera {
@@ -31,14 +31,14 @@ impl Camera for SimpleCamera {
                 let (i, j) = (n % hres, n / hres);
                 let x = pixel_size * (i as f64 - 0.5 * (hres as f64 - 1.0));
                 let y = pixel_size * (j as f64 - 0.5 * (vres as f64 - 1.0));
-                to_rgb(&self.antialias(world, x, y))
+                to_rgb(&self.antialias(world, Point2::new(x, y)))
             })
             .collect()
     }
 }
 
 impl SimpleCamera {
-    pub fn new(eye: Vec3, lookat: Vec3, view_distance: f64) -> SimpleCamera {
+    pub fn new(eye: Vec3, lookat: Vec3, view_plane_distance: f64) -> SimpleCamera {
         let up = Vec3::new(0.0, 1.0, 0.0);
         let w = eye.sub(lookat).normalize();
         let u = up.cross(&w).normalize();
@@ -49,24 +49,24 @@ impl SimpleCamera {
             u,
             v,
             up,
-            view_distance,
+            view_plane_distance,
             sample_points_sqrt: 1,
         }
     }
 
-    fn antialias(&self, world: &World, x: f64, y: f64) -> Color {
+    fn antialias(&self, world: &World, p: Point2<f64>) -> Color {
         get_unit_square_sampler(self.sample_points_sqrt)
-            .map(|(dx, dy)| world.trace(&self.get_direction(x + dx, y + dy), 0))
+            .map(|(dx, dy)| world.trace(&self.get_ray(p.add(Vector2::new(dx, dy))), 0))
             .fold(Vec3::zero(), |v1, v2| v1.add(v2))
             .div(self.sample_points_sqrt as f64 * self.sample_points_sqrt as f64)
     }
 
-    fn get_direction(&self, x: f64, y: f64) -> Ray {
+    fn get_ray(&self, p: Point2<f64>) -> Ray {
         let dir = self
             .u
-            .mul(x)
-            .add(self.v.mul(y))
-            .sub(self.w.mul(self.view_distance))
+            .mul(p.x)
+            .add(self.v.mul(p.y))
+            .sub(self.w.mul(self.view_plane_distance))
             .normalize();
         Ray::new(self.eye, dir)
     }

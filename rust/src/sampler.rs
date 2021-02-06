@@ -37,7 +37,7 @@ pub fn get_hemisphere_sampler(n: u32) -> impl Iterator<Item = Vec3> {
     })
 }
 
-pub fn get_disk_sampler(n: u32) -> impl Iterator<Item = (f64, f64)> {
+pub fn get_disk_sampler(n: u32) -> impl Iterator<Item = (f64, f64, f64, f64)> {
     get_unit_square_sampler(n).map(|(x, y)| {
         let spx = 2.0 * x - 1.0;
         let spy = 2.0 * y - 1.0;
@@ -55,6 +55,6 @@ pub fn get_disk_sampler(n: u32) -> impl Iterator<Item = (f64, f64)> {
             }
         };
         let phi_ = phi * FRAC_PI_4;
-        (r * phi_.cos(), r * phi_.sin())
+        (x, y, r * phi_.cos(), r * phi_.sin())
     })
 }

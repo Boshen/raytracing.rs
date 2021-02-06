@@ -19,7 +19,7 @@ mod view_plane;
 mod world;
 
 use crate::asset::Asset;
-use crate::camera::{Camera, SimpleCamera};
+use crate::camera::{Camera, ThinLensCamera};
 use crate::light::{AmbientLight, AmbientOcculuder, LightEnum};
 use crate::model::Vec3;
 use crate::view_plane::ViewPlane;
@@ -36,7 +36,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let lights: Vec<LightEnum> = vec![LightEnum::from(AmbientOcculuder {
         ls: 1.0,
         cl: Vec3::new(1.0, 1.0, 1.0),
-        sample_points_sqrt: 16,
+        sample_points_sqrt: 4,
     })];
 
     let vp = ViewPlane {
@@ -55,7 +55,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         ambient_light,
     };
 
-    let camera = SimpleCamera::new(Vec3::new(0.0, 0.0, -3.0), Vec3::new(0.0, 0.0, 0.0), 500.0);
+    let camera = ThinLensCamera::new(Vec3::new(0.0, 0.0, -3.0), Vec3::new(0.0, 0.0, 0.0), 500.0);
 
     let pixels = camera.render_scene(&world);
 
