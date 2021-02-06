@@ -1,5 +1,5 @@
 use crate::model::Vec3;
-use nalgebra::{Cross, Norm, Point2, Vector2};
+use nalgebra::{Cross, Norm, Point2};
 use num_traits::identities::Zero;
 use rayon::prelude::*;
 use std::ops::{Add, Div, Mul, Sub};
@@ -14,7 +14,7 @@ pub struct ThinLensCamera {
     lens_radius: f64,
     focal_plane_distance: f64, // f
 
-    sample_points_sqrt: u32,
+    sample_points_sqrt: usize,
     up: Vec3,
     eye: Vec3,
     u: Vec3,
@@ -62,11 +62,11 @@ impl ThinLensCamera {
 
     fn antialias(&self, world: &World, p: Point2<f64>) -> Color {
         get_disk_sampler(self.sample_points_sqrt)
-            .map(|(spx, spy, dpx, dpy)| {
+            .map(|(sp, dp)| {
                 world.trace(
                     &self.get_ray(
-                        p.add(Vector2::new(spx, spy)),
-                        Point2::new(dpx * self.lens_radius, dpy * self.lens_radius),
+                        p.add(sp.to_vector()),
+                        Point2::new(dp.x * self.lens_radius, dp.y * self.lens_radius),
                     ),
                     0,
                 )

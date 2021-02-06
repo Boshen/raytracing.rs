@@ -1,4 +1,4 @@
-use nalgebra::{Cross, Norm, Point2, Vector2};
+use nalgebra::{Cross, Norm, Point2};
 use num_traits::identities::Zero;
 use rayon::prelude::*;
 use std::ops::{Add, Div, Mul, Sub};
@@ -7,11 +7,11 @@ use crate::camera::Camera;
 use crate::color::Color;
 use crate::model::Vec3;
 use crate::ray::Ray;
-use crate::sampler::get_unit_square_sampler;
+use crate::sampler::get_square_sampler;
 use crate::world::World;
 
 pub struct SimpleCamera {
-    sample_points_sqrt: u32,
+    sample_points_sqrt: usize,
     up: Vec3,
     eye: Vec3,
     u: Vec3,
@@ -55,8 +55,8 @@ impl SimpleCamera {
     }
 
     fn antialias(&self, world: &World, p: Point2<f64>) -> Color {
-        get_unit_square_sampler(self.sample_points_sqrt)
-            .map(|(dx, dy)| world.trace(&self.get_ray(p.add(Vector2::new(dx, dy))), 0))
+        get_square_sampler(self.sample_points_sqrt)
+            .map(|dp| world.trace(&self.get_ray(p.add(dp.to_vector())), 0))
             .fold(Vec3::zero(), |v1, v2| v1.add(v2))
             .div(self.sample_points_sqrt as f64 * self.sample_points_sqrt as f64)
     }

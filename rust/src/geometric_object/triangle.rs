@@ -77,7 +77,7 @@ impl GeometricObject for Triangle {
         )
     }
 
-    fn get_samples(&self, sample_points_sqrt: u32) -> Vec<Vec3> {
+    fn get_samples(&self, sample_points_sqrt: usize) -> Vec<Vec3> {
         get_triangle_sampler(sample_points_sqrt, &self).collect()
     }
 

@@ -12,7 +12,7 @@ use crate::ray::RayHit;
 pub struct AreaLight {
     center: Vec3,
     geometric_objects: Vec<Geometry>,
-    sample_points_sqrt: u32,
+    sample_points_sqrt: usize,
     pub material: Emissive,
 }
 

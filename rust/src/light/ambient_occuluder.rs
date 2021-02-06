@@ -11,7 +11,7 @@ use crate::sampler::get_hemisphere_sampler;
 pub struct AmbientOcculuder {
     pub ls: f64,
     pub cl: Color,
-    pub sample_points_sqrt: u32,
+    pub sample_points_sqrt: usize,
 }
 
 impl AmbientOcculuder {

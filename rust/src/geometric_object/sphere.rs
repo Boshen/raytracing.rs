@@ -72,7 +72,7 @@ impl GeometricObject for Sphere {
         self.center.add(self.radius)
     }
 
-    fn get_samples(&self, _sample_points_sqrt: u32) -> Vec<Vec3> {
+    fn get_samples(&self, _sample_points_sqrt: usize) -> Vec<Vec3> {
         vec![]
     }
 

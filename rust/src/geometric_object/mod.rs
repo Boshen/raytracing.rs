@@ -23,5 +23,5 @@ pub trait GeometricObject: Send + Sync {
     fn get_center(&self) -> Vec3;
     fn get_min_point(&self) -> Vec3;
     fn get_max_point(&self) -> Vec3;
-    fn get_samples(&self, sample_points_sqrt: u32) -> Vec<Vec3>;
+    fn get_samples(&self, sample_points_sqrt: usize) -> Vec<Vec3>;
 }
