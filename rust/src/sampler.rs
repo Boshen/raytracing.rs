@@ -1,5 +1,6 @@
 use rand::distributions::Standard;
 use rand::{thread_rng, Rng};
+use std::f64::consts::FRAC_PI_4;
 use std::ops::{Add, Mul, Sub};
 
 use crate::geometric_object::Triangle;
@@ -33,5 +34,27 @@ pub fn get_hemisphere_sampler(n: u32) -> impl Iterator<Item = Vec3> {
         let cos_theta = (1.0 - y).powf((e + 1.0 as f64).recip());
         let sin_theta = (1.0 - cos_theta * cos_theta).sqrt();
         Vec3::new(sin_theta * cos_phi, sin_theta * sin_phi, cos_theta)
+    })
+}
+
+pub fn get_disk_sampler(n: u32) -> impl Iterator<Item = (f64, f64)> {
+    get_unit_square_sampler(n).map(|(x, y)| {
+        let spx = 2.0 * x - 1.0;
+        let spy = 2.0 * y - 1.0;
+        let (r, phi) = if spx > -spy {
+            if spx > spy {
+                (spx, spy / spx)
+            } else {
+                (spy, 2.0 - spx / spy)
+            }
+        } else {
+            if spx < spy {
+                (-spx, 4.0 + spy / spx)
+            } else {
+                (-spy, if spy == 0.0 { 0.0 } else { 6.0 - spx / spy })
+            }
+        };
+        let phi_ = phi * FRAC_PI_4;
+        (r * phi_.cos(), r * phi_.sin())
     })
 }

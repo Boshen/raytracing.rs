@@ -1,5 +1,6 @@
 use nalgebra::Dot;
 use num_traits::identities::Zero;
+use std::f64::consts::FRAC_1_PI;
 use std::ops::{Div, Mul, Sub};
 
 use crate::color::Color;
@@ -49,7 +50,7 @@ impl GlossySpecular {
 
 impl BRDF for Lambertian {
     fn f(&self, _hit: &RayHit, _wo: &Vec3, _wi: &Vec3) -> Color {
-        self.rho().div(std::f64::consts::PI)
+        self.rho().mul(FRAC_1_PI)
     }
 
     fn rho(&self) -> Color {
