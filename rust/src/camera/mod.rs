@@ -3,7 +3,9 @@ use enum_dispatch::enum_dispatch;
 pub mod simple;
 pub mod thin_lens;
 
+use crate::color::Color;
 use crate::world::World;
+
 pub use simple::*;
 pub use thin_lens::*;
 
@@ -15,5 +17,5 @@ pub enum CameraEnum {
 
 #[enum_dispatch(CameraEnum)]
 pub trait Camera {
-    fn render_scene(&self, world: &World) -> Vec<u8>;
+    fn render_scene(&self, world: &World) -> Vec<Color>;
 }

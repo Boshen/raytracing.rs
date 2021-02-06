@@ -4,7 +4,7 @@ use rayon::prelude::*;
 use std::ops::{Add, Div, Mul, Sub};
 
 use crate::camera::Camera;
-use crate::color::{to_rgb, Color};
+use crate::color::Color;
 use crate::model::Vec3;
 use crate::ray::Ray;
 use crate::sampler::get_unit_square_sampler;
@@ -21,17 +21,17 @@ pub struct SimpleCamera {
 }
 
 impl Camera for SimpleCamera {
-    fn render_scene(&self, world: &World) -> Vec<u8> {
+    fn render_scene(&self, world: &World) -> Vec<Color> {
         let hres = world.vp.hres;
         let vres = world.vp.vres;
         let pixel_size = world.vp.pixel_size;
         (0..(world.vp.hres * world.vp.vres))
             .into_par_iter()
-            .flat_map(|n| {
+            .map(|n| {
                 let (i, j) = (n % hres, n / hres);
                 let x = pixel_size * (i as f64 - 0.5 * (hres as f64 - 1.0));
                 let y = pixel_size * (j as f64 - 0.5 * (vres as f64 - 1.0));
-                to_rgb(&self.antialias(world, Point2::new(x, y)))
+                self.antialias(world, Point2::new(x, y))
             })
             .collect()
     }
