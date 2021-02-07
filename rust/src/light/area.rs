@@ -51,7 +51,7 @@ impl Light for AreaLight {
             .filter(|point_on_light| {
                 let wi = point_on_light.sub(hit.hit_point).normalize(); // light direction
                 let d = distance(point_on_light.as_point(), hit.hit_point.as_point());
-                !hit.world.is_in_shadow(&hit.hit_point, &wi, &|t| t < d)
+                !hit.world.is_in_shadow(&hit.hit_point, &wi, |t| t < d)
             })
             .count() as f64;
         total / weight

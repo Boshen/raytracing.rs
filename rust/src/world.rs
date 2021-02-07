@@ -22,55 +22,40 @@ impl World {
         if depth >= 15 {
             return Color::zero();
         }
-        let intersection = self
-            .models
+        self.models
             .iter()
-            .filter(|model| model.aabb.intersects(&ray))
-            .flat_map(|model| {
-                model
-                    .geometric_objects
-                    .iter()
-                    .map(move |geometric_object| (model, geometric_object))
+            .flat_map(|model| model.intersects(ray).map(|(dist, o)| (dist, model, o)))
+            .min_by(|t1, t2| (t1.0).partial_cmp(&t2.0).unwrap())
+            .map_or(Color::zero(), |(distance, model, geometric_object)| {
+                let hit_point = ray.get_point(distance);
+                let normal = geometric_object.normal(&hit_point);
+                let wo = ray.dir.mul(-1.0).normalize();
+                // revert normal if we hit the inside surface
+                let adjusted_normal = normal.mul(normal.dot(&wo).signum());
+                let rayhit = RayHit {
+                    ray,
+                    hit_point,
+                    material: &model.material,
+                    geometric_object: &geometric_object,
+                    world: &self,
+                    normal: adjusted_normal,
+                    depth,
+                };
+                model.material.shade(&rayhit)
             })
-            .filter_map(|(model, geometric_object)| {
-                geometric_object
-                    .intersects(ray)
-                    .map(|dist| (dist, model, geometric_object))
-            })
-            .min_by(|t1, t2| (t1.0).partial_cmp(&t2.0).expect("Tried to compare a NaN"));
-
-        intersection.map_or(Color::zero(), |(distance, model, geometric_object)| {
-            let hit_point = ray.get_point(distance);
-
-            let normal = geometric_object.normal(&hit_point);
-            let wo = ray.dir.mul(-1.0).normalize();
-            // revert normal if we hit the inside surface
-            let adjusted_normal = normal.mul(normal.dot(&wo).signum());
-            let rayhit = RayHit {
-                ray,
-                hit_point,
-                material: &model.material,
-                geometric_object,
-                world: &self,
-                normal: adjusted_normal,
-                depth,
-            };
-            model.material.shade(&rayhit)
-        })
     }
 
-    pub fn is_in_shadow(
-        &self,
-        point: &Vec3,
-        dir: &Vec3,
-        test_distance: &dyn Fn(f64) -> bool,
-    ) -> bool {
+    pub fn is_in_shadow<F>(&self, point: &Vec3, dir: &Vec3, test_distance: F) -> bool
+    where
+        F: Fn(f64) -> bool,
+    {
         let shadow_ray = Ray::new(point.add(dir.mul(0.00001)), *dir);
         self.models
             .iter()
             .filter(|m| !matches!(*m.material, Material::Emissive(_)))
-            .filter(|m| m.aabb.intersects(&shadow_ray))
-            .flat_map(|m| m.geometric_objects.iter())
-            .any(|h| h.intersects(&shadow_ray).map_or(false, test_distance))
+            .any(|m| {
+                m.intersects(&shadow_ray)
+                    .map_or(false, |(dist, _)| test_distance(dist))
+            })
     }
 }

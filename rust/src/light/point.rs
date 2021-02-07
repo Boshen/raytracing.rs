@@ -26,7 +26,7 @@ impl Light for PointLight {
         let d = distance(&self.location.to_point(), &hit.hit_point.to_point());
         let b = hit
             .world
-            .is_in_shadow(&hit.hit_point, &direction, &|t| t < d);
+            .is_in_shadow(&hit.hit_point, &direction, |t| t < d);
         f64::from(u32::from(!b))
     }
 }
