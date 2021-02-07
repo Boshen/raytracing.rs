@@ -10,14 +10,14 @@ impl AABB {
     pub fn new(mins: Vec<Vec3>, maxs: Vec<Vec3>) -> AABB {
         AABB {
             min: [
-                f(&mins, &|v| v.x, &|a, b| a.min(b)),
-                f(&mins, &|v| v.y, &|a, b| a.min(b)),
-                f(&mins, &|v| v.z, &|a, b| a.min(b)),
+                f(&mins, |v| v.x, |a, b| a.min(b)),
+                f(&mins, |v| v.y, |a, b| a.min(b)),
+                f(&mins, |v| v.z, |a, b| a.min(b)),
             ],
             max: [
-                f(&maxs, &|v| v.x, &|a, b| a.max(b)),
-                f(&maxs, &|v| v.y, &|a, b| a.max(b)),
-                f(&maxs, &|v| v.z, &|a, b| a.max(b)),
+                f(&maxs, |v| v.x, |a, b| a.max(b)),
+                f(&maxs, |v| v.y, |a, b| a.max(b)),
+                f(&maxs, |v| v.z, |a, b| a.max(b)),
             ],
         }
     }
@@ -44,7 +44,7 @@ impl AABB {
     }
 }
 
-fn f(xs: &[Vec3], acc: &dyn Fn(&Vec3) -> f64, map: &dyn Fn(f64, f64) -> f64) -> f64 {
+fn f(xs: &[Vec3], acc: fn(&Vec3) -> f64, map: fn(f64, f64) -> f64) -> f64 {
     xs.iter()
         .map(|x| acc(&x))
         .fold(f64::INFINITY, |a, b| map(a, b))
