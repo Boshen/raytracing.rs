@@ -29,12 +29,12 @@ impl Camera for ThinLensCamera {
                     .map(|(sp, dp)| {
                         let p = sp
                             .add(Vector2::new(
-                                i as f64 - hres as f64 / 2.0,
-                                j as f64 - vres as f64 / 2.0,
+                                i as f64 - hres as f64 / 2.0 + sp.x,
+                                j as f64 - vres as f64 / 2.0 + sp.y,
                             ))
                             .mul(pixel_size);
                         let ray = self.get_ray(
-                            p.add(sp.to_vector()),
+                            p,
                             Point2::new(dp.x * self.lens_radius, dp.y * self.lens_radius),
                         );
                         world.trace(&ray, 0)

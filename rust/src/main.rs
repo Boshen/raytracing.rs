@@ -59,7 +59,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let camera = ThinLensCamera {
         setting: CameraSetting::new(Vec3::new(0.0, 0.0, -3.0), Vec3::new(0.0, 0.0, 0.0), 500.0),
         lens_radius: 0.001, // 0 = simple camera with no blur
-        focal_plane_distance: 100000.0,
+        focal_plane_distance: 500.0,
     };
 
     let pixels = camera
