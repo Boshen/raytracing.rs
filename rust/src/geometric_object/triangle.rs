@@ -1,14 +1,12 @@
-use crate::sampler::get_triangle_sampler;
-use nalgebra::{Cross, Dot, Norm, Point3};
-
 use crate::aabb::AABB;
+use crate::geometric_object::{GeometricObject, Geometry};
 use crate::material::Material;
 use crate::model::Vec3;
 use crate::ray::Ray;
+use crate::sampler::get_triangle_sampler;
+use nalgebra::{Cross, Dot, Norm, Point3};
 
-use crate::geometric_object::GeometricObject;
-
-#[derive(Copy, Clone)]
+#[derive(Clone)]
 pub struct Triangle {
     pub x: Vec3,
     pub y: Vec3,
@@ -25,7 +23,7 @@ impl Triangle {
 }
 
 impl GeometricObject for Triangle {
-    fn intersects(&self, ray: &Ray) -> Option<f64> {
+    fn intersects(&self, ray: &Ray) -> Option<(f64, Geometry)> {
         let epsilon = 0.000001;
         let e1 = self.y - self.x;
         let e2 = self.z - self.x;
@@ -54,7 +52,7 @@ impl GeometricObject for Triangle {
             return None;
         }
 
-        Some(t)
+        Some((t, Geometry::from(self.clone())))
     }
 
     fn scale(&mut self, l: f64) {

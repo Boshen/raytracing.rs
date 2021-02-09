@@ -78,13 +78,20 @@ impl Asset {
                             vertices[*face_indices[2] as usize],
                             scale,
                         );
+                        let triangle2 = Triangle::new(
+                            material,
+                            vertices[*face_indices[0] as usize],
+                            vertices[*face_indices[1] as usize],
+                            vertices[*face_indices[2] as usize],
+                            scale,
+                        );
                         triangles.push(Geometry::from(triangle));
-                        asset.geometries.push(Geometry::from(triangle));
+                        asset.geometries.push(Geometry::from(triangle2));
                         next_face = end;
                     }
 
                     if let Material::Emissive(emissive) = material {
-                        let arealight = AreaLight::new(triangles.clone(), emissive);
+                        let arealight = AreaLight::new(triangles, emissive);
                         asset.lights.push(LightEnum::from(arealight));
                     }
                 }

@@ -4,12 +4,12 @@ use nalgebra::Point3;
 use num_traits::One;
 use std::ops::{MulAssign, SubAssign};
 
-use crate::geometric_object::GeometricObject;
+use crate::geometric_object::{GeometricObject, Geometry};
 use crate::material::Material;
 use crate::model::Vec3;
 use crate::ray::Ray;
 
-#[derive(Copy, Clone)]
+#[derive(Clone)]
 pub struct Sphere {
     radius: f64,
     center: Vec3,
@@ -29,7 +29,7 @@ impl Sphere {
 }
 
 impl GeometricObject for Sphere {
-    fn intersects(&self, ray: &Ray) -> Option<f64> {
+    fn intersects(&self, ray: &Ray) -> Option<(f64, Geometry)> {
         let center = self.center;
         let radius = self.radius;
         let start = ray.origin;
@@ -61,7 +61,7 @@ impl GeometricObject for Sphere {
             return None;
         }
 
-        Some(t)
+        Some((t, Geometry::from(self.clone())))
     }
 
     fn scale(&mut self, l: f64) {

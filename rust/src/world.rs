@@ -2,7 +2,7 @@ use nalgebra::{Dot, Norm};
 use num_traits::identities::Zero;
 
 use crate::color::Color;
-use crate::geometric_object::{GeometricObject, Geometry};
+use crate::geometric_object::{BvhNode, GeometricObject};
 use crate::light::{AmbientLight, LightEnum};
 use crate::material::Material;
 use crate::model::Vec3;
@@ -12,7 +12,7 @@ use crate::view_plane::ViewPlane;
 pub struct World {
     pub vp: ViewPlane,
     pub lights: Vec<LightEnum>,
-    pub objects: Vec<Geometry>,
+    pub bvh: BvhNode,
     pub ambient_light: AmbientLight,
 }
 
@@ -21,10 +21,8 @@ impl World {
         if depth >= 15 {
             return Color::zero();
         }
-        self.objects
-            .iter()
-            .flat_map(|o| o.intersects(ray).map(|dist| (dist, o)))
-            .min_by(|t1, t2| (t1.0).partial_cmp(&t2.0).unwrap())
+        self.bvh
+            .intersects(ray)
             .map_or(Color::zero(), |(distance, geometric_object)| {
                 let hit_point = ray.get_point(distance);
                 let normal = geometric_object.normal(&hit_point);
@@ -49,12 +47,9 @@ impl World {
         F: Fn(f64) -> bool,
     {
         let shadow_ray = Ray::new(point + 0.00001 * dir, *dir);
-        self.objects
-            .iter()
-            .filter(|o| !matches!(o.get_material(), Material::Emissive(_)))
-            .any(|m| {
-                m.intersects(&shadow_ray)
-                    .map_or(false, |dist| test_distance(dist))
-            })
+        self.bvh
+            .intersects(&shadow_ray)
+            .filter(|(_, o)| !matches!(o.get_material(), Material::Emissive(_)))
+            .map_or(false, |(dist, _)| test_distance(dist))
     }
 }

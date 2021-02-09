@@ -1,9 +1,10 @@
 use crate::ray::Ray;
 use nalgebra::Point3;
 
+#[derive(Copy, Clone)]
 pub struct AABB {
-    min: Point3<f64>,
-    max: Point3<f64>,
+    pub min: Point3<f64>,
+    pub max: Point3<f64>,
 }
 
 impl AABB {
@@ -30,5 +31,19 @@ impl AABB {
         }
 
         tmax >= tmin.max(0.0)
+    }
+
+    pub fn get_surrounding_aabb(box0: &AABB, box1: &AABB) -> AABB {
+        let small = Point3::new(
+            f64::min(box0.min.x, box1.min.x),
+            f64::min(box0.min.y, box1.min.y),
+            f64::min(box0.min.z, box1.min.z),
+        );
+        let big = Point3::new(
+            f64::max(box0.max.x, box1.max.x),
+            f64::max(box0.max.y, box1.max.y),
+            f64::max(box0.max.z, box1.max.z),
+        );
+        AABB::new(small, big)
     }
 }

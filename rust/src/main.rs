@@ -21,6 +21,7 @@ mod world;
 use crate::asset::Asset;
 use crate::camera::{Camera, CameraSetting, ThinLensCamera};
 use crate::color::to_rgb;
+use crate::geometric_object::BvhNode;
 use crate::light::{AmbientLight, AmbientOcculuder, LightEnum};
 use crate::model::Vec3;
 use crate::view_plane::ViewPlane;
@@ -46,9 +47,10 @@ fn main() -> Result<(), Box<dyn Error>> {
         pixel_size: 1.0,
     };
 
+    let len = asset.geometries.len();
     let world = World {
         vp,
-        objects: asset.geometries,
+        bvh: BvhNode::new(&mut asset.geometries.clone(), 0, len),
         lights: lights
             .into_iter()
             .chain(asset.lights.into_iter())
