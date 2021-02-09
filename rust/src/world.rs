@@ -1,6 +1,5 @@
 use nalgebra::{Dot, Norm};
 use num_traits::identities::Zero;
-use std::ops::{Add, Mul};
 
 use crate::color::Color;
 use crate::geometric_object::GeometricObject;
@@ -29,9 +28,9 @@ impl World {
             .map_or(Color::zero(), |(distance, model, geometric_object)| {
                 let hit_point = ray.get_point(distance);
                 let normal = geometric_object.normal(&hit_point);
-                let wo = ray.dir.mul(-1.0).normalize();
+                let wo = (-1.0 * ray.dir).normalize();
                 // revert normal if we hit the inside surface
-                let adjusted_normal = normal.mul(normal.dot(&wo).signum());
+                let adjusted_normal = normal * normal.dot(&wo).signum();
                 let rayhit = RayHit {
                     ray,
                     hit_point,
@@ -49,7 +48,7 @@ impl World {
     where
         F: Fn(f64) -> bool,
     {
-        let shadow_ray = Ray::new(point.add(dir.mul(0.00001)), *dir);
+        let shadow_ray = Ray::new(point + 0.00001 * dir, *dir);
         self.models
             .iter()
             .filter(|m| !matches!(*m.material, Material::Emissive(_)))

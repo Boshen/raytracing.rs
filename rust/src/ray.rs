@@ -1,6 +1,3 @@
-use std::ops::Add;
-use std::ops::Mul;
-
 use crate::geometric_object::Geometry;
 use crate::material::Material;
 use crate::model::Vec3;
@@ -17,7 +14,7 @@ impl Ray {
     }
 
     pub fn get_point(&self, distance: f64) -> Vec3 {
-        self.origin.add(self.dir.mul(distance))
+        self.origin + self.dir * distance
     }
 }
 

@@ -1,6 +1,5 @@
 use nalgebra::{distance, Norm};
 use num_traits::identities::Zero;
-use std::ops::{Add, Div, Sub};
 
 use crate::color::Color;
 use crate::geometric_object::{GeometricObject, Geometry};
@@ -21,8 +20,8 @@ impl AreaLight {
         let center = geometric_objects
             .iter()
             .map(|h| h.get_center())
-            .fold(Vec3::zero(), |a, b| a.add(b))
-            .div(geometric_objects.len() as f64);
+            .fold(Vec3::zero(), |a, b| a + b)
+            / geometric_objects.len() as f64;
         AreaLight {
             center,
             geometric_objects,
@@ -34,7 +33,7 @@ impl AreaLight {
 
 impl Light for AreaLight {
     fn get_direction(&self, hit: &RayHit) -> Vec3 {
-        self.center.sub(hit.hit_point).normalize()
+        (self.center - hit.hit_point).normalize()
     }
 
     fn radiance(&self, _hit: &RayHit) -> Color {
@@ -49,7 +48,7 @@ impl Light for AreaLight {
             .iter()
             .flat_map(|t| t.get_samples(self.sample_points_sqrt))
             .filter(|point_on_light| {
-                let wi = point_on_light.sub(hit.hit_point).normalize(); // light direction
+                let wi = (point_on_light - hit.hit_point).normalize(); // light direction
                 let d = distance(point_on_light.as_point(), hit.hit_point.as_point());
                 !hit.world.is_in_shadow(&hit.hit_point, &wi, |t| t < d)
             })

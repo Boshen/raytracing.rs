@@ -1,6 +1,6 @@
 use nalgebra::Norm;
 use num_traits::One;
-use std::ops::{Add, Mul, MulAssign, Sub, SubAssign};
+use std::ops::{MulAssign, SubAssign};
 
 use crate::geometric_object::GeometricObject;
 use crate::model::Vec3;
@@ -57,7 +57,7 @@ impl GeometricObject for Sphere {
     }
 
     fn normal(&self, p: &Vec3) -> Vec3 {
-        p.sub(self.center).mul(1.0 / self.radius).normalize()
+        ((p - self.center) / self.radius).normalize()
     }
 
     fn get_center(&self) -> Vec3 {
@@ -65,11 +65,11 @@ impl GeometricObject for Sphere {
     }
 
     fn get_min_point(&self) -> Vec3 {
-        self.center.sub(self.radius)
+        self.center - self.radius
     }
 
     fn get_max_point(&self) -> Vec3 {
-        self.center.add(self.radius)
+        self.center + self.radius
     }
 
     fn get_samples(&self, _sample_points_sqrt: usize) -> Vec<Vec3> {

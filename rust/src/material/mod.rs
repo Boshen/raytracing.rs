@@ -1,6 +1,5 @@
 use nalgebra::{Dot, Norm, PartialOrder};
 use num_traits::identities::Zero;
-use std::ops::{Add, Mul, Sub};
 
 use crate::brdf::*;
 use crate::color::Color;
@@ -53,14 +52,13 @@ impl Material {
                 // wo: reflected direction
                 let shadow_amount = light.shadow_amount(&hit);
 
-                let wo = hit.ray.dir.mul(-1.0).normalize();
-                self.diffuse_color(hit, &wo, &wi)
-                    .add(self.specular_color(hit, &wo, &wi))
-                    .mul(radiance.mul(shadow_amount))
-                    .mul(ndotwi)
-                    .add(self.reflective_color(hit, &wo))
+                let wo = (hit.ray.dir * -1.0).normalize();
+                (self.diffuse_color(hit, &wo, &wi) + self.specular_color(hit, &wo, &wi))
+                    * (radiance * shadow_amount)
+                    * ndotwi
+                    + self.reflective_color(hit, &wo)
             })
-            .fold(ambient_color, |a, b| a.add(b))
+            .fold(ambient_color, |a, b| a + b)
     }
 
     fn ambient_color(&self, hit: &RayHit) -> Color {
@@ -71,7 +69,7 @@ impl Material {
             Material::Reflective(m) => m.ambient_brdf.rho(),
             Material::Emissive(_) => z,
         };
-        rho.mul(hit.world.ambient_light.radiance(hit))
+        rho * hit.world.ambient_light.radiance(hit)
     }
 
     fn diffuse_color(&self, hit: &RayHit, wo: &Vec3, wi: &Vec3) -> Color {
@@ -103,13 +101,10 @@ impl Material {
             Material::Reflective(m) => {
                 let normal = hit.normal;
                 let ndotwo = normal.dot(&wo);
-                let wi = normal.mul(2.0 * ndotwo).sub(wo);
+                let wi = normal * (2.0 * ndotwo) - wo;
                 let fr = m.reflective_brdf.sample_f(hit, &wo, &wi);
                 let reflected_ray = Ray::new(hit.hit_point, wi);
-                hit.world
-                    .trace(&reflected_ray, hit.depth + 1)
-                    .mul(fr)
-                    .mul(normal.dot(&wi))
+                hit.world.trace(&reflected_ray, hit.depth + 1) * fr * normal.dot(&wi)
             }
         }
     }

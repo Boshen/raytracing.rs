@@ -1,6 +1,5 @@
 use enum_dispatch::enum_dispatch;
 use nalgebra::{Cross, Norm};
-use std::ops::Sub;
 
 pub mod simple;
 pub mod thin_lens;
@@ -36,7 +35,7 @@ pub struct CameraSetting {
 impl CameraSetting {
     pub fn new(eye: Vec3, lookat: Vec3, view_plane_distance: f64) -> CameraSetting {
         let up = Vec3::new(0.0, 1.0, 0.0);
-        let w = eye.sub(lookat).normalize();
+        let w = (eye - lookat).normalize();
         let u = up.cross(&w).normalize();
         let v = w.cross(&u).normalize();
         CameraSetting {

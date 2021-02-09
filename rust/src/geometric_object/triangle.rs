@@ -1,6 +1,5 @@
 use crate::sampler::get_triangle_sampler;
 use nalgebra::{Cross, Dot, Norm};
-use std::ops::{Add, Div, Mul, Sub};
 
 use crate::model::Vec3;
 use crate::ray::Ray;
@@ -21,8 +20,8 @@ impl Triangle {
 impl GeometricObject for Triangle {
     fn intersects(&self, ray: &Ray) -> Option<f64> {
         let epsilon = 0.000001;
-        let e1 = self.1.sub(self.0);
-        let e2 = self.2.sub(self.0);
+        let e1 = self.1 - self.0;
+        let e2 = self.2 - self.0;
 
         let h = ray.dir.cross(&e2);
         let a = e1.dot(&h);
@@ -31,7 +30,7 @@ impl GeometricObject for Triangle {
         }
 
         let f = a.recip();
-        let s = ray.origin.sub(self.0);
+        let s = ray.origin - self.0;
         let u = f * s.dot(&h);
         if u < 0.0 || u > 1.0 {
             return None;
@@ -52,13 +51,13 @@ impl GeometricObject for Triangle {
     }
 
     fn normal(&self, _p: &Vec3) -> Vec3 {
-        let e1 = self.1.sub(self.0);
-        let e2 = self.2.sub(self.0);
+        let e1 = self.1 - self.0;
+        let e2 = self.2 - self.0;
         e2.cross(&e1).normalize()
     }
 
     fn get_center(&self) -> Vec3 {
-        self.0.add(self.1).add(self.2).div(3.0)
+        (self.0 + self.1 + self.2) / 3.0
     }
 
     fn get_min_point(&self) -> Vec3 {
@@ -82,13 +81,13 @@ impl GeometricObject for Triangle {
     }
 
     fn scale(&mut self, l: f64) {
-        self.0 = self.0.mul(2.0 / l);
-        self.1 = self.1.mul(2.0 / l);
-        self.2 = self.2.mul(2.0 / l);
+        self.0 = self.0 * (2.0 / l);
+        self.1 = self.1 * (2.0 / l);
+        self.2 = self.2 * (2.0 / l);
 
-        self.0 = self.0.sub(Vec3::new(1.0, 1.0, 1.0));
-        self.1 = self.1.sub(Vec3::new(1.0, 1.0, 1.0));
-        self.2 = self.2.sub(Vec3::new(1.0, 1.0, 1.0));
+        self.0 = self.0 - Vec3::new(1.0, 1.0, 1.0);
+        self.1 = self.1 - Vec3::new(1.0, 1.0, 1.0);
+        self.2 = self.2 - Vec3::new(1.0, 1.0, 1.0);
 
         self.0.x = -self.0.x;
         self.1.x = -self.1.x;

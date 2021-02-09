@@ -2,7 +2,6 @@ use nalgebra::Point2;
 use rand::distributions::Standard;
 use rand::{thread_rng, Rng};
 use std::f64::consts::FRAC_PI_4;
-use std::ops::{Add, Mul, Sub};
 
 use crate::geometric_object::Triangle;
 use crate::model::Vec3;
@@ -23,7 +22,7 @@ pub fn get_triangle_sampler(n: usize, t: &Triangle) -> impl Iterator<Item = Vec3
             a = 1.0 - a;
             b = 1.0 - b;
         }
-        x.add(y.sub(x).mul(a)).add(z.sub(x).mul(b))
+        x + ((y - x) * a) + ((z - x) * b)
     })
 }
 

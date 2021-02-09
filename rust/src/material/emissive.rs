@@ -1,5 +1,4 @@
 use crate::color::Color;
-use std::ops::Mul;
 
 #[derive(Copy, Clone)]
 pub struct Emissive {
@@ -13,6 +12,6 @@ impl Emissive {
     }
 
     pub fn radiance(&self) -> Color {
-        self.ce.mul(self.ls)
+        self.ce * self.ls
     }
 }

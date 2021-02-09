@@ -1,7 +1,6 @@
 use nalgebra::Dot;
 use num_traits::identities::Zero;
 use std::f64::consts::FRAC_1_PI;
-use std::ops::{Div, Mul, Sub};
 
 use crate::color::Color;
 use crate::model::Vec3;
@@ -50,11 +49,11 @@ impl GlossySpecular {
 
 impl BRDF for Lambertian {
     fn f(&self, _hit: &RayHit, _wo: &Vec3, _wi: &Vec3) -> Color {
-        self.rho().mul(FRAC_1_PI)
+        self.rho() * FRAC_1_PI
     }
 
     fn rho(&self) -> Color {
-        self.cd.mul(self.kd)
+        self.cd * self.kd
     }
 
     fn sample_f(&self, _hit: &RayHit, _wo: &Vec3, _wi: &Vec3) -> Color {
@@ -65,7 +64,7 @@ impl BRDF for Lambertian {
 impl BRDF for GlossySpecular {
     fn f(&self, hit: &RayHit, wo: &Vec3, wi: &Vec3) -> Color {
         let ndotwi = hit.normal.dot(wi).max(0.0);
-        let r = hit.normal.mul(2.0 * ndotwi).sub(wi);
+        let r = hit.normal * (2.0 * ndotwi) - wi;
         let rdotwo = r.dot(wo);
         if rdotwo <= 0.0 {
             return Color::zero();
@@ -93,6 +92,6 @@ impl BRDF for PerfectSpecular {
     }
 
     fn sample_f(&self, hit: &RayHit, _wo: &Vec3, wi: &Vec3) -> Color {
-        self.cr.mul(self.kr).div(hit.normal.dot(&wi))
+        self.cr * self.kr / hit.normal.dot(&wi)
     }
 }

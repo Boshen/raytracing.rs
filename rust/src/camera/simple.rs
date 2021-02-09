@@ -1,7 +1,6 @@
 use nalgebra::{Norm, Point2};
 use num_traits::identities::Zero;
 use rayon::prelude::*;
-use std::ops::{Add, Div, Mul, Sub};
 
 use crate::camera::{Camera, CameraSetting};
 use crate::color::Color;
@@ -29,11 +28,11 @@ impl Camera for SimpleCamera {
                 );
                 get_square_sampler(self.setting.sample_points_sqrt)
                     .map(|dp| {
-                        let ray = self.get_ray(p.add(dp.to_vector()));
+                        let ray = self.get_ray(p + dp.to_vector());
                         world.trace(&ray, 0)
                     })
-                    .fold(Vec3::zero(), |v1, v2| v1.add(v2))
-                    .div((self.setting.sample_points_sqrt * self.setting.sample_points_sqrt) as f64)
+                    .fold(Vec3::zero(), |v1, v2| v1 + v2)
+                    / ((self.setting.sample_points_sqrt * self.setting.sample_points_sqrt) as f64)
             })
             .collect()
     }
@@ -41,12 +40,8 @@ impl Camera for SimpleCamera {
 
 impl SimpleCamera {
     fn get_ray(&self, p: Point2<f64>) -> Ray {
-        let dir = self
-            .setting
-            .u
-            .mul(p.x)
-            .add(self.setting.v.mul(p.y))
-            .sub(self.setting.w.mul(self.setting.view_plane_distance))
+        let dir = (self.setting.u * p.x + self.setting.v * p.y
+            - self.setting.w * self.setting.view_plane_distance)
             .normalize();
         Ray::new(self.setting.eye, dir)
     }
