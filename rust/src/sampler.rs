@@ -49,12 +49,10 @@ pub fn get_disk_sampler(n: usize) -> impl Iterator<Item = (Point2<f64>, Point2<f
             } else {
                 (spy, 2.0 - spx / spy)
             }
+        } else if spx < spy {
+            (-spx, 4.0 + spy / spx)
         } else {
-            if spx < spy {
-                (-spx, 4.0 + spy / spx)
-            } else {
-                (-spy, if spy == 0.0 { 0.0 } else { 6.0 - spx / spy })
-            }
+            (-spy, if spy == 0.0 { 0.0 } else { 6.0 - spx / spy })
         };
         let phi_ = phi * FRAC_PI_4;
         (p, Point2::new(r * phi_.cos(), r * phi_.sin()))

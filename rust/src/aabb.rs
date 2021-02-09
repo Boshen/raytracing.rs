@@ -45,7 +45,5 @@ impl AABB {
 }
 
 fn f(xs: &[Vec3], acc: fn(&Vec3) -> f64, map: fn(f64, f64) -> f64) -> f64 {
-    xs.iter()
-        .map(|x| acc(&x))
-        .fold(f64::INFINITY, |a, b| map(a, b))
+    xs.iter().map(|x| acc(&x)).fold(f64::INFINITY, map)
 }

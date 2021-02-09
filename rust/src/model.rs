@@ -34,7 +34,7 @@ impl Model {
         }
         self.geometric_objects
             .iter()
-            .filter_map(|o| o.intersects(ray).map(|dist| (dist, o.clone())))
+            .filter_map(|o| o.intersects(ray).map(|dist| (dist, *o)))
             .min_by(|t1, t2| (t1.0).partial_cmp(&t2.0).unwrap())
     }
 }

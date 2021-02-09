@@ -30,7 +30,7 @@ impl GeometricObject for Triangle {
             return None;
         }
 
-        let f = 1.0 / a;
+        let f = a.recip();
         let s = ray.origin.sub(self.0);
         let u = f * s.dot(&h);
         if u < 0.0 || u > 1.0 {
