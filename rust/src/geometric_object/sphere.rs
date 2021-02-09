@@ -5,6 +5,7 @@ use num_traits::One;
 use std::ops::{MulAssign, SubAssign};
 
 use crate::geometric_object::GeometricObject;
+use crate::material::Material;
 use crate::model::Vec3;
 use crate::ray::Ray;
 
@@ -12,11 +13,16 @@ use crate::ray::Ray;
 pub struct Sphere {
     radius: f64,
     center: Vec3,
+    material: Material,
 }
 
 impl Sphere {
-    pub fn new(radius: f64, center: Vec3, scale: f64) -> Sphere {
-        let mut sphere = Sphere { radius, center };
+    pub fn new(material: Material, radius: f64, center: Vec3, scale: f64) -> Sphere {
+        let mut sphere = Sphere {
+            material,
+            radius,
+            center,
+        };
         sphere.scale(scale);
         sphere
     }
@@ -87,5 +93,9 @@ impl GeometricObject for Sphere {
 
     fn get_samples(&self, _sample_points_sqrt: usize) -> Vec<Vec3> {
         vec![]
+    }
+
+    fn get_material(&self) -> Material {
+        self.material
     }
 }

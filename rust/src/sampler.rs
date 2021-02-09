@@ -14,7 +14,7 @@ pub fn get_square_sampler(n: usize) -> impl Iterator<Item = Point2<f64>> {
 }
 
 pub fn get_triangle_sampler(n: usize, t: &Triangle) -> impl Iterator<Item = Vec3> {
-    let (x, y, z) = (t.0, t.1, t.2);
+    let (x, y, z) = (t.x, t.y, t.z);
     get_square_sampler(n).map(move |p| {
         let mut a = p.x;
         let mut b = p.y;

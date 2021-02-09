@@ -48,7 +48,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let world = World {
         vp,
-        models: asset.models,
+        objects: asset.geometries,
         lights: lights
             .into_iter()
             .chain(asset.lights.into_iter())

@@ -2,17 +2,23 @@ use crate::sampler::get_triangle_sampler;
 use nalgebra::{Cross, Dot, Norm, Point3};
 
 use crate::aabb::AABB;
+use crate::material::Material;
 use crate::model::Vec3;
 use crate::ray::Ray;
 
 use crate::geometric_object::GeometricObject;
 
 #[derive(Copy, Clone)]
-pub struct Triangle(pub Vec3, pub Vec3, pub Vec3);
+pub struct Triangle {
+    pub x: Vec3,
+    pub y: Vec3,
+    pub z: Vec3,
+    material: Material,
+}
 
 impl Triangle {
-    pub fn new(x: Vec3, y: Vec3, z: Vec3, scale: f64) -> Triangle {
-        let mut triangle = Triangle(x, y, z);
+    pub fn new(material: Material, x: Vec3, y: Vec3, z: Vec3, scale: f64) -> Triangle {
+        let mut triangle = Triangle { material, x, y, z };
         triangle.scale(scale);
         triangle
     }
@@ -21,8 +27,8 @@ impl Triangle {
 impl GeometricObject for Triangle {
     fn intersects(&self, ray: &Ray) -> Option<f64> {
         let epsilon = 0.000001;
-        let e1 = self.1 - self.0;
-        let e2 = self.2 - self.0;
+        let e1 = self.y - self.x;
+        let e2 = self.z - self.x;
 
         let h = ray.dir.cross(&e2);
         let a = e1.dot(&h);
@@ -31,7 +37,7 @@ impl GeometricObject for Triangle {
         }
 
         let f = a.recip();
-        let s = ray.origin - self.0;
+        let s = ray.origin - self.x;
         let u = f * s.dot(&h);
         if u < 0.0 || u > 1.0 {
             return None;
@@ -52,46 +58,46 @@ impl GeometricObject for Triangle {
     }
 
     fn scale(&mut self, l: f64) {
-        self.0 = self.0 * (2.0 / l);
-        self.1 = self.1 * (2.0 / l);
-        self.2 = self.2 * (2.0 / l);
+        self.x = self.x * (2.0 / l);
+        self.y = self.y * (2.0 / l);
+        self.z = self.z * (2.0 / l);
 
-        self.0 = self.0 - Vec3::new(1.0, 1.0, 1.0);
-        self.1 = self.1 - Vec3::new(1.0, 1.0, 1.0);
-        self.2 = self.2 - Vec3::new(1.0, 1.0, 1.0);
+        self.x = self.x - Vec3::new(1.0, 1.0, 1.0);
+        self.y = self.y - Vec3::new(1.0, 1.0, 1.0);
+        self.z = self.z - Vec3::new(1.0, 1.0, 1.0);
 
-        self.0.x = -self.0.x;
-        self.1.x = -self.1.x;
-        self.2.x = -self.2.x;
+        self.x.x = -self.x.x;
+        self.y.x = -self.y.x;
+        self.z.x = -self.z.x;
 
-        self.0.y = -self.0.y;
-        self.1.y = -self.1.y;
-        self.2.y = -self.2.y;
+        self.x.y = -self.x.y;
+        self.y.y = -self.y.y;
+        self.z.y = -self.z.y;
     }
 
     fn normal(&self, _p: &Vec3) -> Vec3 {
-        let e1 = self.1 - self.0;
-        let e2 = self.2 - self.0;
+        let e1 = self.y - self.x;
+        let e2 = self.z - self.x;
         e2.cross(&e1).normalize()
     }
 
     fn get_center(&self) -> Vec3 {
-        (self.0 + self.1 + self.2) / 3.0
+        (self.x + self.y + self.z) / 3.0
     }
 
     fn get_min_point(&self) -> Point3<f64> {
         Point3::new(
-            self.0.x.min(self.1.x).min(self.2.x),
-            self.0.y.min(self.1.y).min(self.2.y),
-            self.0.z.min(self.1.z).min(self.2.z),
+            self.x.x.min(self.y.x).min(self.z.x),
+            self.x.y.min(self.y.y).min(self.z.y),
+            self.x.z.min(self.y.z).min(self.z.z),
         )
     }
 
     fn get_max_point(&self) -> Point3<f64> {
         Point3::new(
-            self.0.x.max(self.1.x).max(self.2.x),
-            self.0.y.max(self.1.y).max(self.2.y),
-            self.0.z.max(self.1.z).max(self.2.z),
+            self.x.x.max(self.y.x).max(self.z.x),
+            self.x.y.max(self.y.y).max(self.z.y),
+            self.x.z.max(self.y.z).max(self.z.z),
         )
     }
 
@@ -101,5 +107,9 @@ impl GeometricObject for Triangle {
 
     fn get_samples(&self, sample_points_sqrt: usize) -> Vec<Vec3> {
         get_triangle_sampler(sample_points_sqrt, &self).collect()
+    }
+
+    fn get_material(&self) -> Material {
+        self.material
     }
 }

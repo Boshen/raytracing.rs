@@ -2,17 +2,17 @@ use nalgebra::{Dot, Norm};
 use num_traits::identities::Zero;
 
 use crate::color::Color;
-use crate::geometric_object::GeometricObject;
+use crate::geometric_object::{GeometricObject, Geometry};
 use crate::light::{AmbientLight, LightEnum};
 use crate::material::Material;
-use crate::model::{Model, Vec3};
+use crate::model::Vec3;
 use crate::ray::{Ray, RayHit};
 use crate::view_plane::ViewPlane;
 
 pub struct World {
     pub vp: ViewPlane,
     pub lights: Vec<LightEnum>,
-    pub models: Vec<Model>,
+    pub objects: Vec<Geometry>,
     pub ambient_light: AmbientLight,
 }
 
@@ -21,11 +21,11 @@ impl World {
         if depth >= 15 {
             return Color::zero();
         }
-        self.models
+        self.objects
             .iter()
-            .flat_map(|model| model.intersects(ray).map(|(dist, o)| (dist, model, o)))
+            .flat_map(|o| o.intersects(ray).map(|dist| (dist, o)))
             .min_by(|t1, t2| (t1.0).partial_cmp(&t2.0).unwrap())
-            .map_or(Color::zero(), |(distance, model, geometric_object)| {
+            .map_or(Color::zero(), |(distance, geometric_object)| {
                 let hit_point = ray.get_point(distance);
                 let normal = geometric_object.normal(&hit_point);
                 let wo = (-1.0 * ray.dir).normalize();
@@ -34,13 +34,13 @@ impl World {
                 let rayhit = RayHit {
                     ray,
                     hit_point,
-                    material: &model.material,
+                    material: &geometric_object.get_material(),
                     geometric_object: &geometric_object,
                     world: &self,
                     normal: adjusted_normal,
                     depth,
                 };
-                model.material.shade(&rayhit)
+                geometric_object.get_material().shade(&rayhit)
             })
     }
 
@@ -49,12 +49,12 @@ impl World {
         F: Fn(f64) -> bool,
     {
         let shadow_ray = Ray::new(point + 0.00001 * dir, *dir);
-        self.models
+        self.objects
             .iter()
-            .filter(|m| !matches!(*m.material, Material::Emissive(_)))
+            .filter(|o| !matches!(o.get_material(), Material::Emissive(_)))
             .any(|m| {
                 m.intersects(&shadow_ray)
-                    .map_or(false, |(dist, _)| test_distance(dist))
+                    .map_or(false, |dist| test_distance(dist))
             })
     }
 }

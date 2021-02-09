@@ -1,5 +1,6 @@
 use crate::brdf::{GlossySpecular, Lambertian};
 
+#[derive(Copy, Clone)]
 pub struct Phong {
     pub ambient_brdf: Lambertian,
     pub diffuse_brdf: Lambertian,

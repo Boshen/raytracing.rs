@@ -5,7 +5,7 @@ use crate::color::Color;
 use crate::geometric_object::{Geometry, Sphere, Triangle};
 use crate::light::{AreaLight, LightEnum};
 use crate::material::{Emissive, Material, Matte, Reflective};
-use crate::model::{Model, Vec3};
+use crate::model::Vec3;
 
 #[derive(Clone)]
 pub struct Object {
@@ -16,7 +16,7 @@ pub struct Object {
 
 pub struct Asset {
     pub objects: Vec<Object>,
-    pub models: Vec<Model>,
+    pub geometries: Vec<Geometry>,
     pub lights: Vec<LightEnum>,
 }
 
@@ -24,7 +24,7 @@ impl Asset {
     pub fn new(file_name: &str) -> Asset {
         let mut asset = Asset {
             objects: vec![],
-            models: vec![],
+            geometries: vec![],
             lights: vec![],
         };
 
@@ -44,20 +44,6 @@ impl Asset {
             }
 
             let mut triangles: Vec<Geometry> = vec![];
-            let mut next_face = 0;
-
-            for f in 0..mesh.num_face_indices.len() {
-                let end = next_face + mesh.num_face_indices[f] as usize;
-                let face_indices: Vec<_> = mesh.indices[next_face..end].iter().collect();
-                let triangle = Triangle::new(
-                    vertices[*face_indices[0] as usize],
-                    vertices[*face_indices[1] as usize],
-                    vertices[*face_indices[2] as usize],
-                    scale,
-                );
-                triangles.push(Geometry::from(triangle));
-                next_face = end;
-            }
 
             match mesh.material_id {
                 None => {}
@@ -80,34 +66,42 @@ impl Asset {
                         let diffuse_brdf = Lambertian::new(1.0, diffuse);
                         Material::Matte(Matte::new(ambient_brdf, diffuse_brdf))
                     };
+
+                    let mut next_face = 0;
+                    for f in 0..mesh.num_face_indices.len() {
+                        let end = next_face + mesh.num_face_indices[f] as usize;
+                        let face_indices: Vec<_> = mesh.indices[next_face..end].iter().collect();
+                        let triangle = Triangle::new(
+                            material,
+                            vertices[*face_indices[0] as usize],
+                            vertices[*face_indices[1] as usize],
+                            vertices[*face_indices[2] as usize],
+                            scale,
+                        );
+                        triangles.push(Geometry::from(triangle));
+                        asset.geometries.push(Geometry::from(triangle));
+                        next_face = end;
+                    }
+
                     if let Material::Emissive(emissive) = material {
                         let arealight = AreaLight::new(triangles.clone(), emissive);
                         asset.lights.push(LightEnum::from(arealight));
                     }
-
-                    asset.models.push(Model::new(
-                        model.name.clone(),
-                        Box::new(material),
-                        triangles.clone(),
-                    ));
                 }
             };
         }
 
-        asset.models.push(Model::new(
-            "sphere".to_string(),
-            Box::new(Material::Reflective(Reflective::new(
+        asset.geometries.push(Geometry::from(Sphere::new(
+            Material::Reflective(Reflective::new(
                 Lambertian::new(0.1, Color::new(1.0, 1.0, 1.0)),
                 Lambertian::new(0.1, Color::new(1.0, 1.0, 1.0)),
                 GlossySpecular::new(0.2, 2.0),
                 PerfectSpecular::new(0.5, Color::new(1.0, 1.0, 1.0)),
-            ))),
-            vec![Geometry::from(Sphere::new(
-                40.0,
-                Vec3::new(400.0, 40.0, 500.0),
-                scale,
-            ))],
-        ));
+            )),
+            40.0,
+            Vec3::new(400.0, 40.0, 500.0),
+            scale,
+        )));
         asset
     }
 }
