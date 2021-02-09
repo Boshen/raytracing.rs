@@ -1,4 +1,6 @@
+use crate::aabb::AABB;
 use nalgebra::Norm;
+use nalgebra::Point3;
 use num_traits::One;
 use std::ops::{MulAssign, SubAssign};
 
@@ -56,6 +58,13 @@ impl GeometricObject for Sphere {
         Some(t)
     }
 
+    fn scale(&mut self, l: f64) {
+        self.center.mul_assign(2.0 / l);
+        self.center.sub_assign(Vec3::one());
+        self.center.mul_assign(-1.0);
+        self.radius = (self.radius * 2.0) / l;
+    }
+
     fn normal(&self, p: &Vec3) -> Vec3 {
         ((p - self.center) / self.radius).normalize()
     }
@@ -64,22 +73,19 @@ impl GeometricObject for Sphere {
         self.center
     }
 
-    fn get_min_point(&self) -> Vec3 {
-        self.center - self.radius
+    fn get_min_point(&self) -> Point3<f64> {
+        (self.center - self.radius).to_point()
     }
 
-    fn get_max_point(&self) -> Vec3 {
-        self.center + self.radius
+    fn get_max_point(&self) -> Point3<f64> {
+        (self.center + self.radius).to_point()
+    }
+
+    fn get_bounding_box(&self) -> AABB {
+        AABB::new(self.get_min_point(), self.get_max_point())
     }
 
     fn get_samples(&self, _sample_points_sqrt: usize) -> Vec<Vec3> {
         vec![]
-    }
-
-    fn scale(&mut self, l: f64) {
-        self.center.mul_assign(2.0 / l);
-        self.center.sub_assign(Vec3::one());
-        self.center.mul_assign(-1.0);
-        self.radius = (self.radius * 2.0) / l;
     }
 }

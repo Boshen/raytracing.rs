@@ -1,25 +1,14 @@
-use crate::model::Vec3;
 use crate::ray::Ray;
+use nalgebra::Point3;
 
 pub struct AABB {
-    min: [f64; 3],
-    max: [f64; 3],
+    min: Point3<f64>,
+    max: Point3<f64>,
 }
 
 impl AABB {
-    pub fn new(mins: Vec<Vec3>, maxs: Vec<Vec3>) -> AABB {
-        AABB {
-            min: [
-                f(&mins, |v| v.x, |a, b| a.min(b)),
-                f(&mins, |v| v.y, |a, b| a.min(b)),
-                f(&mins, |v| v.z, |a, b| a.min(b)),
-            ],
-            max: [
-                f(&maxs, |v| v.x, |a, b| a.max(b)),
-                f(&maxs, |v| v.y, |a, b| a.max(b)),
-                f(&maxs, |v| v.z, |a, b| a.max(b)),
-            ],
-        }
+    pub fn new(min: Point3<f64>, max: Point3<f64>) -> AABB {
+        AABB { min, max }
     }
 
     // https://tavianator.com/2015/ray_box_nan.html
@@ -42,8 +31,4 @@ impl AABB {
 
         tmax >= tmin.max(0.0)
     }
-}
-
-fn f(xs: &[Vec3], acc: fn(&Vec3) -> f64, map: fn(f64, f64) -> f64) -> f64 {
-    xs.iter().map(|x| acc(&x)).fold(f64::INFINITY, map)
 }

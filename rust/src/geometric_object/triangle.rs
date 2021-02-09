@@ -1,6 +1,7 @@
 use crate::sampler::get_triangle_sampler;
-use nalgebra::{Cross, Dot, Norm};
+use nalgebra::{Cross, Dot, Norm, Point3};
 
+use crate::aabb::AABB;
 use crate::model::Vec3;
 use crate::ray::Ray;
 
@@ -50,36 +51,6 @@ impl GeometricObject for Triangle {
         Some(t)
     }
 
-    fn normal(&self, _p: &Vec3) -> Vec3 {
-        let e1 = self.1 - self.0;
-        let e2 = self.2 - self.0;
-        e2.cross(&e1).normalize()
-    }
-
-    fn get_center(&self) -> Vec3 {
-        (self.0 + self.1 + self.2) / 3.0
-    }
-
-    fn get_min_point(&self) -> Vec3 {
-        Vec3::new(
-            self.0.x.min(self.1.x).min(self.2.x),
-            self.0.y.min(self.1.y).min(self.2.y),
-            self.0.z.min(self.1.z).min(self.2.z),
-        )
-    }
-
-    fn get_max_point(&self) -> Vec3 {
-        Vec3::new(
-            self.0.x.max(self.1.x).max(self.2.x),
-            self.0.y.max(self.1.y).max(self.2.y),
-            self.0.z.max(self.1.z).max(self.2.z),
-        )
-    }
-
-    fn get_samples(&self, sample_points_sqrt: usize) -> Vec<Vec3> {
-        get_triangle_sampler(sample_points_sqrt, &self).collect()
-    }
-
     fn scale(&mut self, l: f64) {
         self.0 = self.0 * (2.0 / l);
         self.1 = self.1 * (2.0 / l);
@@ -96,5 +67,39 @@ impl GeometricObject for Triangle {
         self.0.y = -self.0.y;
         self.1.y = -self.1.y;
         self.2.y = -self.2.y;
+    }
+
+    fn normal(&self, _p: &Vec3) -> Vec3 {
+        let e1 = self.1 - self.0;
+        let e2 = self.2 - self.0;
+        e2.cross(&e1).normalize()
+    }
+
+    fn get_center(&self) -> Vec3 {
+        (self.0 + self.1 + self.2) / 3.0
+    }
+
+    fn get_min_point(&self) -> Point3<f64> {
+        Point3::new(
+            self.0.x.min(self.1.x).min(self.2.x),
+            self.0.y.min(self.1.y).min(self.2.y),
+            self.0.z.min(self.1.z).min(self.2.z),
+        )
+    }
+
+    fn get_max_point(&self) -> Point3<f64> {
+        Point3::new(
+            self.0.x.max(self.1.x).max(self.2.x),
+            self.0.y.max(self.1.y).max(self.2.y),
+            self.0.z.max(self.1.z).max(self.2.z),
+        )
+    }
+
+    fn get_bounding_box(&self) -> AABB {
+        AABB::new(self.get_min_point(), self.get_max_point())
+    }
+
+    fn get_samples(&self, sample_points_sqrt: usize) -> Vec<Vec3> {
+        get_triangle_sampler(sample_points_sqrt, &self).collect()
     }
 }
