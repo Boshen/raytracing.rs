@@ -1,7 +1,6 @@
 use nalgebra::Point3;
 use num_traits::identities::Zero;
 use rand::{thread_rng, Rng};
-use std::cmp::Ordering;
 
 use crate::aabb::AABB;
 use crate::geometric_object::GeometricObject;
@@ -14,12 +13,16 @@ pub struct BvhNode {
     pub left: Box<Geometry>,
     pub right: Box<Geometry>,
     pub aabb: AABB,
+    pub children: usize,
 }
 
 impl GeometricObject for BvhNode {
     fn intersects(&self, ray: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
         if !self.aabb.intersects(ray, t_min, t_max) {
             return None;
+        }
+        if self.children == 1 {
+            return self.left.intersects(ray, t_min, t_max);
         }
         self.left.intersects(ray, t_min, t_max).map_or_else(
             || self.right.intersects(ray, t_min, t_max),
@@ -64,31 +67,27 @@ impl BvhNode {
         let comparator = box_compare(axis);
 
         let span = end - start;
-        let (left, right) = match span {
-            1 => (objects[start].clone(), objects[start].clone()),
-            2 => {
-                if comparator(&objects[start], &objects[start + 1]) == Ordering::Less {
-                    (objects[start].clone(), objects[start + 1].clone())
-                } else {
-                    (objects[start + 1].clone(), objects[start].clone())
-                }
+        if span == 1 {
+            BvhNode {
+                left: Box::new(objects[start].clone()),
+                right: Box::new(objects[start].clone()),
+                aabb: objects[start].get_bounding_box(),
+                children: 1,
             }
-            _ => {
-                objects[start..end].sort_by(comparator);
-                let mid = start + span / 2.0 as usize;
-                let left = BvhNode::new(objects, start, mid);
-                let right = BvhNode::new(objects, mid, end);
-                (Geometry::from(left), Geometry::from(right))
+        } else {
+            objects[start..end].sort_by(comparator);
+            let mid = start + span / 2.0 as usize;
+            let left = BvhNode::new(objects, start, mid);
+            let right = BvhNode::new(objects, mid, end);
+            let (left, right) = (Geometry::from(left), Geometry::from(right));
+            let box_left = left.get_bounding_box();
+            let box_right = right.get_bounding_box();
+            BvhNode {
+                left: Box::new(left),
+                right: Box::new(right),
+                aabb: AABB::get_surrounding_aabb(&box_left, &box_right),
+                children: 2,
             }
-        };
-
-        let box_left = left.get_bounding_box();
-        let box_right = right.get_bounding_box();
-
-        BvhNode {
-            left: Box::new(left),
-            right: Box::new(right),
-            aabb: AABB::get_surrounding_aabb(&box_left, &box_right),
         }
     }
 }
