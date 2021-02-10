@@ -1,6 +1,5 @@
 use crate::brdf::Lambertian;
 
-#[derive(Copy, Clone)]
 pub struct Matte {
     pub ambient_brdf: Lambertian,
     pub diffuse_brdf: Lambertian,

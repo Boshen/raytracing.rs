@@ -1,6 +1,5 @@
 use crate::brdf::{GlossySpecular, Lambertian, PerfectSpecular};
 
-#[derive(Copy, Clone)]
 pub struct Reflective {
     pub ambient_brdf: Lambertian,
     pub diffuse_brdf: Lambertian,

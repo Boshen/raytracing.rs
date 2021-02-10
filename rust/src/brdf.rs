@@ -14,19 +14,16 @@ pub trait BRDF: Send + Sync {
     fn sample_f(&self, hit: &RayHit, wo: &Vec3, wi: &Vec3) -> Color;
 }
 
-#[derive(Copy, Clone)]
 pub struct Lambertian {
     pub kd: f64,   // diffuse reflection coefficient [0, 1]
     pub cd: Color, // diffuse color
 }
 
-#[derive(Copy, Clone)]
 pub struct GlossySpecular {
     pub ks: f64,  // specular reflection coefficient [0, 1]
     pub exp: f64, // shininess
 }
 
-#[derive(Copy, Clone)]
 pub struct PerfectSpecular {
     pub kr: f64,   // reflection coefficient
     pub cr: Color, // reflection color

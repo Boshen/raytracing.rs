@@ -15,7 +15,7 @@ pub struct World {
     pub lights: Vec<LightEnum>,
     pub bvh: BvhNode,
     pub ambient_light: AmbientLight,
-    pub materials: HashMap<usize, Material>,
+    pub materials: HashMap<usize, Box<Material>>,
 }
 
 impl World {

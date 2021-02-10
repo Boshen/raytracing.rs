@@ -17,7 +17,6 @@ pub use matte::*;
 pub use phong::*;
 pub use reflective::*;
 
-#[derive(Copy, Clone)]
 pub enum Material {
     Matte(Matte),
     Phong(Phong),
