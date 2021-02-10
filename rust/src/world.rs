@@ -1,5 +1,6 @@
 use nalgebra::{Dot, Norm};
 use num_traits::identities::Zero;
+use std::collections::HashMap;
 
 use crate::color::Color;
 use crate::geometric_object::{BvhNode, GeometricObject};
@@ -14,6 +15,7 @@ pub struct World {
     pub lights: Vec<LightEnum>,
     pub bvh: BvhNode,
     pub ambient_light: AmbientLight,
+    pub materials: HashMap<usize, Material>,
 }
 
 impl World {
@@ -32,13 +34,13 @@ impl World {
                 let rayhit = RayHit {
                     ray,
                     hit_point,
-                    material: &geometric_object.get_material(),
                     geometric_object: &geometric_object,
                     world: &self,
                     normal: adjusted_normal,
                     depth,
                 };
-                geometric_object.get_material().shade(&rayhit)
+                self.get_material(geometric_object.get_material_id())
+                    .shade(&rayhit)
             })
     }
 
@@ -49,7 +51,16 @@ impl World {
         let shadow_ray = Ray::new(point + 0.00001 * dir, *dir);
         self.bvh
             .intersects(&shadow_ray)
-            .filter(|(_, o)| !matches!(o.get_material(), Material::Emissive(_)))
+            .filter(|(_, o)| {
+                !matches!(
+                    self.get_material(o.get_material_id()),
+                    Material::Emissive(_)
+                )
+            })
             .map_or(false, |(dist, _)| test_distance(dist))
+    }
+
+    pub fn get_material(&self, material_id: usize) -> &Material {
+        self.materials.get(&material_id).unwrap()
     }
 }

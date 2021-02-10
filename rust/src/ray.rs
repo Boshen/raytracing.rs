@@ -1,5 +1,4 @@
 use crate::geometric_object::Geometry;
-use crate::material::Material;
 use crate::model::Vec3;
 use crate::world::World;
 
@@ -21,7 +20,6 @@ impl Ray {
 pub struct RayHit<'a> {
     pub ray: &'a Ray,
     pub hit_point: Vec3,
-    pub material: &'a Material,
     pub geometric_object: &'a Geometry,
     pub world: &'a World,
     pub normal: Vec3,

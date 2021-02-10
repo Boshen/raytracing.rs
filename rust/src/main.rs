@@ -56,6 +56,7 @@ fn main() -> Result<(), Box<dyn Error>> {
             .chain(asset.lights.into_iter())
             .collect::<Vec<LightEnum>>(),
         ambient_light,
+        materials: asset.materials,
     };
 
     let camera = ThinLensCamera {

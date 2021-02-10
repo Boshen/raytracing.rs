@@ -1,4 +1,5 @@
 extern crate tobj;
+use std::collections::HashMap;
 
 use crate::brdf::{GlossySpecular, Lambertian, PerfectSpecular};
 use crate::color::Color;
@@ -18,6 +19,7 @@ pub struct Asset {
     pub objects: Vec<Object>,
     pub geometries: Vec<Geometry>,
     pub lights: Vec<LightEnum>,
+    pub materials: HashMap<usize, Material>,
 }
 
 impl Asset {
@@ -26,6 +28,7 @@ impl Asset {
             objects: vec![],
             geometries: vec![],
             lights: vec![],
+            materials: HashMap::new(),
         };
 
         let (models, materials) = tobj::load_obj(&file_name, true).expect("Failed to load file");
@@ -66,20 +69,21 @@ impl Asset {
                         let diffuse_brdf = Lambertian::new(1.0, diffuse);
                         Material::Matte(Matte::new(ambient_brdf, diffuse_brdf))
                     };
+                    asset.materials.insert(material_id, material);
 
                     let mut next_face = 0;
                     for f in 0..mesh.num_face_indices.len() {
                         let end = next_face + mesh.num_face_indices[f] as usize;
                         let face_indices: Vec<_> = mesh.indices[next_face..end].iter().collect();
                         let triangle = Triangle::new(
-                            material,
+                            material_id,
                             vertices[*face_indices[0] as usize],
                             vertices[*face_indices[1] as usize],
                             vertices[*face_indices[2] as usize],
                             scale,
                         );
                         let triangle2 = Triangle::new(
-                            material,
+                            material_id,
                             vertices[*face_indices[0] as usize],
                             vertices[*face_indices[1] as usize],
                             vertices[*face_indices[2] as usize],
@@ -98,13 +102,16 @@ impl Asset {
             };
         }
 
+        let material = Material::Reflective(Reflective::new(
+            Lambertian::new(0.1, Color::new(1.0, 1.0, 1.0)),
+            Lambertian::new(0.1, Color::new(1.0, 1.0, 1.0)),
+            GlossySpecular::new(0.2, 2.0),
+            PerfectSpecular::new(0.5, Color::new(1.0, 1.0, 1.0)),
+        ));
+        let material_id = 1000 as usize;
+        asset.materials.insert(material_id, material);
         asset.geometries.push(Geometry::from(Sphere::new(
-            Material::Reflective(Reflective::new(
-                Lambertian::new(0.1, Color::new(1.0, 1.0, 1.0)),
-                Lambertian::new(0.1, Color::new(1.0, 1.0, 1.0)),
-                GlossySpecular::new(0.2, 2.0),
-                PerfectSpecular::new(0.5, Color::new(1.0, 1.0, 1.0)),
-            )),
+            material_id,
             40.0,
             Vec3::new(400.0, 40.0, 500.0),
             scale,

@@ -1,6 +1,5 @@
 use crate::aabb::AABB;
 use crate::geometric_object::{GeometricObject, Geometry};
-use crate::material::Material;
 use crate::model::Vec3;
 use crate::ray::Ray;
 use crate::sampler::get_triangle_sampler;
@@ -11,12 +10,17 @@ pub struct Triangle {
     pub x: Vec3,
     pub y: Vec3,
     pub z: Vec3,
-    material: Material,
+    material_id: usize,
 }
 
 impl Triangle {
-    pub fn new(material: Material, x: Vec3, y: Vec3, z: Vec3, scale: f64) -> Triangle {
-        let mut triangle = Triangle { material, x, y, z };
+    pub fn new(material_id: usize, x: Vec3, y: Vec3, z: Vec3, scale: f64) -> Triangle {
+        let mut triangle = Triangle {
+            material_id,
+            x,
+            y,
+            z,
+        };
         triangle.scale(scale);
         triangle
     }
@@ -107,7 +111,7 @@ impl GeometricObject for Triangle {
         get_triangle_sampler(sample_points_sqrt, &self).collect()
     }
 
-    fn get_material(&self) -> Material {
-        self.material
+    fn get_material_id(&self) -> usize {
+        self.material_id
     }
 }

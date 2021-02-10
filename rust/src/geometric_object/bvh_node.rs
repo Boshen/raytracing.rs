@@ -4,11 +4,8 @@ use rand::{thread_rng, Rng};
 use std::cmp::Ordering;
 
 use crate::aabb::AABB;
-use crate::brdf::Lambertian;
-use crate::color::Color;
 use crate::geometric_object::GeometricObject;
 use crate::geometric_object::Geometry;
-use crate::material::{Material, Matte};
 use crate::model::Vec3;
 use crate::ray::Ray;
 
@@ -66,10 +63,8 @@ impl GeometricObject for BvhNode {
         vec![]
     }
 
-    fn get_material(&self) -> Material {
-        let ambient_brdf = Lambertian::new(0.0, Color::zero());
-        let diffuse_brdf = Lambertian::new(0.0, Color::zero());
-        Material::Matte(Matte::new(ambient_brdf, diffuse_brdf))
+    fn get_material_id(&self) -> usize {
+        0
     }
 }
 
