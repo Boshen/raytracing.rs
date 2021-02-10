@@ -21,19 +21,10 @@ impl GeometricObject for BvhNode {
         if !self.aabb.intersects(ray, t_min, t_max) {
             return None;
         }
-        match self.left.intersects(ray, t_min, t_max) {
-            None => self.right.intersects(ray, t_min, t_max),
-            Some(r1) => match self.right.intersects(ray, t_min, r1.dist) {
-                None => Some(r1),
-                Some(r2) => {
-                    if r2.dist < r1.dist {
-                        Some(r2)
-                    } else {
-                        Some(r1)
-                    }
-                }
-            },
-        }
+        self.left.intersects(ray, t_min, t_max).map_or_else(
+            || self.right.intersects(ray, t_min, t_max),
+            |r1| self.right.intersects(ray, t_min, r1.dist).or(Some(r1)),
+        )
     }
 
     fn scale(&mut self, _l: f64) {}

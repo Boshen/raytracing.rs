@@ -1,6 +1,6 @@
 use nalgebra::{Dot, Norm};
 use num_traits::identities::Zero;
-use std::{collections::HashMap, f64::INFINITY, f64::NEG_INFINITY};
+use std::{collections::HashMap, f64::INFINITY};
 
 use crate::color::Color;
 use crate::geometric_object::{BvhNode, GeometricObject};
@@ -24,7 +24,7 @@ impl World {
             return Color::zero();
         }
         self.bvh
-            .intersects(ray, NEG_INFINITY, INFINITY)
+            .intersects(ray, 0.0, INFINITY)
             .map_or(Color::zero(), |record| {
                 let wo = (-1.0 * ray.dir).normalize();
                 // revert normal if we hit the inside surface
@@ -47,7 +47,7 @@ impl World {
     {
         let shadow_ray = Ray::new(point + 0.00001 * dir, *dir);
         self.bvh
-            .intersects(&shadow_ray, -INFINITY, INFINITY)
+            .intersects(&shadow_ray, 0.0, INFINITY)
             .filter(|record| {
                 !matches!(self.get_material(record.material_id), Material::Emissive(_))
             })
