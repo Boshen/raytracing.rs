@@ -6,7 +6,7 @@ use crate::color::Color;
 use crate::model::Vec3;
 use crate::ray::RayHit;
 
-pub trait BRDF: Send + Sync {
+pub trait BRDF {
     // reciprocity
     fn f(&self, hit: &RayHit, wo: &Vec3, wi: &Vec3) -> Color;
     // bihemispherical reflectance

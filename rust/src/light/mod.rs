@@ -25,7 +25,7 @@ pub enum LightEnum {
 }
 
 #[enum_dispatch(LightEnum)]
-pub trait Light: Send + Sync {
+pub trait Light {
     // the direction of the incoming light at a hit point
     fn get_direction(&self, hit: &RayHit) -> Vec3;
     fn radiance(&self, hit: &RayHit) -> Color;
