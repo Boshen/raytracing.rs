@@ -41,17 +41,14 @@ impl World {
             })
     }
 
-    pub fn is_in_shadow<F>(&self, point: &Vec3, dir: &Vec3, test_distance: F) -> bool
-    where
-        F: Fn(f64) -> bool,
-    {
+    pub fn is_in_shadow(&self, point: &Vec3, dir: &Vec3, t_max: f64) -> bool {
         let shadow_ray = Ray::new(point + 0.00001 * dir, *dir);
         self.bvh
-            .intersects(&shadow_ray, 0.0, INFINITY)
+            .intersects(&shadow_ray, 0.0, t_max)
             .filter(|record| {
                 !matches!(self.get_material(record.material_id), Material::Emissive(_))
             })
-            .map_or(false, |record| test_distance(record.dist))
+            .is_some()
     }
 
     pub fn get_material(&self, material_id: usize) -> &Material {
