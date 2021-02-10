@@ -27,7 +27,7 @@ impl Triangle {
 }
 
 impl GeometricObject for Triangle {
-    fn intersects(&self, ray: &Ray) -> Option<(f64, Geometry)> {
+    fn intersects(&self, ray: &Ray, t_min: f64, t_max: f64) -> Option<(f64, Geometry)> {
         let epsilon = 0.000001;
         let e1 = self.y - self.x;
         let e2 = self.z - self.x;
@@ -53,6 +53,9 @@ impl GeometricObject for Triangle {
 
         let t = f * e2.dot(&q);
         if t <= epsilon {
+            return None;
+        }
+        if t < t_min || t > t_max {
             return None;
         }
 

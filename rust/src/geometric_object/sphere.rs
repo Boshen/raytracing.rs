@@ -28,7 +28,7 @@ impl Sphere {
 }
 
 impl GeometricObject for Sphere {
-    fn intersects(&self, ray: &Ray) -> Option<(f64, Geometry)> {
+    fn intersects(&self, ray: &Ray, t_min: f64, t_max: f64) -> Option<(f64, Geometry)> {
         let center = self.center;
         let radius = self.radius;
         let start = ray.origin;
@@ -57,6 +57,9 @@ impl GeometricObject for Sphere {
 
         let t = (-b - disc.sqrt()) / (2.0 * a);
         if t < 0.0 {
+            return None;
+        }
+        if t < t_min || t > t_max {
             return None;
         }
 

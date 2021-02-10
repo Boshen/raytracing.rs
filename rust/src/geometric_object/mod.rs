@@ -23,7 +23,7 @@ pub enum Geometry {
 #[enum_dispatch(Geometry)]
 pub trait GeometricObject: Send + Sync {
     fn scale(&mut self, l: f64);
-    fn intersects(&self, ray: &Ray) -> Option<(f64, Geometry)>;
+    fn intersects(&self, ray: &Ray, t_min: f64, t_max: f64) -> Option<(f64, Geometry)>;
     fn normal(&self, p: &Vec3) -> Vec3;
     fn get_center(&self) -> Vec3;
     fn get_min_point(&self) -> Point3<f64>;

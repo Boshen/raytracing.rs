@@ -1,6 +1,6 @@
 use nalgebra::{Dot, Norm};
 use num_traits::identities::Zero;
-use std::collections::HashMap;
+use std::{collections::HashMap, f64::INFINITY};
 
 use crate::color::Color;
 use crate::geometric_object::{BvhNode, GeometricObject};
@@ -23,9 +23,9 @@ impl World {
         if depth >= 15 {
             return Color::zero();
         }
-        self.bvh
-            .intersects(ray)
-            .map_or(Color::zero(), |(distance, geometric_object)| {
+        self.bvh.intersects(ray, -INFINITY, INFINITY).map_or(
+            Color::zero(),
+            |(distance, geometric_object)| {
                 let hit_point = ray.get_point(distance);
                 let normal = geometric_object.normal(&hit_point);
                 let wo = (-1.0 * ray.dir).normalize();
@@ -41,7 +41,8 @@ impl World {
                 };
                 self.get_material(geometric_object.get_material_id())
                     .shade(&rayhit)
-            })
+            },
+        )
     }
 
     pub fn is_in_shadow<F>(&self, point: &Vec3, dir: &Vec3, test_distance: F) -> bool
@@ -50,7 +51,7 @@ impl World {
     {
         let shadow_ray = Ray::new(point + 0.00001 * dir, *dir);
         self.bvh
-            .intersects(&shadow_ray)
+            .intersects(&shadow_ray, -INFINITY, INFINITY)
             .filter(|(_, o)| {
                 !matches!(
                     self.get_material(o.get_material_id()),

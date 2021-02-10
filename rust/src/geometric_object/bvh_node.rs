@@ -17,23 +17,22 @@ pub struct BvhNode {
 }
 
 impl GeometricObject for BvhNode {
-    fn intersects(&self, ray: &Ray) -> Option<(f64, Geometry)> {
-        if !self.aabb.intersects(ray) {
+    fn intersects(&self, ray: &Ray, t_min: f64, t_max: f64) -> Option<(f64, Geometry)> {
+        if !self.aabb.intersects(ray, t_min, t_max) {
             return None;
         }
-        let left = self.left.intersects(ray);
-        let right = self.right.intersects(ray);
-        match (left, right) {
-            (None, None) => None,
-            (Some(left), None) => Some(left),
-            (None, Some(right)) => Some(right),
-            (Some(left), Some(right)) => {
-                if left.0 < right.0 {
-                    Some(left)
-                } else {
-                    Some(right)
+        match self.left.intersects(ray, t_min, t_max) {
+            None => self.right.intersects(ray, t_min, t_max),
+            Some((t1, o1)) => match self.right.intersects(ray, t_min, t1) {
+                None => Some((t1, o1)),
+                Some((t2, o2)) => {
+                    if t2 < t1 {
+                        Some((t2, o2))
+                    } else {
+                        Some((t1, o1))
+                    }
                 }
-            }
+            },
         }
     }
 

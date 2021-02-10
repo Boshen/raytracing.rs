@@ -13,15 +13,15 @@ impl AABB {
     }
 
     // https://tavianator.com/2015/ray_box_nan.html
-    pub fn intersects(&self, ray: &Ray) -> bool {
-        let origin = [ray.origin.x, ray.origin.y, ray.origin.z];
-        let inv_dir = [ray.dir.x.recip(), ray.dir.y.recip(), ray.dir.z.recip()];
+    pub fn intersects(&self, r: &Ray, t_min: f64, t_max: f64) -> bool {
+        let origin = [r.origin.x, r.origin.y, r.origin.z];
+        let inv_dir = [r.dir.x.recip(), r.dir.y.recip(), r.dir.z.recip()];
 
         let mut t1 = (self.min[0] - origin[0]) * inv_dir[0];
         let mut t2 = (self.max[0] - origin[0]) * inv_dir[0];
 
-        let mut tmin = t1.min(t2);
-        let mut tmax = t1.max(t2);
+        let mut tmin = t1.min(t2).max(t_min);
+        let mut tmax = t1.max(t2).min(t_max);
 
         for i in 1..3 {
             t1 = (self.min[i] - origin[i]) * inv_dir[i];
