@@ -1,12 +1,12 @@
-use crate::aabb::AABB;
 use nalgebra::Norm;
 use nalgebra::Point3;
 use num_traits::One;
 use std::ops::{MulAssign, SubAssign};
 
-use crate::geometric_object::{GeometricObject, Geometry};
+use crate::aabb::AABB;
+use crate::geometric_object::GeometricObject;
 use crate::model::Vec3;
-use crate::ray::Ray;
+use crate::ray::{HitRecord, Ray};
 
 #[derive(Clone)]
 pub struct Sphere {
@@ -28,7 +28,7 @@ impl Sphere {
 }
 
 impl GeometricObject for Sphere {
-    fn intersects(&self, ray: &Ray, t_min: f64, t_max: f64) -> Option<(f64, Geometry)> {
+    fn intersects(&self, ray: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
         let center = self.center;
         let radius = self.radius;
         let start = ray.origin;
@@ -63,7 +63,13 @@ impl GeometricObject for Sphere {
             return None;
         }
 
-        Some((t, Geometry::from(self.clone())))
+        let hit_point = ray.get_point(t);
+        Some(HitRecord {
+            dist: t,
+            hit_point,
+            normal: self.normal(&hit_point),
+            material_id: self.material_id,
+        })
     }
 
     fn scale(&mut self, l: f64) {

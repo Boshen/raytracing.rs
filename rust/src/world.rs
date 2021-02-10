@@ -1,6 +1,6 @@
 use nalgebra::{Dot, Norm};
 use num_traits::identities::Zero;
-use std::{collections::HashMap, f64::INFINITY};
+use std::{collections::HashMap, f64::INFINITY, f64::NEG_INFINITY};
 
 use crate::color::Color;
 use crate::geometric_object::{BvhNode, GeometricObject};
@@ -23,26 +23,22 @@ impl World {
         if depth >= 15 {
             return Color::zero();
         }
-        self.bvh.intersects(ray, -INFINITY, INFINITY).map_or(
-            Color::zero(),
-            |(distance, geometric_object)| {
-                let hit_point = ray.get_point(distance);
-                let normal = geometric_object.normal(&hit_point);
+        self.bvh
+            .intersects(ray, NEG_INFINITY, INFINITY)
+            .map_or(Color::zero(), |record| {
                 let wo = (-1.0 * ray.dir).normalize();
                 // revert normal if we hit the inside surface
-                let adjusted_normal = normal * normal.dot(&wo).signum();
+                let adjusted_normal = record.normal * record.normal.dot(&wo).signum();
                 let rayhit = RayHit {
                     ray,
-                    hit_point,
-                    geometric_object: &geometric_object,
-                    world: &self,
+                    hit_point: record.hit_point,
+                    material_id: record.material_id,
                     normal: adjusted_normal,
+                    world: &self,
                     depth,
                 };
-                self.get_material(geometric_object.get_material_id())
-                    .shade(&rayhit)
-            },
-        )
+                self.get_material(record.material_id).shade(&rayhit)
+            })
     }
 
     pub fn is_in_shadow<F>(&self, point: &Vec3, dir: &Vec3, test_distance: F) -> bool
@@ -52,13 +48,10 @@ impl World {
         let shadow_ray = Ray::new(point + 0.00001 * dir, *dir);
         self.bvh
             .intersects(&shadow_ray, -INFINITY, INFINITY)
-            .filter(|(_, o)| {
-                !matches!(
-                    self.get_material(o.get_material_id()),
-                    Material::Emissive(_)
-                )
+            .filter(|record| {
+                !matches!(self.get_material(record.material_id), Material::Emissive(_))
             })
-            .map_or(false, |(dist, _)| test_distance(dist))
+            .map_or(false, |record| test_distance(record.dist))
     }
 
     pub fn get_material(&self, material_id: usize) -> &Material {

@@ -7,7 +7,7 @@ use crate::aabb::AABB;
 use crate::geometric_object::GeometricObject;
 use crate::geometric_object::Geometry;
 use crate::model::Vec3;
-use crate::ray::Ray;
+use crate::ray::{HitRecord, Ray};
 
 #[derive(Clone)]
 pub struct BvhNode {
@@ -17,19 +17,19 @@ pub struct BvhNode {
 }
 
 impl GeometricObject for BvhNode {
-    fn intersects(&self, ray: &Ray, t_min: f64, t_max: f64) -> Option<(f64, Geometry)> {
+    fn intersects(&self, ray: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
         if !self.aabb.intersects(ray, t_min, t_max) {
             return None;
         }
         match self.left.intersects(ray, t_min, t_max) {
             None => self.right.intersects(ray, t_min, t_max),
-            Some((t1, o1)) => match self.right.intersects(ray, t_min, t1) {
-                None => Some((t1, o1)),
-                Some((t2, o2)) => {
-                    if t2 < t1 {
-                        Some((t2, o2))
+            Some(r1) => match self.right.intersects(ray, t_min, r1.dist) {
+                None => Some(r1),
+                Some(r2) => {
+                    if r2.dist < r1.dist {
+                        Some(r2)
                     } else {
-                        Some((t1, o1))
+                        Some(r1)
                     }
                 }
             },
