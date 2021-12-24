@@ -1,5 +1,4 @@
-use nalgebra::{Dot, Norm};
-use num_traits::identities::Zero;
+use nalgebra::{Point3, Translation3};
 use std::{collections::HashMap, f64::INFINITY};
 
 use crate::color::Color;
@@ -21,11 +20,11 @@ pub struct World {
 impl World {
     pub fn trace(&self, ray: &Ray, depth: i32) -> Color {
         if depth >= 15 {
-            return Color::zero();
+            return Color::zeros();
         }
         self.bvh
             .intersects(ray, 0.0, INFINITY)
-            .map_or(Color::zero(), |record| {
+            .map_or(Color::zeros(), |record| {
                 let wo = (-1.0 * ray.dir).normalize();
                 // revert normal if we hit the inside surface
                 let adjusted_normal = record.normal * record.normal.dot(&wo).signum();
@@ -41,8 +40,9 @@ impl World {
             })
     }
 
-    pub fn is_in_shadow(&self, point: &Vec3, dir: &Vec3, t_max: f64) -> bool {
-        let shadow_ray = Ray::new(point + 0.00001 * dir, *dir);
+    pub fn is_in_shadow(&self, point: &Point3<f64>, dir: &Vec3, t_max: f64) -> bool {
+        let offset = 0.00001 * dir;
+        let shadow_ray = Ray::new(Translation3::from(offset) * point, *dir);
         self.bvh
             .intersects(&shadow_ray, 0.0, t_max)
             .filter(|record| {

@@ -1,4 +1,4 @@
-use nalgebra::Point2;
+use nalgebra::{Point2, Point3};
 use rand::distributions::Standard;
 use rand::{thread_rng, Rng};
 use std::f64::consts::FRAC_PI_4;
@@ -13,7 +13,7 @@ pub fn get_square_sampler(n: usize) -> impl Iterator<Item = Point2<f64>> {
         .map(|(i, j)| Point2::new(i, j))
 }
 
-pub fn get_triangle_sampler(n: usize, t: &Triangle) -> impl Iterator<Item = Vec3> {
+pub fn get_triangle_sampler(n: usize, t: &Triangle) -> impl Iterator<Item = Point3<f64>> {
     let (x, y, z) = (t.x, t.y, t.z);
     get_square_sampler(n).map(move |p| {
         let mut a = p.x;
@@ -22,7 +22,8 @@ pub fn get_triangle_sampler(n: usize, t: &Triangle) -> impl Iterator<Item = Vec3
             a = 1.0 - a;
             b = 1.0 - b;
         }
-        x + ((y - x) * a) + ((z - x) * b)
+        let z = x + ((y - x) * a) + ((z - x) * b);
+        Point3::from(z)
     })
 }
 

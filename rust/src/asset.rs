@@ -1,16 +1,17 @@
-extern crate tobj;
 use std::collections::HashMap;
+
+use nalgebra::Point3;
+use tobj::{load_obj, LoadOptions};
 
 use crate::brdf::{GlossySpecular, Lambertian, PerfectSpecular};
 use crate::color::Color;
 use crate::geometric_object::{Geometry, Sphere, Triangle};
 use crate::light::{AreaLight, LightEnum};
 use crate::material::{Emissive, Material, Matte, Reflective};
-use crate::model::Vec3;
 
 pub struct Object {
     pub name: String,
-    pub vertices: Vec<Vec3>,
+    pub vertices: Vec<Point3<f64>>,
     pub face_indexes: Vec<(usize, usize, usize)>,
 }
 
@@ -30,15 +31,23 @@ impl Asset {
             materials: HashMap::new(),
         };
 
-        let (models, materials) = tobj::load_obj(&file_name, true).expect("Failed to load file");
+        let (models, materials) = load_obj(
+            &file_name,
+            &LoadOptions {
+                triangulate: true,
+                ..Default::default()
+            },
+        )
+        .expect("Failed to load file");
 
+        let materials = materials.expect("loaded materials");
         let scale = 555.0;
 
         for model in models.iter() {
             let mesh = &model.mesh;
-            let mut vertices: Vec<Vec3> = vec![];
+            let mut vertices: Vec<Point3<f64>> = vec![];
             for v in 0..mesh.positions.len() / 3 {
-                vertices.push(Vec3::new(
+                vertices.push(Point3::new(
                     mesh.positions[3 * v] as f64,
                     mesh.positions[3 * v + 1] as f64,
                     mesh.positions[3 * v + 2] as f64,
@@ -70,27 +79,16 @@ impl Asset {
                         Material::Matte(Matte::new(ambient_brdf, diffuse_brdf))
                     };
 
-                    let mut next_face = 0;
-                    for f in 0..mesh.num_face_indices.len() {
-                        let end = next_face + mesh.num_face_indices[f] as usize;
-                        let face_indices: Vec<_> = mesh.indices[next_face..end].iter().collect();
-                        let triangle = Triangle::new(
-                            material_id,
-                            vertices[*face_indices[0] as usize],
-                            vertices[*face_indices[1] as usize],
-                            vertices[*face_indices[2] as usize],
-                            scale,
-                        );
-                        let triangle2 = Triangle::new(
-                            material_id,
-                            vertices[*face_indices[0] as usize],
-                            vertices[*face_indices[1] as usize],
-                            vertices[*face_indices[2] as usize],
-                            scale,
-                        );
+                    for f in 0..(mesh.indices.len() / 3) {
+                        let start = f * 3;
+                        let face_indices: Vec<_> = mesh.indices[start..start + 3].iter().collect();
+                        let v1 = vertices[*face_indices[0] as usize];
+                        let v2 = vertices[*face_indices[1] as usize];
+                        let v3 = vertices[*face_indices[2] as usize];
+                        let triangle = Triangle::new(material_id, v1, v2, v3, scale);
+                        let triangle2 = Triangle::new(material_id, v1, v2, v3, scale);
                         triangles.push(Geometry::from(triangle));
                         asset.geometries.push(Geometry::from(triangle2));
-                        next_face = end;
                     }
 
                     if m.ambient[0] > 1.0 {
@@ -114,7 +112,7 @@ impl Asset {
         asset.geometries.push(Geometry::from(Sphere::new(
             material_id,
             40.0,
-            Vec3::new(400.0, 40.0, 500.0),
+            Point3::new(400.0, 40.0, 500.0),
             scale,
         )));
         asset.materials.insert(material_id, Box::new(material));

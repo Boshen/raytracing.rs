@@ -1,6 +1,4 @@
-use nalgebra::Norm;
 use nalgebra::Point3;
-use num_traits::One;
 use std::ops::{MulAssign, SubAssign};
 
 use crate::aabb::AABB;
@@ -11,12 +9,12 @@ use crate::ray::{HitRecord, Ray};
 #[derive(Clone)]
 pub struct Sphere {
     radius: f64,
-    center: Vec3,
+    center: Point3<f64>,
     material_id: usize,
 }
 
 impl Sphere {
-    pub fn new(material_id: usize, radius: f64, center: Vec3, scale: f64) -> Sphere {
+    pub fn new(material_id: usize, radius: f64, center: Point3<f64>, scale: f64) -> Sphere {
         let mut sphere = Sphere {
             material_id,
             radius,
@@ -74,32 +72,32 @@ impl GeometricObject for Sphere {
 
     fn scale(&mut self, l: f64) {
         self.center.mul_assign(2.0 / l);
-        self.center.sub_assign(Vec3::one());
+        self.center.sub_assign(Vec3::repeat(1.0));
         self.center.mul_assign(-1.0);
         self.radius = (self.radius * 2.0) / l;
     }
 
-    fn normal(&self, p: &Vec3) -> Vec3 {
+    fn normal(&self, p: &Point3<f64>) -> Vec3 {
         ((p - self.center) / self.radius).normalize()
     }
 
-    fn get_center(&self) -> Vec3 {
+    fn get_center(&self) -> Point3<f64> {
         self.center
     }
 
     fn get_min_point(&self) -> Point3<f64> {
-        (self.center - self.radius).to_point()
+        (self.center - Vec3::repeat(self.radius)).into()
     }
 
     fn get_max_point(&self) -> Point3<f64> {
-        (self.center + self.radius).to_point()
+        (self.center + Vec3::repeat(self.radius)).into()
     }
 
     fn get_bounding_box(&self) -> AABB {
         AABB::new(self.get_min_point(), self.get_max_point())
     }
 
-    fn get_samples(&self, _sample_points_sqrt: usize) -> Vec<Vec3> {
+    fn get_samples(&self, _sample_points_sqrt: usize) -> Vec<Point3<f64>> {
         vec![]
     }
 

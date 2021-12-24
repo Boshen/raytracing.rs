@@ -1,31 +1,33 @@
+use nalgebra::{Point3, Translation3};
+
 use crate::model::Vec3;
 use crate::world::World;
 
 pub struct Ray {
-    pub origin: Vec3,
+    pub origin: Point3<f64>,
     pub dir: Vec3,
 }
 
 impl Ray {
-    pub fn new(origin: Vec3, dir: Vec3) -> Ray {
+    pub fn new(origin: Point3<f64>, dir: Vec3) -> Ray {
         Ray { origin, dir }
     }
 
-    pub fn get_point(&self, distance: f64) -> Vec3 {
-        self.origin + self.dir * distance
+    pub fn get_point(&self, distance: f64) -> Point3<f64> {
+        Translation3::from(self.dir * distance) * self.origin
     }
 }
 
 pub struct HitRecord {
     pub dist: f64,
-    pub hit_point: Vec3,
+    pub hit_point: Point3<f64>,
     pub normal: Vec3,
     pub material_id: usize,
 }
 
 pub struct RayHit<'a> {
     pub ray: &'a Ray,
-    pub hit_point: Vec3,
+    pub hit_point: Point3<f64>,
     pub normal: Vec3,
     pub world: &'a World,
     pub depth: i32,

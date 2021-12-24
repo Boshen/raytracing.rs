@@ -1,5 +1,4 @@
-use nalgebra::{distance, Norm};
-use num_traits::identities::Zero;
+use nalgebra::{center, distance, Point3};
 
 use crate::color::Color;
 use crate::geometric_object::{GeometricObject, Geometry};
@@ -9,7 +8,7 @@ use crate::model::Vec3;
 use crate::ray::RayHit;
 
 pub struct AreaLight {
-    center: Vec3,
+    center: Point3<f64>,
     geometric_objects: Vec<Geometry>,
     sample_points_sqrt: usize,
     pub material: Emissive,
@@ -20,8 +19,7 @@ impl AreaLight {
         let center = geometric_objects
             .iter()
             .map(|h| h.get_center())
-            .fold(Vec3::zero(), |a, b| a + b)
-            / geometric_objects.len() as f64;
+            .fold(Point3::origin(), |a, b| center(&a, &b));
         AreaLight {
             center,
             geometric_objects,
@@ -49,7 +47,7 @@ impl Light for AreaLight {
             .flat_map(|t| t.get_samples(self.sample_points_sqrt))
             .filter(|point_on_light| {
                 let wi = (point_on_light - hit.hit_point).normalize(); // light direction
-                let d = distance(point_on_light.as_point(), hit.hit_point.as_point());
+                let d = distance(point_on_light, &hit.hit_point);
                 !hit.world.is_in_shadow(&hit.hit_point, &wi, d)
             })
             .count() as f64;

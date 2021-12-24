@@ -1,4 +1,4 @@
-use nalgebra::{Cross, Dot, Norm, Point3};
+use nalgebra::{center, Point3};
 
 use crate::aabb::AABB;
 use crate::geometric_object::GeometricObject;
@@ -8,14 +8,20 @@ use crate::sampler::get_triangle_sampler;
 
 #[derive(Clone)]
 pub struct Triangle {
-    pub x: Vec3,
-    pub y: Vec3,
-    pub z: Vec3,
+    pub x: Point3<f64>,
+    pub y: Point3<f64>,
+    pub z: Point3<f64>,
     material_id: usize,
 }
 
 impl Triangle {
-    pub fn new(material_id: usize, x: Vec3, y: Vec3, z: Vec3, scale: f64) -> Triangle {
+    pub fn new(
+        material_id: usize,
+        x: Point3<f64>,
+        y: Point3<f64>,
+        z: Point3<f64>,
+        scale: f64,
+    ) -> Triangle {
         let mut triangle = Triangle {
             material_id,
             x,
@@ -87,14 +93,14 @@ impl GeometricObject for Triangle {
         self.z.y = -self.z.y;
     }
 
-    fn normal(&self, _p: &Vec3) -> Vec3 {
+    fn normal(&self, _p: &Point3<f64>) -> Vec3 {
         let e1 = self.y - self.x;
         let e2 = self.z - self.x;
         e2.cross(&e1).normalize()
     }
 
-    fn get_center(&self) -> Vec3 {
-        (self.x + self.y + self.z) / 3.0
+    fn get_center(&self) -> Point3<f64> {
+        center(&center(&self.x, &self.y), &self.z)
     }
 
     fn get_min_point(&self) -> Point3<f64> {
@@ -117,7 +123,7 @@ impl GeometricObject for Triangle {
         AABB::new(self.get_min_point(), self.get_max_point())
     }
 
-    fn get_samples(&self, sample_points_sqrt: usize) -> Vec<Vec3> {
+    fn get_samples(&self, sample_points_sqrt: usize) -> Vec<Point3<f64>> {
         get_triangle_sampler(sample_points_sqrt, &self).collect()
     }
 

@@ -1,4 +1,4 @@
-use nalgebra::{distance, Norm};
+use nalgebra::{distance, Point3};
 
 use crate::color::Color;
 use crate::light::Light;
@@ -8,7 +8,7 @@ use crate::ray::RayHit;
 pub struct PointLight {
     pub ls: f64,
     pub cl: Color,
-    pub location: Vec3,
+    pub location: Point3<f64>,
 }
 
 impl Light for PointLight {
@@ -22,7 +22,7 @@ impl Light for PointLight {
 
     fn shadow_amount(&self, hit: &RayHit) -> f64 {
         let direction = (self.location - hit.hit_point).normalize();
-        let d = distance(&self.location.to_point(), &hit.hit_point.to_point());
+        let d = distance(&self.location, &hit.hit_point);
         let b = hit.world.is_in_shadow(&hit.hit_point, &direction, d);
         f64::from(u32::from(!b))
     }

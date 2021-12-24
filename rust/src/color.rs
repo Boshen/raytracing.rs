@@ -1,4 +1,4 @@
-use nalgebra::{clamp, Iterable, Vector3};
+use nalgebra::{clamp, Vector3};
 
 pub type Color = Vector3<f64>;
 

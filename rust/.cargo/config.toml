@@ -1,4 +1,4 @@
 [alias]
 lint = "clippy -- -W clippy::pedantic"
-watch = "watch -x run"
+w = "watch -x run"
 release = "run --release && open output.png"

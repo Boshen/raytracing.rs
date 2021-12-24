@@ -1,5 +1,4 @@
 use nalgebra::Point3;
-use num_traits::identities::Zero;
 use rand::{thread_rng, Rng};
 
 use crate::aabb::AABB;
@@ -32,12 +31,12 @@ impl GeometricObject for BvhNode {
 
     fn scale(&mut self, _l: f64) {}
 
-    fn normal(&self, _p: &Vec3) -> Vec3 {
-        Vec3::zero()
+    fn normal(&self, _p: &Point3<f64>) -> Vec3 {
+        Vec3::zeros()
     }
 
-    fn get_center(&self) -> Vec3 {
-        Vec3::zero()
+    fn get_center(&self) -> Point3<f64> {
+        Point3::origin()
     }
 
     fn get_min_point(&self) -> Point3<f64> {
@@ -52,7 +51,7 @@ impl GeometricObject for BvhNode {
         AABB::new(self.get_min_point(), self.get_max_point())
     }
 
-    fn get_samples(&self, _sample_points_sqrt: usize) -> Vec<Vec3> {
+    fn get_samples(&self, _sample_points_sqrt: usize) -> Vec<Point3<f64>> {
         vec![]
     }
 
@@ -63,7 +62,7 @@ impl GeometricObject for BvhNode {
 
 impl BvhNode {
     pub fn new(objects: &mut Vec<Geometry>, start: usize, end: usize) -> BvhNode {
-        let axis = thread_rng().gen_range(0, 3);
+        let axis = thread_rng().gen_range(0..3);
         let comparator = box_compare(axis);
 
         let span = end - start;

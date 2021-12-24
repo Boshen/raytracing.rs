@@ -1,6 +1,3 @@
-use nalgebra::{Dot, Norm, PartialOrder};
-use num_traits::identities::Zero;
-
 use crate::brdf::*;
 use crate::color::Color;
 use crate::light::Light;
@@ -41,12 +38,12 @@ impl Material {
                 let ndotwi = hit.normal.dot(&wi);
                 // not hit by light
                 if ndotwi <= 0.0 {
-                    return Color::zero();
+                    return Color::zeros();
                 }
 
                 let radiance = light.radiance(hit);
-                if radiance.partial_le(&Vec3::zero()) {
-                    return Color::zero();
+                if radiance <= Vec3::zeros() {
+                    return Color::zeros();
                 }
 
                 // wo: reflected direction
@@ -54,7 +51,7 @@ impl Material {
 
                 let wo = (hit.ray.dir * -1.0).normalize();
                 (self.diffuse_color(hit, &wo, &wi) + self.specular_color(hit, &wo, &wi))
-                    * (radiance * shadow_amount)
+                    .component_mul(&(radiance * shadow_amount))
                     * ndotwi
                     + self.reflective_color(hit, &wo)
             })
@@ -62,18 +59,17 @@ impl Material {
     }
 
     fn ambient_color(&self, hit: &RayHit) -> Color {
-        let z = Vec3::zero();
         let rho = match self {
             Material::Matte(m) => m.diffuse_brdf.rho(),
             Material::Phong(m) => m.ambient_brdf.rho(),
             Material::Reflective(m) => m.ambient_brdf.rho(),
-            Material::Emissive(_) => z,
+            Material::Emissive(_) => Color::zeros(),
         };
-        rho * hit.world.ambient_light.radiance(hit)
+        rho.component_mul(&hit.world.ambient_light.radiance(hit))
     }
 
     fn diffuse_color(&self, hit: &RayHit, wo: &Vec3, wi: &Vec3) -> Color {
-        let z = Vec3::zero();
+        let z = Color::zeros();
         match self {
             Material::Matte(m) => m.diffuse_brdf.f(hit, &z, &z),
             Material::Phong(m) => m.diffuse_brdf.f(hit, wo, wi),
@@ -83,7 +79,7 @@ impl Material {
     }
 
     fn specular_color(&self, hit: &RayHit, wo: &Vec3, wi: &Vec3) -> Color {
-        let z = Vec3::zero();
+        let z = Color::zeros();
         match self {
             Material::Matte(_) => z,
             Material::Phong(m) => m.specular_brdf.f(hit, wo, wi),
@@ -93,7 +89,7 @@ impl Material {
     }
 
     fn reflective_color(&self, hit: &RayHit, wo: &Vec3) -> Color {
-        let z = Vec3::zero();
+        let z = Color::zeros();
         match self {
             Material::Matte(_) => z,
             Material::Phong(_) => z,
@@ -104,7 +100,10 @@ impl Material {
                 let wi = normal * (2.0 * ndotwo) - wo;
                 let fr = m.reflective_brdf.sample_f(hit, &wo, &wi);
                 let reflected_ray = Ray::new(hit.hit_point, wi);
-                hit.world.trace(&reflected_ray, hit.depth + 1) * fr * normal.dot(&wi)
+                hit.world
+                    .trace(&reflected_ray, hit.depth + 1)
+                    .component_mul(&fr)
+                    * normal.dot(&wi)
             }
         }
     }

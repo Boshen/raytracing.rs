@@ -2,6 +2,7 @@
 #![allow(clippy::many_single_char_names)]
 
 use image::RgbImage;
+use nalgebra::Point3;
 use std::error::Error;
 
 mod aabb;
@@ -38,7 +39,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let lights: Vec<LightEnum> = vec![LightEnum::from(AmbientOcculuder {
         ls: 1.0,
         cl: Vec3::new(1.0, 1.0, 1.0),
-        sample_points_sqrt: 4,
+        sample_points_sqrt: 16,
     })];
 
     let vp = ViewPlane {
@@ -60,7 +61,11 @@ fn main() -> Result<(), Box<dyn Error>> {
     };
 
     let camera = ThinLensCamera {
-        setting: CameraSetting::new(Vec3::new(0.0, 0.0, -3.0), Vec3::new(0.0, 0.0, 0.0), 500.0),
+        setting: CameraSetting::new(
+            Point3::new(0.0, 0.0, -3.0),
+            Point3::new(0.0, 0.0, 0.0),
+            500.0,
+        ),
         lens_radius: 0.001, // 0 = simple camera with no blur
         focal_plane_distance: 500.0,
     };

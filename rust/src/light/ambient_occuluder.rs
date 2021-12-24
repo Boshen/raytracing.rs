@@ -1,4 +1,3 @@
-use nalgebra::{Cross, Norm};
 use std::f64::INFINITY;
 
 use crate::color::Color;

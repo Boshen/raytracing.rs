@@ -1,6 +1,5 @@
 use crate::model::Vec3;
-use nalgebra::{Norm, Point2, Vector2};
-use num_traits::identities::Zero;
+use nalgebra::{Point2, Vector2};
 use rayon::prelude::*;
 
 use crate::camera::{Camera, CameraSetting};
@@ -37,7 +36,7 @@ impl Camera for ThinLensCamera {
                         );
                         world.trace(&ray, 0)
                     })
-                    .fold(Vec3::zero(), |v1, v2| v1 + v2)
+                    .fold(Vec3::zeros(), |v1, v2| v1 + v2)
                     / ((self.setting.sample_points_sqrt * self.setting.sample_points_sqrt) as f64)
             })
             .collect()
