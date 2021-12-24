@@ -2,13 +2,13 @@
 name = "raytracing"
 version = "0.1.0"
 authors = ["Boshen"]
-edition = "2018"
+edition = "2021"
 
 [dependencies]
-image = "0.23.12"
-nalgebra = "0.10.*"
-rayon = "1.5.*"
-rand = "0.7.*"
-tobj = "2.0.3"
-num-traits = "0.2.6"
-enum_dispatch = "0.3.5"
+image = "0.23.14"
+nalgebra = "0.29.0"
+rayon = "1.5.1"
+rand = "0.8.4"
+tobj = "3.2.0"
+num-traits = "0.2.14"
+enum_dispatch = "0.3.7"
