@@ -90,6 +90,6 @@ impl BRDF for PerfectSpecular {
     }
 
     fn sample_f(&self, hit: &RayHit, _wo: &Vec3, wi: &Vec3) -> Color {
-        self.cr * self.kr / hit.normal.dot(&wi)
+        self.cr * self.kr / hit.normal.dot(wi)
     }
 }

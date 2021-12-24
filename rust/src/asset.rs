@@ -35,7 +35,7 @@ impl Asset {
             &file_name,
             &LoadOptions {
                 triangulate: true,
-                ..Default::default()
+                ..LoadOptions::default()
             },
         )
         .expect("Failed to load file");
@@ -43,7 +43,7 @@ impl Asset {
         let materials = materials.expect("loaded materials");
         let scale = 555.0;
 
-        for model in models.iter() {
+        for model in &models {
             let mesh = &model.mesh;
             let mut vertices: Vec<Point3<f64>> = vec![];
             for v in 0..mesh.positions.len() / 3 {

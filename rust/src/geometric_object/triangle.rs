@@ -23,10 +23,10 @@ impl Triangle {
         scale: f64,
     ) -> Triangle {
         let mut triangle = Triangle {
-            material_id,
             x,
             y,
             z,
+            material_id,
         };
         triangle.scale(scale);
         triangle
@@ -35,7 +35,7 @@ impl Triangle {
 
 impl GeometricObject for Triangle {
     fn intersects(&self, ray: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
-        let epsilon = 0.000001;
+        let epsilon = 0.000_001;
         let e1 = self.y - self.x;
         let e2 = self.z - self.x;
 
@@ -48,7 +48,7 @@ impl GeometricObject for Triangle {
         let f = a.recip();
         let s = ray.origin - self.x;
         let u = f * s.dot(&h);
-        if u < 0.0 || u > 1.0 {
+        if !(0.0..=1.0).contains(&u) {
             return None;
         }
 
@@ -76,13 +76,13 @@ impl GeometricObject for Triangle {
     }
 
     fn scale(&mut self, l: f64) {
-        self.x = self.x * (2.0 / l);
-        self.y = self.y * (2.0 / l);
-        self.z = self.z * (2.0 / l);
+        self.x *= 2.0 / l;
+        self.y *= 2.0 / l;
+        self.z *= 2.0 / l;
 
-        self.x = self.x - Vec3::new(1.0, 1.0, 1.0);
-        self.y = self.y - Vec3::new(1.0, 1.0, 1.0);
-        self.z = self.z - Vec3::new(1.0, 1.0, 1.0);
+        self.x -= Vec3::new(1.0, 1.0, 1.0);
+        self.y -= Vec3::new(1.0, 1.0, 1.0);
+        self.z -= Vec3::new(1.0, 1.0, 1.0);
 
         self.x.x = -self.x.x;
         self.y.x = -self.y.x;
@@ -124,7 +124,7 @@ impl GeometricObject for Triangle {
     }
 
     fn get_samples(&self, sample_points_sqrt: usize) -> Vec<Point3<f64>> {
-        get_triangle_sampler(sample_points_sqrt, &self).collect()
+        get_triangle_sampler(sample_points_sqrt, self).collect()
     }
 
     fn get_material_id(&self) -> usize {

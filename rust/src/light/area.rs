@@ -18,7 +18,7 @@ impl AreaLight {
     pub fn new(geometric_objects: Vec<Geometry>, material: Emissive) -> AreaLight {
         let center = geometric_objects
             .iter()
-            .map(|h| h.get_center())
+            .map(GeometricObject::get_center)
             .fold(Point3::origin(), |a, b| center(&a, &b));
         AreaLight {
             center,

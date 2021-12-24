@@ -16,9 +16,9 @@ pub struct Sphere {
 impl Sphere {
     pub fn new(material_id: usize, radius: f64, center: Point3<f64>, scale: f64) -> Sphere {
         let mut sphere = Sphere {
-            material_id,
             radius,
             center,
+            material_id,
         };
         sphere.scale(scale);
         sphere
@@ -86,11 +86,11 @@ impl GeometricObject for Sphere {
     }
 
     fn get_min_point(&self) -> Point3<f64> {
-        (self.center - Vec3::repeat(self.radius)).into()
+        self.center - Vec3::repeat(self.radius)
     }
 
     fn get_max_point(&self) -> Point3<f64> {
-        (self.center + Vec3::repeat(self.radius)).into()
+        self.center + Vec3::repeat(self.radius)
     }
 
     fn get_bounding_box(&self) -> AABB {

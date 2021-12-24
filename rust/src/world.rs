@@ -33,7 +33,7 @@ impl World {
                     hit_point: record.hit_point,
                     material_id: record.material_id,
                     normal: adjusted_normal,
-                    world: &self,
+                    world: self,
                     depth,
                 };
                 self.get_material(record.material_id).shade(&rayhit)

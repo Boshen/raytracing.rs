@@ -22,8 +22,7 @@ pub fn get_triangle_sampler(n: usize, t: &Triangle) -> impl Iterator<Item = Poin
             a = 1.0 - a;
             b = 1.0 - b;
         }
-        let z = x + ((y - x) * a) + ((z - x) * b);
-        Point3::from(z)
+        x + ((y - x) * a) + ((z - x) * b)
     })
 }
 
@@ -33,7 +32,7 @@ pub fn get_hemisphere_sampler(n: usize) -> impl Iterator<Item = Vec3> {
         let phi = 2.0 * std::f64::consts::PI * p.x;
         let cos_phi = phi.cos();
         let sin_phi = phi.sin();
-        let cos_theta = (1.0 - p.y).powf((e + 1.0 as f64).recip());
+        let cos_theta = (1.0 - p.y).powf((e + 1.0_f64).recip());
         let sin_theta = (1.0 - cos_theta * cos_theta).sqrt();
         Vec3::new(sin_theta * cos_phi, sin_theta * sin_phi, cos_theta)
     })

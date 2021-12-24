@@ -47,7 +47,7 @@ impl Material {
                 }
 
                 // wo: reflected direction
-                let shadow_amount = light.shadow_amount(&hit);
+                let shadow_amount = light.shadow_amount(hit);
 
                 let wo = (hit.ray.dir * -1.0).normalize();
                 (self.diffuse_color(hit, &wo, &wi) + self.specular_color(hit, &wo, &wi))
@@ -79,26 +79,21 @@ impl Material {
     }
 
     fn specular_color(&self, hit: &RayHit, wo: &Vec3, wi: &Vec3) -> Color {
-        let z = Color::zeros();
         match self {
-            Material::Matte(_) => z,
+            Material::Matte(_) | Material::Emissive(_) => Color::zeros(),
             Material::Phong(m) => m.specular_brdf.f(hit, wo, wi),
             Material::Reflective(m) => m.specular_brdf.f(hit, wo, wi),
-            Material::Emissive(_) => z,
         }
     }
 
     fn reflective_color(&self, hit: &RayHit, wo: &Vec3) -> Color {
-        let z = Color::zeros();
         match self {
-            Material::Matte(_) => z,
-            Material::Phong(_) => z,
-            Material::Emissive(_) => z,
+            Material::Matte(_) | Material::Phong(_) | Material::Emissive(_) => Color::zeros(),
             Material::Reflective(m) => {
                 let normal = hit.normal;
-                let ndotwo = normal.dot(&wo);
+                let ndotwo = normal.dot(wo);
                 let wi = normal * (2.0 * ndotwo) - wo;
-                let fr = m.reflective_brdf.sample_f(hit, &wo, &wi);
+                let fr = m.reflective_brdf.sample_f(hit, wo, &wi);
                 let reflected_ray = Ray::new(hit.hit_point, wi);
                 hit.world
                     .trace(&reflected_ray, hit.depth + 1)
