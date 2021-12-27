@@ -6,7 +6,6 @@ use crate::model::Vec3;
 use crate::ray::{HitRecord, Ray};
 use crate::sampler::get_triangle_sampler;
 
-#[derive(Clone)]
 pub struct Triangle {
     pub x: Point3<f64>,
     pub y: Point3<f64>,

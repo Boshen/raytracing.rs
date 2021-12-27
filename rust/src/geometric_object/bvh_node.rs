@@ -1,5 +1,6 @@
 use nalgebra::Point3;
 use rand::{thread_rng, Rng};
+use std::sync::Arc;
 
 use crate::aabb::AABB;
 use crate::geometric_object::GeometricObject;
@@ -9,8 +10,8 @@ use crate::ray::{HitRecord, Ray};
 
 #[derive(Clone)]
 pub struct BvhNode {
-    pub left: Box<Geometry>,
-    pub right: Box<Geometry>,
+    pub left: Arc<Geometry>,
+    pub right: Arc<Geometry>,
     pub aabb: AABB,
     pub children: usize,
 }
@@ -61,29 +62,29 @@ impl GeometricObject for BvhNode {
 }
 
 impl BvhNode {
-    pub fn new(objects: &mut Vec<Geometry>, start: usize, end: usize) -> BvhNode {
+    pub fn new(objects: Vec<Arc<Geometry>>, start: usize, end: usize) -> BvhNode {
+        let mut objects = objects;
         let axis = thread_rng().gen_range(0..3);
         let comparator = box_compare(axis);
 
         let span = end - start;
         if span == 1 {
             BvhNode {
-                left: Box::new(objects[start].clone()),
-                right: Box::new(objects[start].clone()),
+                left: objects[start].clone(),
+                right: objects[start].clone(),
                 aabb: objects[start].get_bounding_box(),
                 children: 1,
             }
         } else {
             objects[start..end].sort_by(comparator);
             let mid = start + span / 2.0 as usize;
-            let left = BvhNode::new(objects, start, mid);
-            let right = BvhNode::new(objects, mid, end);
-            let (left, right) = (Geometry::from(left), Geometry::from(right));
+            let left = Geometry::from(BvhNode::new(objects.clone(), start, mid));
+            let right = Geometry::from(BvhNode::new(objects, mid, end));
             let box_left = left.get_bounding_box();
             let box_right = right.get_bounding_box();
             BvhNode {
-                left: Box::new(left),
-                right: Box::new(right),
+                left: Arc::new(left),
+                right: Arc::new(right),
                 aabb: AABB::get_surrounding_aabb(&box_left, &box_right),
                 children: 2,
             }
@@ -91,7 +92,7 @@ impl BvhNode {
     }
 }
 
-fn box_compare(axis: usize) -> Box<dyn Fn(&Geometry, &Geometry) -> std::cmp::Ordering> {
+fn box_compare(axis: usize) -> Box<dyn Fn(&Arc<Geometry>, &Arc<Geometry>) -> std::cmp::Ordering> {
     Box::new(move |a, b| {
         let box_a = a.get_bounding_box();
         let box_b = b.get_bounding_box();

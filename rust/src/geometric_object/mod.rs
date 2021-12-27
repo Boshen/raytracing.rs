@@ -14,7 +14,6 @@ pub use sphere::*;
 pub use triangle::*;
 
 #[enum_dispatch]
-#[derive(Clone)]
 pub enum Geometry {
     Sphere,
     Triangle,

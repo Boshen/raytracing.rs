@@ -1,5 +1,15 @@
 #![allow(dead_code)]
-#![allow(clippy::many_single_char_names)]
+#![allow(
+    clippy::cast_lossless,
+    clippy::cast_possible_truncation,
+    clippy::cast_precision_loss,
+    clippy::cast_sign_loss,
+    clippy::many_single_char_names,
+    clippy::module_name_repetitions,
+    clippy::similar_names,
+    clippy::unused_self,
+    clippy::upper_case_acronyms
+)]
 
 use image::RgbImage;
 use nalgebra::Point3;
@@ -51,7 +61,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let len = asset.geometries.len();
     let world = World {
         vp,
-        bvh: BvhNode::new(&mut asset.geometries.clone(), 0, len),
+        bvh: BvhNode::new(asset.geometries, 0, len),
         lights: lights
             .into_iter()
             .chain(asset.lights.into_iter())
