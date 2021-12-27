@@ -108,7 +108,7 @@ impl Asset {
             GlossySpecular::new(0.2, 2.0),
             PerfectSpecular::new(0.5, Color::new(1.0, 1.0, 1.0)),
         ));
-        let material_id = 1000 as usize;
+        let material_id = 1000_usize;
         asset.geometries.push(Geometry::from(Sphere::new(
             material_id,
             40.0,

@@ -27,8 +27,8 @@ impl Camera for ThinLensCamera {
                     .map(|(sp, dp)| {
                         let p =
                             (sp + Vector2::new(
-                                i as f64 - hres as f64 / 2.0 + sp.x,
-                                j as f64 - vres as f64 / 2.0 + sp.y,
+                                f64::from(i) as f64 - f64::from(hres) / 2.0 + sp.x,
+                                f64::from(j) as f64 - f64::from(vres) / 2.0 + sp.y,
                             )) * pixel_size;
                         let ray = self.get_ray(
                             p,
