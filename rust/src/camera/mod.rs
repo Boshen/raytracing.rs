@@ -1,4 +1,3 @@
-use enum_dispatch::enum_dispatch;
 use nalgebra::Point3;
 
 pub mod simple;
@@ -11,13 +10,11 @@ use crate::world::World;
 pub use simple::*;
 pub use thin_lens::*;
 
-#[enum_dispatch]
 pub enum CameraEnum {
     SimpleCamera,
     ThinLensCamera,
 }
 
-#[enum_dispatch(CameraEnum)]
 pub trait Camera {
     fn render_scene(&self, world: &World) -> Vec<Color>;
 }
