@@ -86,9 +86,8 @@ impl Asset {
                         let v2 = vertices[*face_indices[1] as usize];
                         let v3 = vertices[*face_indices[2] as usize];
                         let triangle = Triangle::new(material_id, v1, v2, v3, scale);
-                        let triangle2 = Triangle::new(material_id, v1, v2, v3, scale);
-                        triangles.push(Geometry::from(triangle));
-                        asset.geometries.push(Geometry::from(triangle2));
+                        triangles.push(Geometry::from(triangle.clone()));
+                        asset.geometries.push(Geometry::from(triangle));
                     }
 
                     if m.ambient[0] > 1.0 {
