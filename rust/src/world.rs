@@ -1,4 +1,4 @@
-use nalgebra::{Point3, Translation3};
+use nalgebra::Point3;
 use std::{collections::HashMap, f64::INFINITY};
 
 use crate::color::Color;
@@ -42,7 +42,7 @@ impl World {
 
     pub fn is_in_shadow(&self, point: &Point3<f64>, dir: &Vec3, t_max: f64) -> bool {
         let offset = 0.00001 * dir;
-        let shadow_ray = Ray::new(Translation3::from(offset) * point, *dir);
+        let shadow_ray = Ray::new(point + offset, *dir);
         self.bvh
             .intersects(&shadow_ray, 0.0, t_max)
             .filter(|record| {

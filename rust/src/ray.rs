@@ -1,4 +1,4 @@
-use nalgebra::{Point3, Translation3};
+use nalgebra::Point3;
 
 use crate::model::Vec3;
 use crate::world::World;
@@ -14,7 +14,7 @@ impl Ray {
     }
 
     pub fn get_point(&self, distance: f64) -> Point3<f64> {
-        Translation3::from(self.dir * distance) * self.origin
+        self.origin + self.dir * distance
     }
 }
 

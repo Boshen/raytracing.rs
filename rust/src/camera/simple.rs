@@ -1,4 +1,4 @@
-use nalgebra::{Point2, Translation2};
+use nalgebra::{Point2, Vector2};
 use rayon::prelude::*;
 
 use crate::camera::{Camera, CameraSetting};
@@ -27,7 +27,7 @@ impl Camera for SimpleCamera {
                 );
                 get_square_sampler(self.setting.sample_points_sqrt)
                     .map(|dp| {
-                        let ray = self.get_ray(Translation2::new(dp.x, dp.y).transform_point(&p));
+                        let ray = self.get_ray(p - dp);
                         world.trace(&ray, 0)
                     })
                     .fold(Vec3::zeros(), |v1, v2| v1 + v2)
@@ -38,8 +38,8 @@ impl Camera for SimpleCamera {
 }
 
 impl SimpleCamera {
-    fn get_ray(&self, p: Point2<f64>) -> Ray {
-        let dir = (self.setting.u * p.x + self.setting.v * p.y
+    fn get_ray(&self, dir: Vector2<f64>) -> Ray {
+        let dir = (self.setting.u * dir.x + self.setting.v * dir.y
             - self.setting.w * self.setting.view_plane_distance)
             .normalize();
         Ray::new(self.setting.eye, dir)
