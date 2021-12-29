@@ -1,12 +1,12 @@
-use nalgebra::{clamp, Vector3};
+use nalgebra::Vector3;
 
 pub type Color = Vector3<f64>;
 
+#[allow(clippy::cast_sign_loss)]
 pub fn to_rgb(color: &Color) -> Vec<u8> {
     tone_mapping(color)
         .iter()
-        .map(|c| (c * 255.0).round() as u8)
-        .map(|c| clamp(c, 0, 255))
+        .map(|c| ((c * 255.0).round() as u8).clamp(0, 255))
         .collect()
 }
 

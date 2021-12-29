@@ -77,7 +77,7 @@ impl BvhNode {
             }
         } else {
             objects[start..end].sort_by(comparator);
-            let mid = start + span / 2.0 as usize;
+            let mid = start + span / 2;
             let left = Geometry::from(BvhNode::new(objects.clone(), start, mid));
             let right = Geometry::from(BvhNode::new(objects, mid, end));
             let box_left = left.get_bounding_box();

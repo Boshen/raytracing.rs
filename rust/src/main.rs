@@ -3,7 +3,6 @@
     clippy::cast_lossless,
     clippy::cast_possible_truncation,
     clippy::cast_precision_loss,
-    clippy::cast_sign_loss,
     clippy::many_single_char_names,
     clippy::module_name_repetitions,
     clippy::similar_names,
