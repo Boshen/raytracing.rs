@@ -12,3 +12,8 @@ rand = "0.8.4"
 tobj = "3.2.0"
 num-traits = "0.2.14"
 enum_dispatch = "0.3.7"
+
+[profile.release]
+lto = "fat"
+codegen-units = 1
+panic = "abort"
