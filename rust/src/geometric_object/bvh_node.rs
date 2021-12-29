@@ -3,20 +3,19 @@ use rand::{thread_rng, Rng};
 use std::sync::Arc;
 
 use crate::aabb::AABB;
-use crate::geometric_object::GeometricObject;
 use crate::geometric_object::Geometry;
 use crate::model::Vec3;
 use crate::ray::{HitRecord, Ray};
 
 #[derive(Clone)]
 pub struct BvhNode {
-    pub left: Arc<Geometry>,
-    pub right: Arc<Geometry>,
+    pub left: Arc<dyn Geometry + Send + Sync>,
+    pub right: Arc<dyn Geometry + Send + Sync>,
     pub aabb: AABB,
     pub children: usize,
 }
 
-impl GeometricObject for BvhNode {
+impl Geometry for BvhNode {
     fn intersects(&self, ray: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
         if !self.aabb.intersects(ray, t_min, t_max) {
             return None;
@@ -62,7 +61,7 @@ impl GeometricObject for BvhNode {
 }
 
 impl BvhNode {
-    pub fn new(objects: Vec<Arc<Geometry>>, start: usize, end: usize) -> BvhNode {
+    pub fn new(objects: Vec<Arc<dyn Geometry + Send + Sync>>, start: usize, end: usize) -> BvhNode {
         let mut objects = objects;
         let axis = thread_rng().gen_range(0..3);
         let comparator = box_compare(axis);
@@ -78,13 +77,13 @@ impl BvhNode {
         } else {
             objects[start..end].sort_by(comparator);
             let mid = start + span / 2;
-            let left = Geometry::from(BvhNode::new(objects.clone(), start, mid));
-            let right = Geometry::from(BvhNode::new(objects, mid, end));
+            let left = Arc::new(BvhNode::new(objects.clone(), start, mid));
+            let right = Arc::new(BvhNode::new(objects, mid, end));
             let box_left = left.get_bounding_box();
             let box_right = right.get_bounding_box();
             BvhNode {
-                left: Arc::new(left),
-                right: Arc::new(right),
+                left,
+                right,
                 aabb: AABB::get_surrounding_aabb(&box_left, &box_right),
                 children: 2,
             }
@@ -92,7 +91,10 @@ impl BvhNode {
     }
 }
 
-fn box_compare(axis: usize) -> Box<dyn Fn(&Arc<Geometry>, &Arc<Geometry>) -> std::cmp::Ordering> {
+fn box_compare<T: ?Sized>(axis: usize) -> Box<dyn Fn(&Arc<T>, &Arc<T>) -> std::cmp::Ordering>
+where
+    T: Geometry + Send + Sync,
+{
     Box::new(move |a, b| {
         let box_a = a.get_bounding_box();
         let box_b = b.get_bounding_box();

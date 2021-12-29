@@ -2,7 +2,7 @@ use nalgebra::Point3;
 use std::ops::{MulAssign, SubAssign};
 
 use crate::aabb::AABB;
-use crate::geometric_object::GeometricObject;
+use crate::geometric_object::Geometry;
 use crate::model::Vec3;
 use crate::ray::{HitRecord, Ray};
 
@@ -24,7 +24,7 @@ impl Sphere {
     }
 }
 
-impl GeometricObject for Sphere {
+impl Geometry for Sphere {
     fn intersects(&self, ray: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
         let center = self.center;
         let radius = self.radius;

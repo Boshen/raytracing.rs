@@ -7,7 +7,7 @@ use tobj::{load_obj, LoadOptions};
 use crate::brdf::{GlossySpecular, Lambertian, PerfectSpecular};
 use crate::color::Color;
 use crate::geometric_object::{Geometry, Sphere, Triangle};
-use crate::light::{AreaLight, LightEnum};
+use crate::light::{AreaLight, Light};
 use crate::material::{Emissive, Material, Matte, Reflective};
 
 pub struct Object {
@@ -18,8 +18,8 @@ pub struct Object {
 
 pub struct Asset {
     pub objects: Vec<Object>,
-    pub geometries: Vec<Arc<Geometry>>,
-    pub lights: Vec<LightEnum>,
+    pub geometries: Vec<Arc<dyn Geometry + Send + Sync>>,
+    pub lights: Vec<Arc<dyn Light + Send + Sync>>,
     pub materials: HashMap<usize, Box<Material>>,
 }
 
@@ -55,7 +55,7 @@ impl Asset {
                 ));
             }
 
-            let mut triangles: Vec<Geometry> = vec![];
+            let mut triangles: Vec<Arc<dyn Geometry + Send + Sync>> = vec![];
 
             match mesh.material_id {
                 None => {}
@@ -86,18 +86,17 @@ impl Asset {
                         let v1 = vertices[*face_indices[0] as usize];
                         let v2 = vertices[*face_indices[1] as usize];
                         let v3 = vertices[*face_indices[2] as usize];
-                        let triangle = Triangle::new(material_id, v1, v2, v3, scale);
-                        let triangle2 = Triangle::new(material_id, v1, v2, v3, scale);
-                        triangles.push(Geometry::from(triangle2));
-                        asset.geometries.push(Arc::new(Geometry::from(triangle)));
+                        let triangle = Arc::new(Triangle::new(material_id, v1, v2, v3, scale));
+                        triangles.push(triangle);
                     }
 
                     if m.ambient[0] > 1.0 {
                         let emissive = Emissive::new(m.ambient[0] as f64, diffuse);
-                        let arealight = AreaLight::new(triangles, emissive);
-                        asset.lights.push(LightEnum::from(arealight));
+                        let arealight = Arc::new(AreaLight::new(triangles.clone(), emissive));
+                        asset.lights.push(arealight);
                     }
 
+                    asset.geometries.extend(triangles);
                     asset.materials.insert(material_id, Box::new(material));
                 }
             };
@@ -110,12 +109,12 @@ impl Asset {
             PerfectSpecular::new(0.5, Color::new(1.0, 1.0, 1.0)),
         ));
         let material_id = 1000_usize;
-        asset.geometries.push(Arc::new(Geometry::from(Sphere::new(
+        asset.geometries.push(Arc::new(Sphere::new(
             material_id,
             40.0,
             Point3::new(400.0, 40.0, 500.0),
             scale,
-        ))));
+        )));
         asset.materials.insert(material_id, Box::new(material));
         asset
     }

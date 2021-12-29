@@ -1,9 +1,10 @@
 use nalgebra::Point3;
+use std::sync::Arc;
 use std::{collections::HashMap, f64::INFINITY};
 
 use crate::color::Color;
-use crate::geometric_object::{BvhNode, GeometricObject};
-use crate::light::{AmbientLight, LightEnum};
+use crate::geometric_object::Geometry;
+use crate::light::{AmbientLight, Light};
 use crate::material::Material;
 use crate::model::Vec3;
 use crate::ray::{Ray, RayHit};
@@ -11,8 +12,8 @@ use crate::view_plane::ViewPlane;
 
 pub struct World {
     pub vp: ViewPlane,
-    pub lights: Vec<LightEnum>,
-    pub bvh: BvhNode,
+    pub lights: Vec<Arc<dyn Light + Send + Sync>>,
+    pub bvh: Arc<dyn Geometry + Send + Sync>,
     pub ambient_light: AmbientLight,
     pub materials: HashMap<usize, Box<Material>>,
 }

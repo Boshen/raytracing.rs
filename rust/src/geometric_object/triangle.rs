@@ -1,7 +1,7 @@
 use nalgebra::{center, Point3};
 
 use crate::aabb::AABB;
-use crate::geometric_object::GeometricObject;
+use crate::geometric_object::Geometry;
 use crate::model::Vec3;
 use crate::ray::{HitRecord, Ray};
 use crate::sampler::get_triangle_sampler;
@@ -32,7 +32,7 @@ impl Triangle {
     }
 }
 
-impl GeometricObject for Triangle {
+impl Geometry for Triangle {
     fn intersects(&self, ray: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
         let epsilon = 0.000_001;
         let e1 = self.y - self.x;

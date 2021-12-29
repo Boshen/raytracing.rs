@@ -1,7 +1,8 @@
 use nalgebra::{center, distance, Point3};
+use std::sync::Arc;
 
 use crate::color::Color;
-use crate::geometric_object::{GeometricObject, Geometry};
+use crate::geometric_object::Geometry;
 use crate::light::Light;
 use crate::material::Emissive;
 use crate::model::Vec3;
@@ -9,16 +10,19 @@ use crate::ray::RayHit;
 
 pub struct AreaLight {
     center: Point3<f64>,
-    geometric_objects: Vec<Geometry>,
+    geometric_objects: Vec<Arc<dyn Geometry + Send + Sync>>,
     sample_points_sqrt: usize,
     pub material: Emissive,
 }
 
 impl AreaLight {
-    pub fn new(geometric_objects: Vec<Geometry>, material: Emissive) -> AreaLight {
+    pub fn new(
+        geometric_objects: Vec<Arc<dyn Geometry + Send + Sync>>,
+        material: Emissive,
+    ) -> AreaLight {
         let center = geometric_objects
             .iter()
-            .map(GeometricObject::get_center)
+            .map(|o| o.get_center())
             .fold(Point3::origin(), |a, b| center(&a, &b));
         AreaLight {
             center,

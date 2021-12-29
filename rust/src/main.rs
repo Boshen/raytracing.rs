@@ -13,6 +13,7 @@
 use image::RgbImage;
 use nalgebra::Point3;
 use std::error::Error;
+use std::sync::Arc;
 
 mod aabb;
 mod asset;
@@ -32,7 +33,7 @@ use crate::asset::Asset;
 use crate::camera::{Camera, CameraSetting, ThinLensCamera};
 use crate::color::to_rgb;
 use crate::geometric_object::BvhNode;
-use crate::light::{AmbientLight, AmbientOcculuder, LightEnum};
+use crate::light::{AmbientLight, AmbientOcculuder};
 use crate::model::Vec3;
 use crate::view_plane::ViewPlane;
 use crate::world::World;
@@ -45,11 +46,13 @@ fn main() -> Result<(), Box<dyn Error>> {
         cl: Vec3::new(1.0, 1.0, 1.0),
     };
 
-    let lights: Vec<LightEnum> = vec![LightEnum::from(AmbientOcculuder {
+    let mut lights = asset.lights;
+    let ambient_occuluder = Arc::new(AmbientOcculuder {
         ls: 1.0,
         cl: Vec3::new(1.0, 1.0, 1.0),
         sample_points_sqrt: 16,
-    })];
+    });
+    lights.push(ambient_occuluder);
 
     let vp = ViewPlane {
         hres: 500,
@@ -60,11 +63,8 @@ fn main() -> Result<(), Box<dyn Error>> {
     let len = asset.geometries.len();
     let world = World {
         vp,
-        bvh: BvhNode::new(asset.geometries, 0, len),
-        lights: lights
-            .into_iter()
-            .chain(asset.lights.into_iter())
-            .collect::<Vec<LightEnum>>(),
+        bvh: Arc::new(BvhNode::new(asset.geometries, 0, len)),
+        lights,
         ambient_light,
         materials: asset.materials,
     };
