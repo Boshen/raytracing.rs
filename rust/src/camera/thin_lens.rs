@@ -1,4 +1,3 @@
-use crate::model::Vec3;
 use nalgebra::{Point2, Vector2};
 use rayon::prelude::*;
 
@@ -19,26 +18,24 @@ impl Camera for ThinLensCamera {
         let hres = world.vp.hres;
         let vres = world.vp.vres;
         let pixel_size = world.vp.pixel_size;
-        (0..(world.vp.hres * world.vp.vres))
+        let sample_points = self.setting.sample_points_sqrt.pow(2);
+
+        let vec = (0..(hres * vres))
             .into_par_iter()
-            .map(|n| {
-                let (i, j) = (n % hres, n / hres);
-                get_disk_sampler(self.setting.sample_points_sqrt)
-                    .map(|(sp, dp)| {
-                        let p =
-                            (sp + Vector2::new(
-                                f64::from(i) as f64 - f64::from(hres) / 2.0 + sp.x,
-                                f64::from(j) as f64 - f64::from(vres) / 2.0 + sp.y,
-                            )) * pixel_size;
-                        let ray = self.get_ray(
-                            p,
-                            Point2::new(dp.x * self.lens_radius, dp.y * self.lens_radius),
-                        );
-                        world.trace(&ray, 0)
-                    })
-                    .fold(Vec3::zeros(), |v1, v2| v1 + v2)
-                    / ((self.setting.sample_points_sqrt * self.setting.sample_points_sqrt) as f64)
+            .flat_map_iter(|n| {
+                let i = f64::from(n % hres) - f64::from(hres) / 2.0;
+                let j = f64::from(n / hres) - f64::from(vres) / 2.0;
+                get_disk_sampler(self.setting.sample_points_sqrt).map(move |(sp, dp)| {
+                    let start_point = (sp + Vector2::new(i + sp.x, j + sp.y)) * pixel_size;
+                    let end_point = dp * self.lens_radius;
+                    self.get_ray(start_point, end_point)
+                })
             })
+            .map(|ray| world.trace(&ray, 0))
+            .collect::<Vec<_>>();
+
+        vec.chunks(sample_points)
+            .map(|chunks| chunks.iter().sum::<Color>() / sample_points as f64)
             .collect()
     }
 }
