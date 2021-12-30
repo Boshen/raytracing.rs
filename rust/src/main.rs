@@ -12,8 +12,10 @@
 
 use image::RgbImage;
 use nalgebra::Point3;
+use std::env;
 use std::error::Error;
 use std::sync::Arc;
+use std::time::Instant;
 
 mod aabb;
 mod asset;
@@ -39,6 +41,8 @@ use crate::view_plane::ViewPlane;
 use crate::world::World;
 
 fn main() -> Result<(), Box<dyn Error>> {
+    let debug = env::args().any(|x| x == "--debug");
+
     let asset = Asset::new("../assets/cornell_box.obj");
 
     let ambient_light = AmbientLight {
@@ -46,11 +50,12 @@ fn main() -> Result<(), Box<dyn Error>> {
         cl: Vec3::new(1.0, 1.0, 1.0),
     };
 
+    let sample_points_sqrt = if debug { 1 } else { 16 };
     let mut lights = asset.lights;
     let ambient_occuluder = Arc::new(AmbientOcculuder {
         ls: 1.0,
         cl: Vec3::new(1.0, 1.0, 1.0),
-        sample_points_sqrt: 16,
+        sample_points_sqrt,
     });
     lights.push(ambient_occuluder);
 
@@ -81,11 +86,18 @@ fn main() -> Result<(), Box<dyn Error>> {
         focal_plane_distance: 500.0,
     };
 
+    let now = Instant::now();
     let pixels = camera
         .render_scene(&world)
         .iter()
         .flat_map(to_rgb)
         .collect();
+    let duration = now.elapsed();
+    println!(
+        "Time Elapased: {}.{}s",
+        duration.as_secs(),
+        duration.subsec_millis()
+    );
 
     RgbImage::from_vec(hres, vres, pixels)
         .unwrap()
