@@ -54,9 +54,11 @@ fn main() -> Result<(), Box<dyn Error>> {
     });
     lights.push(ambient_occuluder);
 
+    let hres = 500;
+    let vres = 500;
     let vp = ViewPlane {
-        hres: 500,
-        vres: 500,
+        hres,
+        vres,
         pixel_size: 1.0,
     };
 
@@ -85,7 +87,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         .flat_map(to_rgb)
         .collect();
 
-    RgbImage::from_vec(vp.hres, vp.vres, pixels)
+    RgbImage::from_vec(hres, vres, pixels)
         .unwrap()
         .save("output.png")?;
 

@@ -1,7 +1,6 @@
 use crate::ray::Ray;
 use nalgebra::Point3;
 
-#[derive(Copy, Clone)]
 pub struct AABB {
     pub min: Point3<f64>,
     pub max: Point3<f64>,

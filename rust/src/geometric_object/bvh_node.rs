@@ -7,7 +7,6 @@ use crate::geometric_object::Geometry;
 use crate::model::Vec3;
 use crate::ray::{HitRecord, Ray};
 
-#[derive(Clone)]
 pub struct BvhNode {
     pub left: Arc<dyn Geometry + Send + Sync>,
     pub right: Arc<dyn Geometry + Send + Sync>,
