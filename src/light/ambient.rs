@@ -21,5 +21,5 @@ impl Light for AmbientLight {
         1.0
     }
 
-    fn set_sample_points_sqrt(&mut self, _n: usize) {}
+    fn set_sample_points_sqrt(&mut self, _n: u8) {}
 }

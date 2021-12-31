@@ -34,7 +34,7 @@ impl Camera for ThinLensCamera {
             .map(|ray| world.trace(&ray, 0))
             .collect::<Vec<_>>();
 
-        vec.chunks(sample_points)
+        vec.chunks(sample_points.into())
             .map(|chunks| chunks.iter().sum::<Color>() / sample_points as f64)
             .collect()
     }

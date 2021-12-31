@@ -3,7 +3,6 @@ use rayon::prelude::*;
 
 use crate::camera::{Camera, CameraSetting};
 use crate::color::Color;
-use crate::model::Vec3;
 use crate::ray::Ray;
 use crate::sampler::get_square_sampler;
 use crate::world::World;
@@ -17,7 +16,9 @@ impl Camera for SimpleCamera {
         let hres = world.vp.hres;
         let vres = world.vp.vres;
         let pixel_size = world.vp.pixel_size;
-        (0..(world.vp.hres * world.vp.vres))
+        let sample_points = self.setting.sample_points_sqrt.pow(2);
+
+        (0..(hres * vres))
             .into_par_iter()
             .map(|n| {
                 let (i, j) = (n % hres, n / hres);
@@ -30,8 +31,8 @@ impl Camera for SimpleCamera {
                         let ray = self.get_ray(p - dp);
                         world.trace(&ray, 0)
                     })
-                    .fold(Vec3::zeros(), |v1, v2| v1 + v2)
-                    / ((self.setting.sample_points_sqrt * self.setting.sample_points_sqrt) as f64)
+                    .sum::<Color>()
+                    / (sample_points as f64)
             })
             .collect()
     }

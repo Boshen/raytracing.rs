@@ -122,7 +122,7 @@ impl Geometry for Triangle {
         Aabb::new(self.get_min_point(), self.get_max_point())
     }
 
-    fn get_samples(&self, sample_points_sqrt: usize) -> Vec<Point3<f64>> {
+    fn get_samples(&self, sample_points_sqrt: u8) -> Vec<Point3<f64>> {
         get_triangle_sampler(sample_points_sqrt, self).collect()
     }
 

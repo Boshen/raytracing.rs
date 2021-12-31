@@ -10,7 +10,7 @@ use crate::sampler::get_hemisphere_sampler;
 pub struct AmbientOcculuder {
     pub ls: f64,
     pub cl: Color,
-    sample_points_sqrt: usize,
+    sample_points_sqrt: u8,
 }
 
 impl AmbientOcculuder {
@@ -42,15 +42,14 @@ impl Light for AmbientOcculuder {
 
     fn shadow_amount(&self, hit: &RayHit) -> f64 {
         let (u, v, w) = AmbientOcculuder::uvw(hit);
-        let sample_points = (self.sample_points_sqrt * self.sample_points_sqrt) as f64;
         let total = get_hemisphere_sampler(self.sample_points_sqrt)
             .map(|sp| (u * sp.x + v * sp.y + w * sp.z).normalize())
             .filter(|dir| !hit.world.is_in_shadow(&hit.hit_point, dir, INFINITY))
-            .count() as f64;
-        total / sample_points
+            .count();
+        f64::from(total as u32) / f64::from(self.sample_points_sqrt * self.sample_points_sqrt)
     }
 
-    fn set_sample_points_sqrt(&mut self, n: usize) {
+    fn set_sample_points_sqrt(&mut self, n: u8) {
         self.sample_points_sqrt = n;
     }
 }

@@ -24,5 +24,5 @@ impl Light for DirectionalLight {
         self.cl.mul(self.ls)
     }
 
-    fn set_sample_points_sqrt(&mut self, _n: usize) {}
+    fn set_sample_points_sqrt(&mut self, _n: u8) {}
 }

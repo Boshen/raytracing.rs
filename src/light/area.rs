@@ -11,7 +11,7 @@ use crate::ray::RayHit;
 pub struct AreaLight {
     center: Point3<f64>,
     geometric_objects: Vec<Arc<dyn Geometry + Send + Sync>>,
-    sample_points_sqrt: usize,
+    sample_points_sqrt: u8,
     pub material: Emissive,
 }
 
@@ -27,7 +27,7 @@ impl AreaLight {
         AreaLight {
             center,
             geometric_objects,
-            sample_points_sqrt: 5,
+            sample_points_sqrt: 1,
             material,
         }
     }
@@ -43,8 +43,6 @@ impl Light for AreaLight {
     }
 
     fn shadow_amount(&self, hit: &RayHit) -> f64 {
-        let sqrt = self.sample_points_sqrt as f64;
-        let weight = sqrt * sqrt * self.geometric_objects.len() as f64;
         let total = self
             .geometric_objects
             .iter()
@@ -54,11 +52,14 @@ impl Light for AreaLight {
                 let d = distance(point_on_light, &hit.hit_point);
                 !hit.world.is_in_shadow(&hit.hit_point, &wi, d)
             })
-            .count() as f64;
-        total / weight
+            .count();
+        f64::from(total as u32)
+            / f64::from(
+                (self.sample_points_sqrt.pow(2) as usize * self.geometric_objects.len()) as u32,
+            )
     }
 
-    fn set_sample_points_sqrt(&mut self, n: usize) {
+    fn set_sample_points_sqrt(&mut self, n: u8) {
         self.sample_points_sqrt = n;
     }
 }

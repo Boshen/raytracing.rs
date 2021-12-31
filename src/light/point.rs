@@ -27,5 +27,5 @@ impl Light for PointLight {
         f64::from(u32::from(!b))
     }
 
-    fn set_sample_points_sqrt(&mut self, _n: usize) {}
+    fn set_sample_points_sqrt(&mut self, _n: u8) {}
 }

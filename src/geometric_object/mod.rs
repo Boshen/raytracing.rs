@@ -20,6 +20,6 @@ pub trait Geometry {
     fn get_min_point(&self) -> Point3<f64>;
     fn get_max_point(&self) -> Point3<f64>;
     fn get_bounding_box(&self) -> Aabb;
-    fn get_samples(&self, sample_points_sqrt: usize) -> Vec<Point3<f64>>;
+    fn get_samples(&self, sample_points_sqrt: u8) -> Vec<Point3<f64>>;
     fn get_material_id(&self) -> usize;
 }

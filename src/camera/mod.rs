@@ -26,7 +26,7 @@ pub struct CameraSetting {
     pub v: Vec3,
     pub w: Vec3,
     pub view_plane_distance: f64,
-    sample_points_sqrt: usize,
+    sample_points_sqrt: u8,
 }
 
 impl CameraSetting {
