@@ -1,23 +1,25 @@
 use nalgebra::Point3;
 use std::ops::{MulAssign, SubAssign};
+use std::sync::Arc;
 
 use crate::aabb::Aabb;
 use crate::geometric_object::Geometry;
+use crate::material::Material;
 use crate::model::Vec3;
 use crate::ray::{HitRecord, Ray};
 
 pub struct Sphere {
     radius: f64,
     center: Point3<f64>,
-    material_id: usize,
+    material: Arc<dyn Material>,
 }
 
 impl Sphere {
-    pub fn new(material_id: usize, radius: f64, center: Point3<f64>, scale: f64) -> Self {
+    pub fn new(material: Arc<dyn Material>, radius: f64, center: Point3<f64>, scale: f64) -> Self {
         let mut sphere = Self {
             radius,
             center,
-            material_id,
+            material,
         };
         sphere.scale(scale);
         sphere
@@ -55,7 +57,7 @@ impl Geometry for Sphere {
             dist: t,
             hit_point,
             normal: self.normal(&hit_point),
-            material_id: self.material_id,
+            material: self.material.clone(),
         })
     }
 
@@ -90,7 +92,7 @@ impl Geometry for Sphere {
         vec![]
     }
 
-    fn get_material_id(&self) -> usize {
-        self.material_id
+    fn get_material(&self) -> Option<Arc<dyn Material>> {
+        Some(self.material.clone())
     }
 }

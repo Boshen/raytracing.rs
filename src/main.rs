@@ -58,7 +58,6 @@ fn main() -> Result<(), Box<dyn Error>> {
         bvh: Arc::new(BvhNode::new(asset.geometries, 0, len)),
         lights,
         ambient_light,
-        materials: asset.materials,
         max_depth: 15,
     };
 

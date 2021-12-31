@@ -1,4 +1,9 @@
-use crate::brdf::{GlossySpecular, Lambertian};
+use crate::brdf::{Brdf, GlossySpecular, Lambertian};
+use crate::color::Color;
+use crate::light::Light;
+use crate::material::{shade, Material};
+use crate::model::Vec3;
+use crate::ray::Hit;
 
 pub struct Phong {
     pub ambient_brdf: Lambertian,
@@ -20,5 +25,33 @@ impl Phong {
             diffuse_brdf,
             specular_brdf,
         }
+    }
+}
+
+impl Material for Phong {
+    fn shade(&self, hit: &Hit) -> Color {
+        shade(self, hit)
+    }
+
+    fn emissive(&self) -> bool {
+        false
+    }
+
+    fn ambient(&self, hit: &Hit) -> Color {
+        self.ambient_brdf
+            .rho()
+            .component_mul(&hit.world.ambient_light.radiance(hit))
+    }
+
+    fn diffuse(&self, hit: &Hit, wo: &Vec3, wi: &Vec3) -> Color {
+        self.diffuse_brdf.f(hit, wo, wi)
+    }
+
+    fn specular(&self, hit: &Hit, wo: &Vec3, wi: &Vec3) -> Color {
+        self.specular_brdf.f(hit, wo, wi)
+    }
+
+    fn reflective(&self, _hit: &Hit, _wo: &Vec3) -> Color {
+        Color::zeros()
     }
 }

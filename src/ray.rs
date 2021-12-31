@@ -1,5 +1,7 @@
 use nalgebra::Point3;
+use std::sync::Arc;
 
+use crate::material::Material;
 use crate::model::Vec3;
 use crate::world::World;
 
@@ -27,7 +29,7 @@ pub struct HitRecord {
     pub dist: f64,
     pub hit_point: Point3<f64>,
     pub normal: Vec3,
-    pub material_id: usize,
+    pub material: Arc<dyn Material>,
 }
 
 pub struct Hit<'a> {
@@ -36,5 +38,5 @@ pub struct Hit<'a> {
     pub normal: Vec3,
     pub world: &'a World,
     pub depth: i32,
-    pub material_id: usize,
+    pub material: Arc<dyn Material>,
 }

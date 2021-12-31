@@ -1,7 +1,9 @@
 use nalgebra::{center, Point3};
+use std::sync::Arc;
 
 use crate::aabb::Aabb;
 use crate::geometric_object::Geometry;
+use crate::material::Material;
 use crate::model::Vec3;
 use crate::ray::{HitRecord, Ray};
 use crate::sampler::get_triangle;
@@ -10,23 +12,18 @@ pub struct Triangle {
     pub x: Point3<f64>,
     pub y: Point3<f64>,
     pub z: Point3<f64>,
-    material_id: usize,
+    material: Arc<dyn Material>,
 }
 
 impl Triangle {
     pub fn new(
-        material_id: usize,
+        material: Arc<dyn Material>,
         x: Point3<f64>,
         y: Point3<f64>,
         z: Point3<f64>,
         scale: f64,
     ) -> Self {
-        let mut triangle = Self {
-            x,
-            y,
-            z,
-            material_id,
-        };
+        let mut triangle = Self { x, y, z, material };
         triangle.scale(scale);
         triangle
     }
@@ -70,7 +67,7 @@ impl Geometry for Triangle {
             dist: t,
             hit_point,
             normal: self.normal(&hit_point),
-            material_id: self.material_id,
+            material: self.material.clone(),
         })
     }
 
@@ -126,7 +123,7 @@ impl Geometry for Triangle {
         get_triangle(sample_points_sqrt, self).collect()
     }
 
-    fn get_material_id(&self) -> usize {
-        self.material_id
+    fn get_material(&self) -> Option<Arc<dyn Material>> {
+        Some(self.material.clone())
     }
 }

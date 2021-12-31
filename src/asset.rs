@@ -1,4 +1,3 @@
-use std::collections::HashMap;
 use std::sync::Arc;
 
 use nalgebra::Point3;
@@ -20,7 +19,6 @@ pub struct Asset {
     pub objects: Vec<Object>,
     pub geometries: Vec<Arc<dyn Geometry>>,
     pub lights: Vec<Arc<dyn Light>>,
-    pub materials: HashMap<usize, Box<Material>>,
 }
 
 impl Asset {
@@ -29,7 +27,6 @@ impl Asset {
             objects: vec![],
             geometries: vec![],
             lights: vec![],
-            materials: HashMap::new(),
         };
 
         let (models, materials) = load_obj(
@@ -66,18 +63,19 @@ impl Asset {
                         m.ambient[1] as f64,
                         m.ambient[2] as f64,
                     );
+
                     let diffuse = Color::new(
                         m.diffuse[0] as f64,
                         m.diffuse[1] as f64,
                         m.diffuse[2] as f64,
                     );
-                    let material = if m.ambient[0] > 1.0 {
-                        let emissive = Emissive::new(m.ambient[0] as f64, diffuse);
-                        Material::Emissive(emissive)
+
+                    let material: Arc<dyn Material> = if m.ambient[0] > 1.0 {
+                        Arc::new(Emissive::new(m.ambient[0] as f64, diffuse))
                     } else {
                         let ambient_brdf = Lambertian::new(0.5, ambient);
                         let diffuse_brdf = Lambertian::new(1.0, diffuse);
-                        Material::Matte(Matte::new(ambient_brdf, diffuse_brdf))
+                        Arc::new(Matte::new(ambient_brdf, diffuse_brdf))
                     };
 
                     for f in 0..(mesh.indices.len() / 3) {
@@ -86,7 +84,7 @@ impl Asset {
                         let v1 = vertices[*face_indices[0] as usize];
                         let v2 = vertices[*face_indices[1] as usize];
                         let v3 = vertices[*face_indices[2] as usize];
-                        let triangle = Arc::new(Triangle::new(material_id, v1, v2, v3, scale));
+                        let triangle = Arc::new(Triangle::new(material.clone(), v1, v2, v3, scale));
                         triangles.push(triangle);
                     }
 
@@ -97,25 +95,22 @@ impl Asset {
                     }
 
                     asset.geometries.extend(triangles);
-                    asset.materials.insert(material_id, Box::new(material));
                 }
             };
         }
 
-        let material = Material::Reflective(Reflective::new(
+        let material = Arc::new(Reflective::new(
             Lambertian::new(0.1, Color::new(1.0, 1.0, 1.0)),
             Lambertian::new(0.1, Color::new(1.0, 1.0, 1.0)),
             GlossySpecular::new(0.2, 2.0),
             PerfectSpecular::new(0.5, Color::new(1.0, 1.0, 1.0)),
         ));
-        let material_id = 1000_usize;
         asset.geometries.push(Arc::new(Sphere::new(
-            material_id,
+            material,
             40.0,
             Point3::new(400.0, 40.0, 500.0),
             scale,
         )));
-        asset.materials.insert(material_id, Box::new(material));
         asset
     }
 }

@@ -4,6 +4,7 @@ use std::sync::Arc;
 
 use crate::aabb::Aabb;
 use crate::geometric_object::Geometry;
+use crate::material::Material;
 use crate::model::Vec3;
 use crate::ray::{HitRecord, Ray};
 
@@ -12,6 +13,37 @@ pub struct BvhNode {
     pub right: Arc<dyn Geometry>,
     pub aabb: Aabb,
     pub children: usize,
+}
+
+impl BvhNode {
+    pub fn new(objects: Vec<Arc<dyn Geometry>>, start: usize, end: usize) -> Self {
+        let mut objects = objects;
+        let axis = thread_rng().gen_range(0..3);
+        let comparator = box_compare(axis);
+
+        let span = end - start;
+        if span == 1 {
+            Self {
+                left: objects[start].clone(),
+                right: objects[start].clone(),
+                aabb: objects[start].get_bounding_box(),
+                children: 1,
+            }
+        } else {
+            objects[start..end].sort_by(comparator);
+            let mid = start + span / 2;
+            let left = Arc::new(Self::new(objects.clone(), start, mid));
+            let right = Arc::new(Self::new(objects, mid, end));
+            let box_left = left.get_bounding_box();
+            let box_right = right.get_bounding_box();
+            Self {
+                left,
+                right,
+                aabb: Aabb::get_surrounding_aabb(&box_left, &box_right),
+                children: 2,
+            }
+        }
+    }
 }
 
 impl Geometry for BvhNode {
@@ -54,39 +86,8 @@ impl Geometry for BvhNode {
         vec![]
     }
 
-    fn get_material_id(&self) -> usize {
-        0
-    }
-}
-
-impl BvhNode {
-    pub fn new(objects: Vec<Arc<dyn Geometry>>, start: usize, end: usize) -> Self {
-        let mut objects = objects;
-        let axis = thread_rng().gen_range(0..3);
-        let comparator = box_compare(axis);
-
-        let span = end - start;
-        if span == 1 {
-            Self {
-                left: objects[start].clone(),
-                right: objects[start].clone(),
-                aabb: objects[start].get_bounding_box(),
-                children: 1,
-            }
-        } else {
-            objects[start..end].sort_by(comparator);
-            let mid = start + span / 2;
-            let left = Arc::new(Self::new(objects.clone(), start, mid));
-            let right = Arc::new(Self::new(objects, mid, end));
-            let box_left = left.get_bounding_box();
-            let box_right = right.get_bounding_box();
-            Self {
-                left,
-                right,
-                aabb: Aabb::get_surrounding_aabb(&box_left, &box_right),
-                children: 2,
-            }
-        }
+    fn get_material(&self) -> Option<Arc<dyn Material>> {
+        None
     }
 }
 
