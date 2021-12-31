@@ -14,8 +14,8 @@ pub struct AmbientOcculuder {
 }
 
 impl AmbientOcculuder {
-    pub fn new(ls: f64, cl: Color) -> AmbientOcculuder {
-        AmbientOcculuder {
+    pub const fn new(ls: f64, cl: Color) -> Self {
+        Self {
             ls,
             cl,
             sample_points_sqrt: 1,
@@ -32,7 +32,7 @@ impl AmbientOcculuder {
 
 impl Light for AmbientOcculuder {
     fn get_direction(&self, hit: &Hit) -> Vec3 {
-        let (u, v, w) = AmbientOcculuder::uvw(hit);
+        let (u, v, w) = Self::uvw(hit);
         u + v + w
     }
 
@@ -41,7 +41,7 @@ impl Light for AmbientOcculuder {
     }
 
     fn shadow_amount(&self, hit: &Hit) -> f64 {
-        let (u, v, w) = AmbientOcculuder::uvw(hit);
+        let (u, v, w) = Self::uvw(hit);
         let total = get_hemisphere(self.sample_points_sqrt)
             .map(|sp| (u * sp.x + v * sp.y + w * sp.z).normalize())
             .filter(|dir| !hit.world.is_in_shadow(&hit.hit_point, dir, INFINITY))

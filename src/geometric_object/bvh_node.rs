@@ -60,14 +60,14 @@ impl Geometry for BvhNode {
 }
 
 impl BvhNode {
-    pub fn new(objects: Vec<Arc<dyn Geometry + Send + Sync>>, start: usize, end: usize) -> BvhNode {
+    pub fn new(objects: Vec<Arc<dyn Geometry + Send + Sync>>, start: usize, end: usize) -> Self {
         let mut objects = objects;
         let axis = thread_rng().gen_range(0..3);
         let comparator = box_compare(axis);
 
         let span = end - start;
         if span == 1 {
-            BvhNode {
+            Self {
                 left: objects[start].clone(),
                 right: objects[start].clone(),
                 aabb: objects[start].get_bounding_box(),
@@ -76,11 +76,11 @@ impl BvhNode {
         } else {
             objects[start..end].sort_by(comparator);
             let mid = start + span / 2;
-            let left = Arc::new(BvhNode::new(objects.clone(), start, mid));
-            let right = Arc::new(BvhNode::new(objects, mid, end));
+            let left = Arc::new(Self::new(objects.clone(), start, mid));
+            let right = Arc::new(Self::new(objects, mid, end));
             let box_left = left.get_bounding_box();
             let box_right = right.get_bounding_box();
-            BvhNode {
+            Self {
                 left,
                 right,
                 aabb: Aabb::get_surrounding_aabb(&box_left, &box_right),

@@ -10,8 +10,8 @@ pub struct Ray {
 }
 
 impl Ray {
-    pub fn new(origin: Point3<f64>, dir: Vec3) -> Ray {
-        Ray {
+    pub fn new(origin: Point3<f64>, dir: Vec3) -> Self {
+        Self {
             origin,
             dir,
             inv_dir: Vec3::new(dir.x.recip(), dir.y.recip(), dir.z.recip()),

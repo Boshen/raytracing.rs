@@ -1,4 +1,5 @@
 #![allow(dead_code)]
+#![warn(clippy::all, clippy::pedantic, clippy::nursery)]
 #![allow(
     clippy::cast_lossless,
     clippy::cast_possible_truncation,

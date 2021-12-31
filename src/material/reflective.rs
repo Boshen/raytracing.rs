@@ -8,13 +8,13 @@ pub struct Reflective {
 }
 
 impl Reflective {
-    pub fn new(
+    pub const fn new(
         ambient_brdf: Lambertian,
         diffuse_brdf: Lambertian,
         specular_brdf: GlossySpecular,
         reflective_brdf: PerfectSpecular,
-    ) -> Reflective {
-        Reflective {
+    ) -> Self {
+        Self {
             ambient_brdf,
             diffuse_brdf,
             specular_brdf,

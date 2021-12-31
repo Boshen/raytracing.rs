@@ -20,8 +20,8 @@ impl Triangle {
         y: Point3<f64>,
         z: Point3<f64>,
         scale: f64,
-    ) -> Triangle {
-        let mut triangle = Triangle {
+    ) -> Self {
+        let mut triangle = Self {
             x,
             y,
             z,

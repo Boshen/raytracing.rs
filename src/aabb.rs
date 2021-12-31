@@ -7,8 +7,8 @@ pub struct Aabb {
 }
 
 impl Aabb {
-    pub fn new(min: Point3<f64>, max: Point3<f64>) -> Aabb {
-        Aabb { min, max }
+    pub const fn new(min: Point3<f64>, max: Point3<f64>) -> Self {
+        Self { min, max }
     }
 
     // https://tavianator.com/2015/ray_box_nan.html
@@ -30,7 +30,7 @@ impl Aabb {
         tmax >= tmin.max(0.0)
     }
 
-    pub fn get_surrounding_aabb(box0: &Aabb, box1: &Aabb) -> Aabb {
+    pub fn get_surrounding_aabb(box0: &Self, box1: &Self) -> Self {
         let small = Point3::new(
             box0.min.x.min(box1.min.x),
             box0.min.y.min(box1.min.y),
@@ -41,6 +41,6 @@ impl Aabb {
             box0.max.y.max(box1.max.y),
             box0.max.z.max(box1.max.z),
         );
-        Aabb::new(small, big)
+        Self::new(small, big)
     }
 }

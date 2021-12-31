@@ -6,8 +6,8 @@ pub struct Matte {
 }
 
 impl Matte {
-    pub fn new(ambient_brdf: Lambertian, diffuse_brdf: Lambertian) -> Matte {
-        Matte {
+    pub const fn new(ambient_brdf: Lambertian, diffuse_brdf: Lambertian) -> Self {
+        Self {
             ambient_brdf,
             diffuse_brdf,
         }

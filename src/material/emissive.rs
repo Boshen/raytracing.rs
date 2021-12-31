@@ -6,8 +6,8 @@ pub struct Emissive {
 }
 
 impl Emissive {
-    pub fn new(ls: f64, ce: Color) -> Emissive {
-        Emissive { ls, ce }
+    pub const fn new(ls: f64, ce: Color) -> Self {
+        Self { ls, ce }
     }
 
     pub fn radiance(&self) -> Color {

@@ -24,8 +24,8 @@ pub struct Asset {
 }
 
 impl Asset {
-    pub fn new(file_name: &str) -> Asset {
-        let mut asset = Asset {
+    pub fn new(file_name: &str) -> Self {
+        let mut asset = Self {
             objects: vec![],
             geometries: vec![],
             lights: vec![],

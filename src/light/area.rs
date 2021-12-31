@@ -19,12 +19,12 @@ impl Area {
     pub fn new(
         geometric_objects: Vec<Arc<dyn Geometry + Send + Sync>>,
         material: Emissive,
-    ) -> Area {
+    ) -> Self {
         let center = geometric_objects
             .iter()
             .map(|o| o.get_center())
             .fold(Point3::origin(), |a, b| center(&a, &b));
-        Area {
+        Self {
             center,
             geometric_objects,
             sample_points_sqrt: 1,

@@ -25,12 +25,12 @@ pub struct Setting {
 }
 
 impl Setting {
-    pub fn new(eye: Point3<f64>, lookat: Point3<f64>, view_plane_distance: f64) -> Setting {
+    pub fn new(eye: Point3<f64>, lookat: Point3<f64>, view_plane_distance: f64) -> Self {
         let up = Vec3::new(0.0, 1.0, 0.0);
         let w = (eye - lookat).normalize();
         let u = up.cross(&w).normalize();
         let v = w.cross(&u).normalize();
-        Setting {
+        Self {
             eye,
             w,
             u,

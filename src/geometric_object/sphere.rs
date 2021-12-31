@@ -13,8 +13,8 @@ pub struct Sphere {
 }
 
 impl Sphere {
-    pub fn new(material_id: usize, radius: f64, center: Point3<f64>, scale: f64) -> Sphere {
-        let mut sphere = Sphere {
+    pub fn new(material_id: usize, radius: f64, center: Point3<f64>, scale: f64) -> Self {
+        let mut sphere = Self {
             radius,
             center,
             material_id,
@@ -26,25 +26,15 @@ impl Sphere {
 
 impl Geometry for Sphere {
     fn intersects(&self, ray: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
-        let center = self.center;
         let radius = self.radius;
-        let start = ray.origin;
-        let dx = ray.dir.x;
-        let dy = ray.dir.y;
-        let dz = ray.dir.z;
+        let center = Vec3::new(self.center.x, self.center.y, self.center.z);
+        let start = Vec3::new(ray.origin.x, ray.origin.y, ray.origin.z);
+        let dir = ray.dir;
 
-        let a = dx * dx + dy * dy + dz * dz;
-        let b = 2.0 * dx * (start.x - center.x)
-            + 2.0 * dy * (start.y - center.y)
-            + 2.0 * dz * (start.z - center.z);
-        let c = center.x * center.x
-            + center.y * center.y
-            + center.z * center.z
-            + start.x * start.x
-            + start.y * start.y
-            + start.z * start.z
-            - 2.0 * (center.x * start.x + center.y * start.y + center.z * start.z)
-            - radius * radius;
+        let a = dir.dot(&dir);
+        let b = 2.0 * dir.dot(&(start - center));
+        let c =
+            center.dot(&center) + start.dot(&start) - 2.0 * center.dot(&start) - radius * radius;
 
         let disc = b * b - 4.0 * a * c;
 
