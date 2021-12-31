@@ -16,11 +16,12 @@ pub struct World {
     pub bvh: Arc<dyn Geometry + Send + Sync>,
     pub ambient_light: AmbientLight,
     pub materials: HashMap<usize, Box<Material>>,
+    pub max_depth: i32,
 }
 
 impl World {
     pub fn trace(&self, ray: &Ray, depth: i32) -> Color {
-        if depth >= 15 {
+        if depth >= self.max_depth {
             return Color::zeros();
         }
         self.bvh

@@ -43,7 +43,7 @@ use crate::world::World;
 fn main() -> Result<(), Box<dyn Error>> {
     let debug = env::args().any(|x| x == "--debug");
 
-    let asset = Asset::new("../assets/cornell_box.obj");
+    let asset = Asset::new("./assets/cornell_box.obj");
 
     let ambient_light = AmbientLight {
         ls: 0.1,
@@ -74,6 +74,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         lights,
         ambient_light,
         materials: asset.materials,
+        max_depth: if debug { 1 } else { 15 },
     };
 
     let camera = ThinLensCamera {
