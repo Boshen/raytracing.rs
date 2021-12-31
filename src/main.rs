@@ -14,28 +14,14 @@ use std::error::Error;
 use std::sync::Arc;
 use std::time::Instant;
 
-mod aabb;
-mod asset;
-mod brdf;
-mod camera;
-mod color;
-mod geometric_object;
-mod light;
-mod material;
-mod model;
-mod ray;
-mod sampler;
-mod view_plane;
-mod world;
-
-use crate::asset::Asset;
-use crate::camera::{Camera, Setting, ThinLens};
-use crate::color::to_rgb;
-use crate::geometric_object::BvhNode;
-use crate::light::{Ambient, AmbientOcculuder, Light};
-use crate::model::Vec3;
-use crate::view_plane::ViewPlane;
-use crate::world::World;
+use raytracing::asset::Asset;
+use raytracing::camera::{Camera, Setting, ThinLens};
+use raytracing::color::to_rgb;
+use raytracing::geometric_object::BvhNode;
+use raytracing::light::{Ambient, AmbientOcculuder, Light};
+use raytracing::model::Vec3;
+use raytracing::view_plane::ViewPlane;
+use raytracing::world::World;
 
 fn main() -> Result<(), Box<dyn Error>> {
     let preview = env::args().any(|x| x == "--preview");
