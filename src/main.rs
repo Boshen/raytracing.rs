@@ -5,8 +5,7 @@
     clippy::cast_precision_loss,
     clippy::many_single_char_names,
     clippy::module_name_repetitions,
-    clippy::similar_names,
-    clippy::unused_self
+    clippy::similar_names
 )]
 
 use image::RgbImage;
@@ -54,7 +53,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         Arc::new(AmbientOcculuder::new(1.0, Vec3::new(1.0, 1.0, 1.0)));
     let mut lights = asset.lights;
     lights.push(ambient_occuluder);
-    for light in lights.iter_mut() {
+    for light in &mut lights {
         if let Some(l) = Arc::get_mut(light) {
             l.set_sample_points_sqrt(if preview { 1 } else { 4 });
         }

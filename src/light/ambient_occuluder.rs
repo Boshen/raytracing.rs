@@ -22,7 +22,7 @@ impl AmbientOcculuder {
         }
     }
 
-    fn uvw(&self, hit: &RayHit) -> (Vec3, Vec3, Vec3) {
+    pub fn uvw(hit: &RayHit) -> (Vec3, Vec3, Vec3) {
         let w = hit.normal;
         let v = w.cross(&Vec3::new(0.0072, 1.0, 0.0034)).normalize();
         let u = v.cross(&w);
@@ -32,7 +32,7 @@ impl AmbientOcculuder {
 
 impl Light for AmbientOcculuder {
     fn get_direction(&self, hit: &RayHit) -> Vec3 {
-        let (u, v, w) = self.uvw(hit);
+        let (u, v, w) = AmbientOcculuder::uvw(hit);
         u + v + w
     }
 
@@ -41,7 +41,7 @@ impl Light for AmbientOcculuder {
     }
 
     fn shadow_amount(&self, hit: &RayHit) -> f64 {
-        let (u, v, w) = self.uvw(hit);
+        let (u, v, w) = AmbientOcculuder::uvw(hit);
         let sample_points = (self.sample_points_sqrt * self.sample_points_sqrt) as f64;
         let total = get_hemisphere_sampler(self.sample_points_sqrt)
             .map(|sp| (u * sp.x + v * sp.y + w * sp.z).normalize())
