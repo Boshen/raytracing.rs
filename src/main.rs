@@ -3,7 +3,6 @@
     clippy::cast_lossless,
     clippy::cast_possible_truncation,
     clippy::many_single_char_names,
-    clippy::module_name_repetitions,
     clippy::similar_names
 )]
 
@@ -29,10 +28,10 @@ mod view_plane;
 mod world;
 
 use crate::asset::Asset;
-use crate::camera::{Camera, CameraSetting, ThinLensCamera};
+use crate::camera::{Camera, Setting, ThinLens};
 use crate::color::to_rgb;
 use crate::geometric_object::BvhNode;
-use crate::light::{AmbientLight, AmbientOcculuder, Light};
+use crate::light::{Ambient, AmbientOcculuder, Light};
 use crate::model::Vec3;
 use crate::view_plane::ViewPlane;
 use crate::world::World;
@@ -43,7 +42,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let asset = Asset::new("./assets/cornell_box.obj");
 
-    let ambient_light = AmbientLight {
+    let ambient_light = Ambient {
         ls: 0.1,
         cl: Vec3::new(1.0, 1.0, 1.0),
     };
@@ -76,8 +75,8 @@ fn main() -> Result<(), Box<dyn Error>> {
         max_depth: 15,
     };
 
-    let camera = ThinLensCamera {
-        setting: CameraSetting::new(
+    let camera = ThinLens {
+        setting: Setting::new(
             Point3::new(0.0, 0.0, -3.0),
             Point3::new(0.0, 0.0, 0.0),
             500.0,

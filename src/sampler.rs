@@ -6,16 +6,16 @@ use std::f64::consts::FRAC_PI_4;
 use crate::geometric_object::Triangle;
 use crate::model::Vec3;
 
-pub fn get_square_sampler(n: u8) -> impl Iterator<Item = Point2<f64>> {
+pub fn get_square(n: u8) -> impl Iterator<Item = Point2<f64>> {
     thread_rng()
         .sample_iter(&Standard)
         .take((n * n) as usize)
         .map(|(i, j)| Point2::new(i, j))
 }
 
-pub fn get_triangle_sampler(n: u8, t: &Triangle) -> impl Iterator<Item = Point3<f64>> {
+pub fn get_triangle(n: u8, t: &Triangle) -> impl Iterator<Item = Point3<f64>> {
     let (x, y, z) = (t.x, t.y, t.z);
-    get_square_sampler(n).map(move |p| {
+    get_square(n).map(move |p| {
         let mut a = p.x;
         let mut b = p.y;
         if a + b >= 1.0 {
@@ -26,8 +26,8 @@ pub fn get_triangle_sampler(n: u8, t: &Triangle) -> impl Iterator<Item = Point3<
     })
 }
 
-pub fn get_hemisphere_sampler(n: u8) -> impl Iterator<Item = Vec3> {
-    get_square_sampler(n).map(|p| {
+pub fn get_hemisphere(n: u8) -> impl Iterator<Item = Vec3> {
+    get_square(n).map(|p| {
         let e = 1.0;
         let phi = 2.0 * std::f64::consts::PI * p.x;
         let cos_phi = phi.cos();
@@ -38,8 +38,8 @@ pub fn get_hemisphere_sampler(n: u8) -> impl Iterator<Item = Vec3> {
     })
 }
 
-pub fn get_disk_sampler(n: u8) -> impl Iterator<Item = (Point2<f64>, Point2<f64>)> {
-    get_square_sampler(n).map(|p| {
+pub fn get_disk(n: u8) -> impl Iterator<Item = (Point2<f64>, Point2<f64>)> {
+    get_square(n).map(|p| {
         let spx = 2.0 * p.x - 1.0;
         let spy = 2.0 * p.y - 1.0;
         let (r, phi) = if spx > -spy {

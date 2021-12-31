@@ -2,14 +2,14 @@ use std::f64::consts::FRAC_1_PI;
 
 use crate::color::Color;
 use crate::model::Vec3;
-use crate::ray::RayHit;
+use crate::ray::Hit;
 
 pub trait Brdf {
     // reciprocity
-    fn f(&self, hit: &RayHit, wo: &Vec3, wi: &Vec3) -> Color;
+    fn f(&self, hit: &Hit, wo: &Vec3, wi: &Vec3) -> Color;
     // bihemispherical reflectance
     fn rho(&self) -> Color;
-    fn sample_f(&self, hit: &RayHit, wo: &Vec3, wi: &Vec3) -> Color;
+    fn sample_f(&self, hit: &Hit, wo: &Vec3, wi: &Vec3) -> Color;
 }
 
 pub struct Lambertian {
@@ -46,7 +46,7 @@ impl GlossySpecular {
 }
 
 impl Brdf for Lambertian {
-    fn f(&self, _hit: &RayHit, _wo: &Vec3, _wi: &Vec3) -> Color {
+    fn f(&self, _hit: &Hit, _wo: &Vec3, _wi: &Vec3) -> Color {
         self.rho() * FRAC_1_PI
     }
 
@@ -54,13 +54,13 @@ impl Brdf for Lambertian {
         self.cd * self.kd
     }
 
-    fn sample_f(&self, _hit: &RayHit, _wo: &Vec3, _wi: &Vec3) -> Color {
+    fn sample_f(&self, _hit: &Hit, _wo: &Vec3, _wi: &Vec3) -> Color {
         Color::zeros()
     }
 }
 
 impl Brdf for GlossySpecular {
-    fn f(&self, hit: &RayHit, wo: &Vec3, wi: &Vec3) -> Color {
+    fn f(&self, hit: &Hit, wo: &Vec3, wi: &Vec3) -> Color {
         let ndotwi = hit.normal.dot(wi).max(0.0);
         let r = hit.normal * (2.0 * ndotwi) - wi;
         let rdotwo = r.dot(wo);
@@ -75,13 +75,13 @@ impl Brdf for GlossySpecular {
         Color::zeros() // is black for GlossySpecular
     }
 
-    fn sample_f(&self, _hit: &RayHit, _wo: &Vec3, _wi: &Vec3) -> Color {
+    fn sample_f(&self, _hit: &Hit, _wo: &Vec3, _wi: &Vec3) -> Color {
         Color::zeros()
     }
 }
 
 impl Brdf for PerfectSpecular {
-    fn f(&self, _hit: &RayHit, _wo: &Vec3, _wi: &Vec3) -> Color {
+    fn f(&self, _hit: &Hit, _wo: &Vec3, _wi: &Vec3) -> Color {
         Color::zeros() // is black for PerfectSpecular
     }
 
@@ -89,7 +89,7 @@ impl Brdf for PerfectSpecular {
         Color::zeros() // is black for PerfectSpecular
     }
 
-    fn sample_f(&self, hit: &RayHit, _wo: &Vec3, wi: &Vec3) -> Color {
+    fn sample_f(&self, hit: &Hit, _wo: &Vec3, wi: &Vec3) -> Color {
         self.cr * self.kr / hit.normal.dot(wi)
     }
 }

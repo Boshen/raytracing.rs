@@ -6,25 +6,25 @@ use crate::geometric_object::Geometry;
 use crate::light::Light;
 use crate::material::Emissive;
 use crate::model::Vec3;
-use crate::ray::RayHit;
+use crate::ray::Hit;
 
-pub struct AreaLight {
+pub struct Area {
     center: Point3<f64>,
     geometric_objects: Vec<Arc<dyn Geometry + Send + Sync>>,
     sample_points_sqrt: u8,
     pub material: Emissive,
 }
 
-impl AreaLight {
+impl Area {
     pub fn new(
         geometric_objects: Vec<Arc<dyn Geometry + Send + Sync>>,
         material: Emissive,
-    ) -> AreaLight {
+    ) -> Area {
         let center = geometric_objects
             .iter()
             .map(|o| o.get_center())
             .fold(Point3::origin(), |a, b| center(&a, &b));
-        AreaLight {
+        Area {
             center,
             geometric_objects,
             sample_points_sqrt: 1,
@@ -33,16 +33,16 @@ impl AreaLight {
     }
 }
 
-impl Light for AreaLight {
-    fn get_direction(&self, hit: &RayHit) -> Vec3 {
+impl Light for Area {
+    fn get_direction(&self, hit: &Hit) -> Vec3 {
         (self.center - hit.hit_point).normalize()
     }
 
-    fn radiance(&self, _hit: &RayHit) -> Color {
+    fn radiance(&self, _hit: &Hit) -> Color {
         self.material.radiance()
     }
 
-    fn shadow_amount(&self, hit: &RayHit) -> f64 {
+    fn shadow_amount(&self, hit: &Hit) -> f64 {
         let total = self
             .geometric_objects
             .iter()

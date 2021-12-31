@@ -1,19 +1,19 @@
 use nalgebra::{Point2, Vector2};
 use rayon::prelude::*;
 
-use crate::camera::{Camera, CameraSetting};
+use crate::camera::{Camera, Setting};
 use crate::color::Color;
 use crate::ray::Ray;
-use crate::sampler::get_disk_sampler;
+use crate::sampler::get_disk;
 use crate::world::World;
 
-pub struct ThinLensCamera {
+pub struct ThinLens {
     pub lens_radius: f64,
     pub focal_plane_distance: f64, // f
-    pub setting: CameraSetting,
+    pub setting: Setting,
 }
 
-impl Camera for ThinLensCamera {
+impl Camera for ThinLens {
     fn render_scene(&self, world: &World) -> Vec<Color> {
         let hres = world.vp.hres;
         let vres = world.vp.vres;
@@ -25,7 +25,7 @@ impl Camera for ThinLensCamera {
             .flat_map_iter(|n| {
                 let i = f64::from(n % hres) - f64::from(hres) / 2.0;
                 let j = f64::from(n / hres) - f64::from(vres) / 2.0;
-                get_disk_sampler(self.setting.sample_points_sqrt).map(move |(sp, dp)| {
+                get_disk(self.setting.sample_points_sqrt).map(move |(sp, dp)| {
                     let start_point = (sp + Vector2::new(i + sp.x, j + sp.y)) * pixel_size;
                     let end_point = dp * self.lens_radius;
                     self.get_ray(start_point, end_point)
@@ -40,7 +40,7 @@ impl Camera for ThinLensCamera {
     }
 }
 
-impl ThinLensCamera {
+impl ThinLens {
     fn get_ray(&self, p: Point2<f64>, lens_point: Point2<f64>) -> Ray {
         let origin =
             self.setting.eye + self.setting.u * lens_point.x + self.setting.v * lens_point.y;

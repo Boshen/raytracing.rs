@@ -4,7 +4,7 @@ use crate::aabb::Aabb;
 use crate::geometric_object::Geometry;
 use crate::model::Vec3;
 use crate::ray::{HitRecord, Ray};
-use crate::sampler::get_triangle_sampler;
+use crate::sampler::get_triangle;
 
 pub struct Triangle {
     pub x: Point3<f64>,
@@ -123,7 +123,7 @@ impl Geometry for Triangle {
     }
 
     fn get_samples(&self, sample_points_sqrt: u8) -> Vec<Point3<f64>> {
-        get_triangle_sampler(sample_points_sqrt, self).collect()
+        get_triangle(sample_points_sqrt, self).collect()
     }
 
     fn get_material_id(&self) -> usize {

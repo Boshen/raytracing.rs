@@ -1,6 +1,6 @@
 use crate::color::Color;
 use crate::model::Vec3;
-use crate::ray::RayHit;
+use crate::ray::Hit;
 
 pub mod ambient;
 pub mod ambient_occuluder;
@@ -16,8 +16,8 @@ pub use point::*;
 
 pub trait Light {
     // the direction of the incoming light at a hit point
-    fn get_direction(&self, hit: &RayHit) -> Vec3;
-    fn radiance(&self, hit: &RayHit) -> Color;
-    fn shadow_amount(&self, hit: &RayHit) -> f64;
+    fn get_direction(&self, hit: &Hit) -> Vec3;
+    fn radiance(&self, hit: &Hit) -> Color;
+    fn shadow_amount(&self, hit: &Hit) -> f64;
     fn set_sample_points_sqrt(&mut self, n: u8);
 }

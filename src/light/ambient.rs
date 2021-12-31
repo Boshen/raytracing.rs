@@ -1,23 +1,23 @@
 use crate::color::Color;
 use crate::light::Light;
 use crate::model::Vec3;
-use crate::ray::RayHit;
+use crate::ray::Hit;
 
-pub struct AmbientLight {
+pub struct Ambient {
     pub ls: f64,   // radiance scaling factor [0, infinity)
     pub cl: Color, // light color
 }
 
-impl Light for AmbientLight {
-    fn get_direction(&self, _hit: &RayHit) -> Vec3 {
+impl Light for Ambient {
+    fn get_direction(&self, _hit: &Hit) -> Vec3 {
         Vec3::zeros()
     }
 
-    fn radiance(&self, _hit: &RayHit) -> Color {
+    fn radiance(&self, _hit: &Hit) -> Color {
         self.cl * self.ls
     }
 
-    fn shadow_amount(&self, _hit: &RayHit) -> f64 {
+    fn shadow_amount(&self, _hit: &Hit) -> f64 {
         1.0
     }
 

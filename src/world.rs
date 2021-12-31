@@ -4,17 +4,17 @@ use std::{collections::HashMap, f64::INFINITY};
 
 use crate::color::Color;
 use crate::geometric_object::Geometry;
-use crate::light::{AmbientLight, Light};
+use crate::light::{Ambient, Light};
 use crate::material::Material;
 use crate::model::Vec3;
-use crate::ray::{Ray, RayHit};
+use crate::ray::{Hit, Ray};
 use crate::view_plane::ViewPlane;
 
 pub struct World {
     pub vp: ViewPlane,
     pub lights: Vec<Arc<dyn Light + Send + Sync>>,
     pub bvh: Arc<dyn Geometry + Send + Sync>,
-    pub ambient_light: AmbientLight,
+    pub ambient_light: Ambient,
     pub materials: HashMap<usize, Box<Material>>,
     pub max_depth: i32,
 }
@@ -30,7 +30,7 @@ impl World {
                 let wo = (-1.0 * ray.dir).normalize();
                 // revert normal if we hit the inside surface
                 let adjusted_normal = record.normal * record.normal.dot(&wo).signum();
-                let rayhit = RayHit {
+                let rayhit = Hit {
                     ray,
                     hit_point: record.hit_point,
                     material_id: record.material_id,

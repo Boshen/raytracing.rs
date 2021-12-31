@@ -30,7 +30,7 @@ pub struct HitRecord {
     pub material_id: usize,
 }
 
-pub struct RayHit<'a> {
+pub struct Hit<'a> {
     pub ray: &'a Ray,
     pub hit_point: Point3<f64>,
     pub normal: Vec3,

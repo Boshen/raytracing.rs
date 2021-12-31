@@ -10,16 +10,11 @@ use crate::world::World;
 pub use simple::*;
 pub use thin_lens::*;
 
-pub enum CameraEnum {
-    SimpleCamera,
-    ThinLensCamera,
-}
-
 pub trait Camera {
     fn render_scene(&self, world: &World) -> Vec<Color>;
 }
 
-pub struct CameraSetting {
+pub struct Setting {
     pub up: Vec3,
     pub eye: Point3<f64>,
     pub u: Vec3,
@@ -29,13 +24,13 @@ pub struct CameraSetting {
     sample_points_sqrt: u8,
 }
 
-impl CameraSetting {
-    pub fn new(eye: Point3<f64>, lookat: Point3<f64>, view_plane_distance: f64) -> CameraSetting {
+impl Setting {
+    pub fn new(eye: Point3<f64>, lookat: Point3<f64>, view_plane_distance: f64) -> Setting {
         let up = Vec3::new(0.0, 1.0, 0.0);
         let w = (eye - lookat).normalize();
         let u = up.cross(&w).normalize();
         let v = w.cross(&u).normalize();
-        CameraSetting {
+        Setting {
             eye,
             w,
             u,

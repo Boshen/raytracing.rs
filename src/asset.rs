@@ -7,7 +7,7 @@ use tobj::{load_obj, LoadOptions};
 use crate::brdf::{GlossySpecular, Lambertian, PerfectSpecular};
 use crate::color::Color;
 use crate::geometric_object::{Geometry, Sphere, Triangle};
-use crate::light::{AreaLight, Light};
+use crate::light::{Area, Light};
 use crate::material::{Emissive, Material, Matte, Reflective};
 
 pub struct Object {
@@ -92,7 +92,7 @@ impl Asset {
 
                     if m.ambient[0] > 1.0 {
                         let emissive = Emissive::new(m.ambient[0] as f64, diffuse);
-                        let arealight = Arc::new(AreaLight::new(triangles.clone(), emissive));
+                        let arealight = Arc::new(Area::new(triangles.clone(), emissive));
                         asset.lights.push(arealight);
                     }
 

@@ -2,7 +2,7 @@ use crate::brdf::Brdf;
 use crate::color::Color;
 use crate::light::Light;
 use crate::model::Vec3;
-use crate::ray::{Ray, RayHit};
+use crate::ray::{Hit, Ray};
 
 pub mod emissive;
 pub mod matte;
@@ -22,7 +22,7 @@ pub enum Material {
 }
 
 impl Material {
-    pub fn shade(&self, hit: &RayHit) -> Color {
+    pub fn shade(&self, hit: &Hit) -> Color {
         if let Material::Emissive(emissive) = self {
             return emissive.radiance();
         }
@@ -58,7 +58,7 @@ impl Material {
             .fold(ambient_color, |a, b| a + b)
     }
 
-    fn ambient_color(&self, hit: &RayHit) -> Color {
+    fn ambient_color(&self, hit: &Hit) -> Color {
         let rho = match self {
             Material::Matte(m) => m.diffuse_brdf.rho(),
             Material::Phong(m) => m.ambient_brdf.rho(),
@@ -68,7 +68,7 @@ impl Material {
         rho.component_mul(&hit.world.ambient_light.radiance(hit))
     }
 
-    fn diffuse_color(&self, hit: &RayHit, wo: &Vec3, wi: &Vec3) -> Color {
+    fn diffuse_color(&self, hit: &Hit, wo: &Vec3, wi: &Vec3) -> Color {
         let z = Color::zeros();
         match self {
             Material::Matte(m) => m.diffuse_brdf.f(hit, &z, &z),
@@ -78,7 +78,7 @@ impl Material {
         }
     }
 
-    fn specular_color(&self, hit: &RayHit, wo: &Vec3, wi: &Vec3) -> Color {
+    fn specular_color(&self, hit: &Hit, wo: &Vec3, wi: &Vec3) -> Color {
         match self {
             Material::Matte(_) | Material::Emissive(_) => Color::zeros(),
             Material::Phong(m) => m.specular_brdf.f(hit, wo, wi),
@@ -86,7 +86,7 @@ impl Material {
         }
     }
 
-    fn reflective_color(&self, hit: &RayHit, wo: &Vec3) -> Color {
+    fn reflective_color(&self, hit: &Hit, wo: &Vec3) -> Color {
         match self {
             Material::Matte(_) | Material::Phong(_) | Material::Emissive(_) => Color::zeros(),
             Material::Reflective(m) => {
