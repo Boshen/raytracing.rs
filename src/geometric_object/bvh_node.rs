@@ -8,8 +8,8 @@ use crate::model::Vec3;
 use crate::ray::{HitRecord, Ray};
 
 pub struct BvhNode {
-    pub left: Arc<dyn Geometry + Send + Sync>,
-    pub right: Arc<dyn Geometry + Send + Sync>,
+    pub left: Arc<dyn Geometry>,
+    pub right: Arc<dyn Geometry>,
     pub aabb: Aabb,
     pub children: usize,
 }
@@ -60,7 +60,7 @@ impl Geometry for BvhNode {
 }
 
 impl BvhNode {
-    pub fn new(objects: Vec<Arc<dyn Geometry + Send + Sync>>, start: usize, end: usize) -> Self {
+    pub fn new(objects: Vec<Arc<dyn Geometry>>, start: usize, end: usize) -> Self {
         let mut objects = objects;
         let axis = thread_rng().gen_range(0..3);
         let comparator = box_compare(axis);
@@ -92,7 +92,7 @@ impl BvhNode {
 
 fn box_compare<T: ?Sized>(axis: usize) -> Box<dyn Fn(&Arc<T>, &Arc<T>) -> std::cmp::Ordering>
 where
-    T: Geometry + Send + Sync,
+    T: Geometry,
 {
     Box::new(move |a, b| {
         let box_a = a.get_bounding_box();

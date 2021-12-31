@@ -34,7 +34,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         cl: Vec3::new(1.0, 1.0, 1.0),
     };
 
-    let ambient_occuluder: Arc<dyn Light + Send + Sync> =
+    let ambient_occuluder: Arc<dyn Light> =
         Arc::new(AmbientOcculuder::new(1.0, Vec3::new(1.0, 1.0, 1.0)));
     let mut lights = asset.lights;
     lights.push(ambient_occuluder);

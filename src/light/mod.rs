@@ -14,7 +14,7 @@ pub use area::*;
 pub use directional::*;
 pub use point::*;
 
-pub trait Light {
+pub trait Light: Send + Sync {
     // the direction of the incoming light at a hit point
     fn get_direction(&self, hit: &Hit) -> Vec3;
     fn radiance(&self, hit: &Hit) -> Color;

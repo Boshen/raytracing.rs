@@ -18,8 +18,8 @@ pub struct Object {
 
 pub struct Asset {
     pub objects: Vec<Object>,
-    pub geometries: Vec<Arc<dyn Geometry + Send + Sync>>,
-    pub lights: Vec<Arc<dyn Light + Send + Sync>>,
+    pub geometries: Vec<Arc<dyn Geometry>>,
+    pub lights: Vec<Arc<dyn Light>>,
     pub materials: HashMap<usize, Box<Material>>,
 }
 
@@ -55,7 +55,7 @@ impl Asset {
                 ));
             }
 
-            let mut triangles: Vec<Arc<dyn Geometry + Send + Sync>> = vec![];
+            let mut triangles: Vec<Arc<dyn Geometry>> = vec![];
 
             match mesh.material_id {
                 None => {}

@@ -12,8 +12,8 @@ use crate::view_plane::ViewPlane;
 
 pub struct World {
     pub vp: ViewPlane,
-    pub lights: Vec<Arc<dyn Light + Send + Sync>>,
-    pub bvh: Arc<dyn Geometry + Send + Sync>,
+    pub lights: Vec<Arc<dyn Light>>,
+    pub bvh: Arc<dyn Geometry>,
     pub ambient_light: Ambient,
     pub materials: HashMap<usize, Box<Material>>,
     pub max_depth: i32,

@@ -10,16 +10,13 @@ use crate::ray::Hit;
 
 pub struct Area {
     center: Point3<f64>,
-    geometric_objects: Vec<Arc<dyn Geometry + Send + Sync>>,
+    geometric_objects: Vec<Arc<dyn Geometry>>,
     sample_points_sqrt: u8,
     pub material: Emissive,
 }
 
 impl Area {
-    pub fn new(
-        geometric_objects: Vec<Arc<dyn Geometry + Send + Sync>>,
-        material: Emissive,
-    ) -> Self {
+    pub fn new(geometric_objects: Vec<Arc<dyn Geometry>>, material: Emissive) -> Self {
         let center = geometric_objects
             .iter()
             .map(|o| o.get_center())

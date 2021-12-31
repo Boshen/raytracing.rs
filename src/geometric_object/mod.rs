@@ -12,7 +12,7 @@ pub use bvh_node::*;
 pub use sphere::*;
 pub use triangle::*;
 
-pub trait Geometry {
+pub trait Geometry: Send + Sync {
     fn scale(&mut self, l: f64);
     fn intersects(&self, ray: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord>;
     fn normal(&self, p: &Point3<f64>) -> Vec3;
