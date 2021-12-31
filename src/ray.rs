@@ -6,11 +6,16 @@ use crate::world::World;
 pub struct Ray {
     pub origin: Point3<f64>,
     pub dir: Vec3,
+    pub inv_dir: Vec3,
 }
 
 impl Ray {
     pub fn new(origin: Point3<f64>, dir: Vec3) -> Ray {
-        Ray { origin, dir }
+        Ray {
+            origin,
+            dir,
+            inv_dir: Vec3::new(dir.x.recip(), dir.y.recip(), dir.z.recip()),
+        }
     }
 
     pub fn get_point(&self, distance: f64) -> Point3<f64> {
