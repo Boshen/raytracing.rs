@@ -1,14 +1,14 @@
 use crate::ray::Ray;
 use nalgebra::Point3;
 
-pub struct AABB {
+pub struct Aabb {
     pub min: Point3<f64>,
     pub max: Point3<f64>,
 }
 
-impl AABB {
-    pub fn new(min: Point3<f64>, max: Point3<f64>) -> AABB {
-        AABB { min, max }
+impl Aabb {
+    pub fn new(min: Point3<f64>, max: Point3<f64>) -> Aabb {
+        Aabb { min, max }
     }
 
     // https://tavianator.com/2015/ray_box_nan.html
@@ -30,7 +30,7 @@ impl AABB {
         tmax >= tmin.max(0.0)
     }
 
-    pub fn get_surrounding_aabb(box0: &AABB, box1: &AABB) -> AABB {
+    pub fn get_surrounding_aabb(box0: &Aabb, box1: &Aabb) -> Aabb {
         let small = Point3::new(
             box0.min.x.min(box1.min.x),
             box0.min.y.min(box1.min.y),
@@ -41,6 +41,6 @@ impl AABB {
             box0.max.y.max(box1.max.y),
             box0.max.z.max(box1.max.z),
         );
-        AABB::new(small, big)
+        Aabb::new(small, big)
     }
 }

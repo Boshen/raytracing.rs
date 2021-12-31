@@ -6,8 +6,7 @@
     clippy::many_single_char_names,
     clippy::module_name_repetitions,
     clippy::similar_names,
-    clippy::unused_self,
-    clippy::upper_case_acronyms
+    clippy::unused_self
 )]
 
 use image::RgbImage;

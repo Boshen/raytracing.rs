@@ -4,7 +4,7 @@ use crate::color::Color;
 use crate::model::Vec3;
 use crate::ray::RayHit;
 
-pub trait BRDF {
+pub trait Brdf {
     // reciprocity
     fn f(&self, hit: &RayHit, wo: &Vec3, wi: &Vec3) -> Color;
     // bihemispherical reflectance
@@ -45,7 +45,7 @@ impl GlossySpecular {
     }
 }
 
-impl BRDF for Lambertian {
+impl Brdf for Lambertian {
     fn f(&self, _hit: &RayHit, _wo: &Vec3, _wi: &Vec3) -> Color {
         self.rho() * FRAC_1_PI
     }
@@ -59,7 +59,7 @@ impl BRDF for Lambertian {
     }
 }
 
-impl BRDF for GlossySpecular {
+impl Brdf for GlossySpecular {
     fn f(&self, hit: &RayHit, wo: &Vec3, wi: &Vec3) -> Color {
         let ndotwi = hit.normal.dot(wi).max(0.0);
         let r = hit.normal * (2.0 * ndotwi) - wi;
@@ -80,7 +80,7 @@ impl BRDF for GlossySpecular {
     }
 }
 
-impl BRDF for PerfectSpecular {
+impl Brdf for PerfectSpecular {
     fn f(&self, _hit: &RayHit, _wo: &Vec3, _wi: &Vec3) -> Color {
         Color::zeros() // is black for PerfectSpecular
     }

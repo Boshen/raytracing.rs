@@ -1,4 +1,4 @@
-use crate::brdf::BRDF;
+use crate::brdf::Brdf;
 use crate::color::Color;
 use crate::light::Light;
 use crate::model::Vec3;

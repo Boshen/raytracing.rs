@@ -1,6 +1,6 @@
 use nalgebra::{center, Point3};
 
-use crate::aabb::AABB;
+use crate::aabb::Aabb;
 use crate::geometric_object::Geometry;
 use crate::model::Vec3;
 use crate::ray::{HitRecord, Ray};
@@ -118,8 +118,8 @@ impl Geometry for Triangle {
         )
     }
 
-    fn get_bounding_box(&self) -> AABB {
-        AABB::new(self.get_min_point(), self.get_max_point())
+    fn get_bounding_box(&self) -> Aabb {
+        Aabb::new(self.get_min_point(), self.get_max_point())
     }
 
     fn get_samples(&self, sample_points_sqrt: usize) -> Vec<Point3<f64>> {
