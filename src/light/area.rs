@@ -57,4 +57,8 @@ impl Light for AreaLight {
             .count() as f64;
         total / weight
     }
+
+    fn set_sample_points_sqrt(&mut self, n: usize) {
+        self.sample_points_sqrt = n;
+    }
 }

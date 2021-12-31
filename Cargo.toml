@@ -15,3 +15,4 @@ tobj = "3.2.0"
 lto = "fat"
 codegen-units = 1
 panic = "abort"
+incremental = true

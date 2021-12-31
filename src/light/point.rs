@@ -26,4 +26,6 @@ impl Light for PointLight {
         let b = hit.world.is_in_shadow(&hit.hit_point, &direction, d);
         f64::from(u32::from(!b))
     }
+
+    fn set_sample_points_sqrt(&mut self, _n: usize) {}
 }

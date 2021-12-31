@@ -1,2 +1,7 @@
+# Raytracing in Rust 🦀
+
 ## Run
-`cargo build --release && time cargo run --release && open output.png`
+
+```bash
+cargo watch -x 'run --release -- --preview' -s 'open output.png'
+```

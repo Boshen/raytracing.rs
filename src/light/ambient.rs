@@ -20,4 +20,6 @@ impl Light for AmbientLight {
     fn shadow_amount(&self, _hit: &RayHit) -> f64 {
         1.0
     }
+
+    fn set_sample_points_sqrt(&mut self, _n: usize) {}
 }

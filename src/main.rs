@@ -35,13 +35,14 @@ use crate::asset::Asset;
 use crate::camera::{Camera, CameraSetting, ThinLensCamera};
 use crate::color::to_rgb;
 use crate::geometric_object::BvhNode;
-use crate::light::{AmbientLight, AmbientOcculuder};
+use crate::light::{AmbientLight, AmbientOcculuder, Light};
 use crate::model::Vec3;
 use crate::view_plane::ViewPlane;
 use crate::world::World;
 
 fn main() -> Result<(), Box<dyn Error>> {
-    let debug = env::args().any(|x| x == "--debug");
+    let preview = env::args().any(|x| x == "--preview");
+    println!("Preview Mode: {:?}", preview);
 
     let asset = Asset::new("./assets/cornell_box.obj");
 
@@ -50,14 +51,15 @@ fn main() -> Result<(), Box<dyn Error>> {
         cl: Vec3::new(1.0, 1.0, 1.0),
     };
 
-    let sample_points_sqrt = if debug { 1 } else { 16 };
+    let ambient_occuluder: Arc<dyn Light + Send + Sync> =
+        Arc::new(AmbientOcculuder::new(1.0, Vec3::new(1.0, 1.0, 1.0)));
     let mut lights = asset.lights;
-    let ambient_occuluder = Arc::new(AmbientOcculuder {
-        ls: 1.0,
-        cl: Vec3::new(1.0, 1.0, 1.0),
-        sample_points_sqrt,
-    });
     lights.push(ambient_occuluder);
+    for light in lights.iter_mut() {
+        if let Some(l) = Arc::get_mut(light) {
+            l.set_sample_points_sqrt(if preview { 1 } else { 4 });
+        }
+    }
 
     let hres = 500;
     let vres = 500;
@@ -74,7 +76,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         lights,
         ambient_light,
         materials: asset.materials,
-        max_depth: if debug { 1 } else { 15 },
+        max_depth: 15,
     };
 
     let camera = ThinLensCamera {

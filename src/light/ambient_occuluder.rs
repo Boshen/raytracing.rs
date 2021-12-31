@@ -10,10 +10,18 @@ use crate::sampler::get_hemisphere_sampler;
 pub struct AmbientOcculuder {
     pub ls: f64,
     pub cl: Color,
-    pub sample_points_sqrt: usize,
+    sample_points_sqrt: usize,
 }
 
 impl AmbientOcculuder {
+    pub fn new(ls: f64, cl: Color) -> AmbientOcculuder {
+        AmbientOcculuder {
+            ls,
+            cl,
+            sample_points_sqrt: 1,
+        }
+    }
+
     fn uvw(&self, hit: &RayHit) -> (Vec3, Vec3, Vec3) {
         let w = hit.normal;
         let v = w.cross(&Vec3::new(0.0072, 1.0, 0.0034)).normalize();
@@ -40,5 +48,9 @@ impl Light for AmbientOcculuder {
             .filter(|dir| !hit.world.is_in_shadow(&hit.hit_point, dir, INFINITY))
             .count() as f64;
         total / sample_points
+    }
+
+    fn set_sample_points_sqrt(&mut self, n: usize) {
+        self.sample_points_sqrt = n;
     }
 }
