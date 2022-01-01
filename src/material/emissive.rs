@@ -9,10 +9,12 @@ pub struct Emissive {
 }
 
 impl Emissive {
+    #[must_use]
     pub const fn new(ls: f64, ce: Color) -> Self {
         Self { ls, ce }
     }
 
+    #[must_use]
     pub fn radiance(&self) -> Color {
         self.ce * self.ls
     }

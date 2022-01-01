@@ -12,10 +12,12 @@ pub struct Simple {
 }
 
 impl Simple {
-    pub fn new(setting: Setting) -> Self {
+    #[must_use]
+    pub const fn new(setting: Setting) -> Self {
         Self { setting }
     }
 
+    #[must_use]
     fn get_ray(&self, dir: Vector2<f64>) -> Ray {
         let dir = (self.setting.u * dir.x + self.setting.v * dir.y
             - self.setting.w * self.setting.view_plane_distance)

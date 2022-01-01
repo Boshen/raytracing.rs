@@ -16,6 +16,7 @@ pub struct Area {
 }
 
 impl Area {
+    #[must_use]
     pub fn new(geometric_objects: Vec<Arc<dyn Geometry>>, material: Emissive) -> Self {
         let center = geometric_objects
             .iter()

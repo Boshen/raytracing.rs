@@ -28,18 +28,21 @@ pub struct PerfectSpecular {
 }
 
 impl Lambertian {
+    #[must_use]
     pub const fn new(kd: f64, cd: Color) -> Self {
         Self { kd, cd }
     }
 }
 
 impl PerfectSpecular {
+    #[must_use]
     pub const fn new(kr: f64, cr: Color) -> Self {
         Self { kr, cr }
     }
 }
 
 impl GlossySpecular {
+    #[must_use]
     pub const fn new(ks: f64, exp: f64) -> Self {
         Self { ks, exp }
     }

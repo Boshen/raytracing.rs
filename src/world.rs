@@ -18,6 +18,7 @@ pub struct World {
 }
 
 impl World {
+    #[must_use]
     pub fn trace(&self, ray: &Ray, depth: i32) -> Color {
         if depth >= self.max_depth {
             return Color::zeros();
@@ -40,6 +41,7 @@ impl World {
             })
     }
 
+    #[must_use]
     pub fn is_in_shadow(&self, point: &Point3<f64>, dir: &Vec3, t_max: f64) -> bool {
         let offset = 0.00001 * dir;
         let shadow_ray = Ray::new(point + offset, *dir);

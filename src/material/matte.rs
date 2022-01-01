@@ -12,6 +12,7 @@ pub struct Matte {
 }
 
 impl Matte {
+    #[must_use]
     pub const fn new(ambient_brdf: Lambertian, diffuse_brdf: Lambertian) -> Self {
         Self {
             ambient_brdf,

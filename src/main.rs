@@ -1,11 +1,5 @@
-#![allow(dead_code)]
 #![warn(clippy::all, clippy::pedantic, clippy::nursery)]
-#![allow(
-    clippy::cast_lossless,
-    clippy::cast_possible_truncation,
-    clippy::many_single_char_names,
-    clippy::similar_names
-)]
+#![allow(clippy::similar_names)]
 
 use std::error::Error;
 use std::sync::Arc;

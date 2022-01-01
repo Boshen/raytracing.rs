@@ -12,6 +12,9 @@ pub struct Phong {
 }
 
 impl Phong {
+    /// # Panics
+    /// will panic if `diffuse_brdf.kd` + `specular_brdf.ks` >= 1.0
+    #[must_use]
     pub fn new(
         ambient_brdf: Lambertian,
         diffuse_brdf: Lambertian,

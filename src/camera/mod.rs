@@ -25,6 +25,7 @@ pub struct Setting {
 }
 
 impl Setting {
+    #[must_use]
     pub fn new(eye: Point3<f64>, lookat: Point3<f64>, view_plane_distance: f64) -> Self {
         let up = Vec3::new(0.0, 1.0, 0.0);
         let w = (eye - lookat).normalize();

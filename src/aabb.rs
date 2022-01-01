@@ -7,11 +7,13 @@ pub struct Aabb {
 }
 
 impl Aabb {
+    #[must_use]
     pub const fn new(min: Point3<f64>, max: Point3<f64>) -> Self {
         Self { min, max }
     }
 
     // https://tavianator.com/2015/ray_box_nan.html
+    #[must_use]
     pub fn intersects(&self, r: &Ray, tmin: f64, tmax: f64) -> bool {
         let mut t1 = (self.min[0] - r.origin[0]) * r.inv_dir[0];
         let mut t2 = (self.max[0] - r.origin[0]) * r.inv_dir[0];
@@ -30,6 +32,7 @@ impl Aabb {
         tmax >= tmin.max(0.0)
     }
 
+    #[must_use]
     pub fn get_surrounding_aabb(box0: &Self, box1: &Self) -> Self {
         let small = Point3::new(
             box0.min.x.min(box1.min.x),

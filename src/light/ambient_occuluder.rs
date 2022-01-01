@@ -14,6 +14,7 @@ pub struct AmbientOcculuder {
 }
 
 impl AmbientOcculuder {
+    #[must_use]
     pub const fn new(ls: f64, cl: Color) -> Self {
         Self {
             ls,
@@ -22,6 +23,7 @@ impl AmbientOcculuder {
         }
     }
 
+    #[must_use]
     pub fn uvw(hit: &Hit) -> (Vec3, Vec3, Vec3) {
         let w = hit.normal;
         let v = w.cross(&Vec3::new(0.0072, 1.0, 0.0034)).normalize();

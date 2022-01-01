@@ -11,6 +11,7 @@ pub struct Ray {
 }
 
 impl Ray {
+    #[must_use]
     pub fn new(origin: Point3<f64>, dir: Vec3) -> Self {
         Self {
             origin,
@@ -19,6 +20,7 @@ impl Ray {
         }
     }
 
+    #[must_use]
     pub fn get_point(&self, distance: f64) -> Point3<f64> {
         self.origin + self.dir * distance
     }

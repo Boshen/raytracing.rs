@@ -3,6 +3,7 @@ use nalgebra::Vector3;
 pub type Color = Vector3<f64>;
 
 #[allow(clippy::cast_sign_loss)]
+#[must_use]
 pub fn to_rgb(color: &Color) -> Vec<u8> {
     tone_mapping(color)
         .iter()

@@ -14,7 +14,8 @@ pub struct ThinLens {
 }
 
 impl ThinLens {
-    pub fn new(setting: Setting, lens_radius: f64, focal_plane_distance: f64) -> Self {
+    #[must_use]
+    pub const fn new(setting: Setting, lens_radius: f64, focal_plane_distance: f64) -> Self {
         Self {
             setting,
             lens_radius,

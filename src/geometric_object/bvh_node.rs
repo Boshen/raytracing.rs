@@ -15,6 +15,7 @@ pub struct BvhNode {
 }
 
 impl BvhNode {
+    #[must_use]
     pub fn new(objects: Vec<Arc<dyn Geometry>>, start: usize, end: usize) -> Self {
         let mut objects = objects;
         let axis = thread_rng().gen_range(0..3);
