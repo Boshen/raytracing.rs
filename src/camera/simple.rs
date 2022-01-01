@@ -8,7 +8,20 @@ use crate::sampler::get_square;
 use crate::world::World;
 
 pub struct Simple {
-    pub setting: Setting,
+    setting: Setting,
+}
+
+impl Simple {
+    pub fn new(setting: Setting) -> Self {
+        Self { setting }
+    }
+
+    fn get_ray(&self, dir: Vector2<f64>) -> Ray {
+        let dir = (self.setting.u * dir.x + self.setting.v * dir.y
+            - self.setting.w * self.setting.view_plane_distance)
+            .normalize();
+        Ray::new(self.setting.eye, dir)
+    }
 }
 
 impl Camera for Simple {
@@ -35,14 +48,5 @@ impl Camera for Simple {
                     / (sample_points as f64)
             })
             .collect()
-    }
-}
-
-impl Simple {
-    fn get_ray(&self, dir: Vector2<f64>) -> Ray {
-        let dir = (self.setting.u * dir.x + self.setting.v * dir.y
-            - self.setting.w * self.setting.view_plane_distance)
-            .normalize();
-        Ray::new(self.setting.eye, dir)
     }
 }

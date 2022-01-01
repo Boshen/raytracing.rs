@@ -8,9 +8,29 @@ use crate::sampler::get_disk;
 use crate::world::World;
 
 pub struct ThinLens {
-    pub lens_radius: f64,
-    pub focal_plane_distance: f64, // f
-    pub setting: Setting,
+    setting: Setting,
+    lens_radius: f64,
+    focal_plane_distance: f64, // f
+}
+
+impl ThinLens {
+    pub fn new(setting: Setting, lens_radius: f64, focal_plane_distance: f64) -> Self {
+        Self {
+            setting,
+            lens_radius,
+            focal_plane_distance,
+        }
+    }
+
+    fn get_ray(&self, p: Point2<f64>, lens_point: Point2<f64>) -> Ray {
+        let origin =
+            self.setting.eye + self.setting.u * lens_point.x + self.setting.v * lens_point.y;
+        let dp = p * self.focal_plane_distance / self.setting.view_plane_distance - lens_point;
+        let dir = (self.setting.u * dp.x + self.setting.v * dp.y
+            - self.setting.w * self.focal_plane_distance)
+            .normalize();
+        Ray::new(origin, dir)
+    }
 }
 
 impl Camera for ThinLens {
@@ -37,17 +57,5 @@ impl Camera for ThinLens {
         vec.chunks(sample_points.into())
             .map(|chunks| chunks.iter().sum::<Color>() / sample_points as f64)
             .collect()
-    }
-}
-
-impl ThinLens {
-    fn get_ray(&self, p: Point2<f64>, lens_point: Point2<f64>) -> Ray {
-        let origin =
-            self.setting.eye + self.setting.u * lens_point.x + self.setting.v * lens_point.y;
-        let dp = p * self.focal_plane_distance / self.setting.view_plane_distance - lens_point;
-        let dir = (self.setting.u * dp.x + self.setting.v * dp.y
-            - self.setting.w * self.focal_plane_distance)
-            .normalize();
-        Ray::new(origin, dir)
     }
 }

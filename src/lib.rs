@@ -1,4 +1,5 @@
 pub mod aabb;
+pub mod args;
 pub mod asset;
 pub mod brdf;
 pub mod camera;
