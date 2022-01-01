@@ -12,24 +12,18 @@ impl Aabb {
         Self { min, max }
     }
 
-    // https://tavianator.com/2015/ray_box_nan.html
     #[must_use]
-    pub fn intersects(&self, r: &Ray, tmin: f64, tmax: f64) -> bool {
-        let mut t1 = (self.min[0] - r.origin[0]) * r.inv_dir[0];
-        let mut t2 = (self.max[0] - r.origin[0]) * r.inv_dir[0];
-
-        let mut tmin = t1.min(t2).max(tmin);
-        let mut tmax = t1.max(t2).min(tmax);
-
-        for i in 1..3 {
-            t1 = (self.min[i] - r.origin[i]) * r.inv_dir[i];
-            t2 = (self.max[i] - r.origin[i]) * r.inv_dir[i];
-
-            tmin = tmin.max(t1.min(t2));
-            tmax = tmax.min(t1.max(t2));
+    pub fn intersects(&self, r: &Ray, mut tmin: f64, mut tmax: f64) -> bool {
+        for i in 0..3 {
+            let t1 = (self.min[i] - r.origin[i]) / r.dir[i];
+            let t2 = (self.max[i] - r.origin[i]) / r.dir[i];
+            tmin = t1.min(t2).max(tmin);
+            tmax = t1.max(t2).min(tmax);
+            if tmax < tmin {
+                return false;
+            }
         }
-
-        tmax >= tmin.max(0.0)
+        true
     }
 
     #[must_use]

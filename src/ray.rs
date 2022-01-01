@@ -7,17 +7,12 @@ use crate::world::World;
 pub struct Ray {
     pub origin: Point3<f64>,
     pub dir: Vec3,
-    pub inv_dir: Vec3,
 }
 
 impl Ray {
     #[must_use]
-    pub fn new(origin: Point3<f64>, dir: Vec3) -> Self {
-        Self {
-            origin,
-            dir,
-            inv_dir: Vec3::new(dir.x.recip(), dir.y.recip(), dir.z.recip()),
-        }
+    pub const fn new(origin: Point3<f64>, dir: Vec3) -> Self {
+        Self { origin, dir }
     }
 
     #[must_use]
