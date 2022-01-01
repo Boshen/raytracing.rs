@@ -47,10 +47,9 @@ fn main() -> Result<(), Box<dyn Error>> {
         pixel_size: 1.0,
     };
 
-    let len = asset.geometries.len();
     let world = World {
         vp,
-        bvh: Arc::new(BvhNode::new(asset.geometries, 0, len)),
+        bvh: BvhNode::construct(asset.geometries),
         lights,
         ambient_light,
         max_depth: 15,
