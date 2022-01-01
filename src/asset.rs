@@ -7,7 +7,7 @@ use crate::brdf::{GlossySpecular, Lambertian, PerfectSpecular};
 use crate::color::Color;
 use crate::geometric_object::{Geometry, Sphere, Triangle};
 use crate::light::{Area, Light};
-use crate::material::{Emissive, Material, Matte, Reflective};
+use crate::material::{Emissive, Matte, Reflective};
 
 pub struct Object {
     pub name: String,
@@ -70,21 +70,23 @@ impl Asset {
                         m.diffuse[2] as f64,
                     );
 
-                    let material: Arc<dyn Material> = if m.ambient[0] > 1.0 {
-                        Arc::new(Emissive::new(m.ambient[0] as f64, diffuse))
-                    } else {
-                        let ambient_brdf = Lambertian::new(0.5, ambient);
-                        let diffuse_brdf = Lambertian::new(1.0, diffuse);
-                        Arc::new(Matte::new(ambient_brdf, diffuse_brdf))
-                    };
-
                     for f in 0..(mesh.indices.len() / 3) {
                         let start = f * 3;
                         let face_indices: Vec<_> = mesh.indices[start..start + 3].iter().collect();
                         let v1 = vertices[*face_indices[0] as usize];
                         let v2 = vertices[*face_indices[1] as usize];
                         let v3 = vertices[*face_indices[2] as usize];
-                        let triangle = Arc::new(Triangle::new(material.clone(), v1, v2, v3, scale));
+
+                        let triangle: Arc<dyn Geometry> = if m.ambient[0] > 1.0 {
+                            let material = Emissive::new(m.ambient[0] as f64, diffuse);
+                            Arc::new(Triangle::new(material, v1, v2, v3, scale))
+                        } else {
+                            let ambient_brdf = Lambertian::new(0.5, ambient);
+                            let diffuse_brdf = Lambertian::new(1.0, diffuse);
+                            let material = Matte::new(ambient_brdf, diffuse_brdf);
+                            Arc::new(Triangle::new(material, v1, v2, v3, scale))
+                        };
+
                         triangles.push(triangle);
                     }
 
@@ -99,12 +101,12 @@ impl Asset {
             };
         }
 
-        let material = Arc::new(Reflective::new(
+        let material = Reflective::new(
             Lambertian::new(0.1, Color::new(1.0, 1.0, 1.0)),
             Lambertian::new(0.1, Color::new(1.0, 1.0, 1.0)),
             GlossySpecular::new(0.2, 2.0),
             PerfectSpecular::new(0.5, Color::new(1.0, 1.0, 1.0)),
-        ));
+        );
         asset.geometries.push(Arc::new(Sphere::new(
             material,
             40.0,

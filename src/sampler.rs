@@ -3,7 +3,6 @@ use rand::distributions::Standard;
 use rand::{thread_rng, Rng};
 use std::f64::consts::FRAC_PI_4;
 
-use crate::geometric_object::Triangle;
 use crate::model::Vec3;
 
 pub fn get_square(n: u8) -> impl Iterator<Item = Point2<f64>> {
@@ -13,8 +12,12 @@ pub fn get_square(n: u8) -> impl Iterator<Item = Point2<f64>> {
         .map(|(i, j)| Point2::new(i, j))
 }
 
-pub fn get_triangle(n: u8, t: &Triangle) -> impl Iterator<Item = Point3<f64>> {
-    let (x, y, z) = (t.x, t.y, t.z);
+pub fn get_triangle<'a>(
+    n: u8,
+    x: &'a Point3<f64>,
+    y: &'a Point3<f64>,
+    z: &'a Point3<f64>,
+) -> impl Iterator<Item = Point3<f64>> + 'a {
     get_square(n).map(move |p| {
         let mut a = p.x;
         let mut b = p.y;

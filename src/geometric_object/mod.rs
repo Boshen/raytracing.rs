@@ -1,8 +1,6 @@
 use nalgebra::Point3;
-use std::sync::Arc;
 
 use crate::aabb::Aabb;
-use crate::material::Material;
 use crate::model::Vec3;
 use crate::ray::{HitRecord, Ray};
 
@@ -23,5 +21,4 @@ pub trait Geometry: Send + Sync {
     fn get_max_point(&self) -> Point3<f64>;
     fn get_bounding_box(&self) -> Aabb;
     fn get_samples(&self, sample_points_sqrt: u8) -> Vec<Point3<f64>>;
-    fn get_material(&self) -> Option<Arc<dyn Material>>;
 }

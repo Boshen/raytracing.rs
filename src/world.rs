@@ -31,7 +31,7 @@ impl World {
                 let rayhit = Hit {
                     ray,
                     hit_point: record.hit_point,
-                    material: record.material.clone(),
+                    material: record.material,
                     normal: adjusted_normal,
                     world: self,
                     depth,

@@ -1,5 +1,4 @@
 use nalgebra::{center, Point3};
-use std::sync::Arc;
 
 use crate::aabb::Aabb;
 use crate::geometric_object::Geometry;
@@ -8,28 +7,22 @@ use crate::model::Vec3;
 use crate::ray::{HitRecord, Ray};
 use crate::sampler::get_triangle;
 
-pub struct Triangle {
+pub struct Triangle<M: Material> {
     pub x: Point3<f64>,
     pub y: Point3<f64>,
     pub z: Point3<f64>,
-    material: Arc<dyn Material>,
+    material: M,
 }
 
-impl Triangle {
-    pub fn new(
-        material: Arc<dyn Material>,
-        x: Point3<f64>,
-        y: Point3<f64>,
-        z: Point3<f64>,
-        scale: f64,
-    ) -> Self {
+impl<M: Material> Triangle<M> {
+    pub fn new(material: M, x: Point3<f64>, y: Point3<f64>, z: Point3<f64>, scale: f64) -> Self {
         let mut triangle = Self { x, y, z, material };
         triangle.scale(scale);
         triangle
     }
 }
 
-impl Geometry for Triangle {
+impl<M: Material> Geometry for Triangle<M> {
     fn intersects(&self, ray: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
         let epsilon = 0.000_001;
         let e1 = self.y - self.x;
@@ -67,7 +60,7 @@ impl Geometry for Triangle {
             dist: t,
             hit_point,
             normal: self.normal(&hit_point),
-            material: self.material.clone(),
+            material: &self.material,
         })
     }
 
@@ -120,10 +113,6 @@ impl Geometry for Triangle {
     }
 
     fn get_samples(&self, sample_points_sqrt: u8) -> Vec<Point3<f64>> {
-        get_triangle(sample_points_sqrt, self).collect()
-    }
-
-    fn get_material(&self) -> Option<Arc<dyn Material>> {
-        Some(self.material.clone())
+        get_triangle(sample_points_sqrt, &self.x, &self.y, &self.z).collect()
     }
 }

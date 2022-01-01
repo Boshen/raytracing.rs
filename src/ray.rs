@@ -1,5 +1,4 @@
 use nalgebra::Point3;
-use std::sync::Arc;
 
 use crate::material::Material;
 use crate::model::Vec3;
@@ -25,11 +24,11 @@ impl Ray {
     }
 }
 
-pub struct HitRecord {
+pub struct HitRecord<'a> {
     pub dist: f64,
     pub hit_point: Point3<f64>,
     pub normal: Vec3,
-    pub material: Arc<dyn Material>,
+    pub material: &'a dyn Material,
 }
 
 pub struct Hit<'a> {
@@ -38,5 +37,5 @@ pub struct Hit<'a> {
     pub normal: Vec3,
     pub world: &'a World,
     pub depth: i32,
-    pub material: Arc<dyn Material>,
+    pub material: &'a dyn Material,
 }
