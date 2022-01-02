@@ -1,14 +1,14 @@
 use nalgebra::Point3;
 
-pub mod simple;
-pub mod thin_lens;
+mod simple;
+mod thin_lens;
+
+pub use simple::*;
+pub use thin_lens::*;
 
 use crate::color::Color;
 use crate::model::Vec3;
 use crate::world::World;
-
-pub use simple::*;
-pub use thin_lens::*;
 
 pub trait Camera {
     fn render_scene(&self, world: &World) -> Vec<Color>;

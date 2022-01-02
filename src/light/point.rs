@@ -1,7 +1,7 @@
 use nalgebra::{distance, Point3};
 
+use super::Light;
 use crate::color::Color;
-use crate::light::Light;
 use crate::model::Vec3;
 use crate::ray::Hit;
 

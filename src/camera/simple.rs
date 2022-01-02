@@ -1,7 +1,7 @@
 use nalgebra::{Point2, Vector2};
 use rayon::prelude::*;
 
-use crate::camera::{Camera, Setting};
+use super::{Camera, Setting};
 use crate::color::Color;
 use crate::ray::Ray;
 use crate::sampler::get_square;

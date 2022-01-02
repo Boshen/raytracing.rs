@@ -1,7 +1,7 @@
+use super::{shade, Material};
 use crate::brdf::{Brdf, GlossySpecular, Lambertian, PerfectSpecular};
 use crate::color::Color;
 use crate::light::Light;
-use crate::material::{shade, Material};
 use crate::model::Vec3;
 use crate::ray::{Hit, Ray};
 

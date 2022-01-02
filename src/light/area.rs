@@ -1,9 +1,9 @@
 use nalgebra::{center, distance, Point3};
 use std::sync::Arc;
 
+use super::Light;
 use crate::color::Color;
 use crate::geometric_object::Geometry;
-use crate::light::Light;
 use crate::material::Emissive;
 use crate::model::Vec3;
 use crate::ray::Hit;

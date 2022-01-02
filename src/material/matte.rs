@@ -1,8 +1,7 @@
+use super::{shade, Material};
 use crate::brdf::{Brdf, Lambertian};
 use crate::color::Color;
 use crate::light::Light;
-use crate::material::shade;
-use crate::material::Material;
 use crate::model::Vec3;
 use crate::ray::Hit;
 

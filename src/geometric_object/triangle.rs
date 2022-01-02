@@ -1,7 +1,7 @@
 use nalgebra::{center, Point3};
 
+use super::Geometry;
 use crate::aabb::Aabb;
-use crate::geometric_object::Geometry;
 use crate::material::Material;
 use crate::model::Vec3;
 use crate::ray::{HitRecord, Ray};

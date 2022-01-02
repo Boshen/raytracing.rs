@@ -1,16 +1,16 @@
 use nalgebra::Point3;
 
-use crate::aabb::Aabb;
-use crate::model::Vec3;
-use crate::ray::{HitRecord, Ray};
-
-pub mod bvh_node;
-pub mod sphere;
-pub mod triangle;
+mod bvh_node;
+mod sphere;
+mod triangle;
 
 pub use bvh_node::*;
 pub use sphere::*;
 pub use triangle::*;
+
+use crate::aabb::Aabb;
+use crate::model::Vec3;
+use crate::ray::{HitRecord, Ray};
 
 pub trait Geometry: Send + Sync {
     fn scale(&mut self, l: f64);

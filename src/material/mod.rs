@@ -1,16 +1,16 @@
-use crate::color::Color;
-use crate::model::Vec3;
-use crate::ray::Hit;
-
-pub mod emissive;
-pub mod matte;
-pub mod phong;
-pub mod reflective;
+mod emissive;
+mod matte;
+mod phong;
+mod reflective;
 
 pub use emissive::*;
 pub use matte::*;
 pub use phong::*;
 pub use reflective::*;
+
+use crate::color::Color;
+use crate::model::Vec3;
+use crate::ray::Hit;
 
 pub trait Material: Send + Sync {
     fn shade(&self, hit: &Hit) -> Color;
@@ -29,9 +29,11 @@ pub fn shade(m: &dyn Material, hit: &Hit) -> Color {
         .iter()
         .map(|light| {
             // wi: incoming direction
-            // ndotwi: angle between light and normal
             let wi = light.get_direction(hit);
+
+            // ndotwi: angle between light and normal
             let ndotwi = hit.normal.dot(&wi);
+
             // not hit by light
             if ndotwi <= 0.0 {
                 return Color::zeros();
@@ -47,9 +49,9 @@ pub fn shade(m: &dyn Material, hit: &Hit) -> Color {
             // wo: reflected direction
             let wo = -hit.ray.dir;
 
-            (m.diffuse(hit, &wo, &wi) + m.specular(hit, &wo, &wi))
-                .component_mul(&(radiance * shadow_amount))
-                * ndotwi
+            let diffuse = m.diffuse(hit, &wo, &wi);
+            let specular = m.specular(hit, &wo, &wi);
+            (diffuse + specular).component_mul(&(radiance * shadow_amount)) * ndotwi
                 + m.reflective(hit, &wo)
         })
         .sum::<Color>();

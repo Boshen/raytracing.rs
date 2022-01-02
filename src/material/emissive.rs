@@ -1,5 +1,5 @@
+use super::Material;
 use crate::color::Color;
-use crate::material::Material;
 use crate::model::Vec3;
 use crate::ray::Hit;
 
