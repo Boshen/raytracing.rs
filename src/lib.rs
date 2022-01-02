@@ -2,8 +2,7 @@
 #![allow(
     clippy::cast_lossless,
     clippy::cast_possible_truncation,
-    clippy::many_single_char_names,
-    clippy::similar_names
+    clippy::many_single_char_names
 )]
 
 pub mod aabb;

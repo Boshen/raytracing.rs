@@ -28,15 +28,15 @@ impl Renderer {
 
     #[must_use]
     pub fn render(&self) -> Vec<Color> {
-        let hres = self.scene.view_width;
-        let vres = self.scene.view_height;
+        let width = self.scene.view_width;
+        let height = self.scene.view_height;
         let pixel_size = self.scene.camera.setting().pixel_size;
 
-        let vec = (0..(hres * vres))
+        let vec = (0..(width * height))
             .into_par_iter()
             .flat_map_iter(|n| {
-                let i = pixel_size * (f64::from(n % hres) - f64::from(hres) / 2.0);
-                let j = pixel_size * (f64::from(n / hres) - f64::from(vres) / 2.0);
+                let i = pixel_size * (f64::from(n % width) - f64::from(width) / 2.0);
+                let j = pixel_size * (f64::from(n / width) - f64::from(height) / 2.0);
                 let origin = Point2::new(i, j);
                 self.scene
                     .camera

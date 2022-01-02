@@ -1,5 +1,4 @@
 #![warn(clippy::all, clippy::pedantic, clippy::nursery)]
-#![allow(clippy::similar_names)]
 
 use std::error::Error;
 use std::time::Instant;

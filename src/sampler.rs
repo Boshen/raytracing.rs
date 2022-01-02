@@ -53,18 +53,18 @@ impl Sampler {
 
     pub fn disk(&self) -> impl Iterator<Item = (Point2<f64>, Point2<f64>)> {
         self.square().map(|p| {
-            let spx = 2.0 * p.x - 1.0;
-            let spy = 2.0 * p.y - 1.0;
-            let (r, phi) = if spx > -spy {
-                if spx > spy {
-                    (spx, spy / spx)
+            let x = 2.0 * p.x - 1.0;
+            let y = 2.0 * p.y - 1.0;
+            let (r, phi) = if x > -y {
+                if x > y {
+                    (x, y / x)
                 } else {
-                    (spy, 2.0 - spx / spy)
+                    (y, 2.0 - x / y)
                 }
-            } else if spx < spy {
-                (-spx, 4.0 + spy / spx)
+            } else if x < y {
+                (-x, 4.0 + y / x)
             } else {
-                (-spy, if spy == 0.0 { 0.0 } else { 6.0 - spx / spy })
+                (-y, if y == 0.0 { 0.0 } else { 6.0 - x / y })
             };
             let phi_ = phi * FRAC_PI_4;
             (p, Point2::new(r * phi_.cos(), r * phi_.sin()))
