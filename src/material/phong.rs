@@ -43,7 +43,7 @@ impl Material for Phong {
     fn ambient(&self, hit: &Hit) -> Color {
         self.ambient_brdf
             .rho()
-            .component_mul(&hit.world.ambient_light.radiance(hit))
+            .component_mul(&hit.renderer.scene.ambient_light.radiance(hit))
     }
 
     fn diffuse(&self, hit: &Hit, wo: &Vec3, wi: &Vec3) -> Color {

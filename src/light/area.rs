@@ -48,7 +48,7 @@ impl Light for Area {
             .filter(|point_on_light| {
                 let wi = (point_on_light - hit.hit_point).normalize(); // light direction
                 let d = distance(point_on_light, &hit.hit_point);
-                !hit.world.is_in_shadow(&hit.hit_point, &wi, d)
+                !hit.renderer.is_in_shadow(&hit.hit_point, &wi, d)
             })
             .count();
         f64::from(total as u32)

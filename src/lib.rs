@@ -17,6 +17,6 @@ pub mod light;
 pub mod material;
 pub mod model;
 pub mod ray;
+pub mod renderer;
 pub mod sampler;
 pub mod scene;
-pub mod world;

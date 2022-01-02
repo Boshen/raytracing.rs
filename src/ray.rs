@@ -2,7 +2,7 @@ use nalgebra::Point3;
 
 use crate::material::Material;
 use crate::model::Vec3;
-use crate::world::World;
+use crate::renderer::Renderer;
 
 pub struct Ray {
     pub origin: Point3<f64>,
@@ -32,7 +32,7 @@ pub struct Hit<'a> {
     pub ray: &'a Ray,
     pub hit_point: Point3<f64>,
     pub normal: Vec3,
-    pub world: &'a World,
-    pub depth: i32,
+    pub renderer: &'a Renderer,
+    pub depth: u8,
     pub material: &'a dyn Material,
 }

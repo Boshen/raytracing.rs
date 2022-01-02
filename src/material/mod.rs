@@ -24,7 +24,8 @@ pub trait Material: Send + Sync {
 pub fn shade(m: &dyn Material, hit: &Hit) -> Color {
     let ambient = m.ambient(hit);
     let color = hit
-        .world
+        .renderer
+        .scene
         .lights
         .iter()
         .map(|light| {

@@ -6,9 +6,11 @@ pub use setting::*;
 pub use simple::*;
 pub use thin_lens::*;
 
-use crate::color::Color;
-use crate::world::World;
+use nalgebra::Point2;
 
-pub trait Camera {
-    fn render_scene(&self, world: &World) -> Vec<Color>;
+use crate::ray::Ray;
+
+pub trait Camera: Send + Sync {
+    fn setting(&self) -> &Setting;
+    fn get_rays(&self, origin: Point2<f64>) -> Vec<Ray>;
 }

@@ -23,7 +23,7 @@ impl Light for Point {
     fn shadow_amount(&self, hit: &Hit) -> f64 {
         let direction = (self.location - hit.hit_point).normalize();
         let d = distance(&self.location, &hit.hit_point);
-        let b = hit.world.is_in_shadow(&hit.hit_point, &direction, d);
+        let b = hit.renderer.is_in_shadow(&hit.hit_point, &direction, d);
         f64::from(u32::from(!b))
     }
 

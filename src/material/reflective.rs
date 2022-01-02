@@ -41,7 +41,7 @@ impl Material for Reflective {
     fn ambient(&self, hit: &Hit) -> Color {
         self.ambient_brdf
             .rho()
-            .component_mul(&hit.world.ambient_light.radiance(hit))
+            .component_mul(&hit.renderer.scene.ambient_light.radiance(hit))
     }
 
     fn diffuse(&self, hit: &Hit, wo: &Vec3, wi: &Vec3) -> Color {
@@ -58,7 +58,7 @@ impl Material for Reflective {
         let wi = normal * (2.0 * ndotwo) - wo;
         let fr = self.reflective_brdf.sample_f(hit, wo, &wi);
         let reflected_ray = Ray::new(hit.hit_point, wi);
-        hit.world
+        hit.renderer
             .trace(&reflected_ray, hit.depth + 1)
             .component_mul(&fr)
             * normal.dot(&wi)

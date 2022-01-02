@@ -32,7 +32,7 @@ impl Material for Matte {
     fn ambient(&self, hit: &Hit) -> Color {
         self.diffuse_brdf
             .rho()
-            .component_mul(&hit.world.ambient_light.radiance(hit))
+            .component_mul(&hit.renderer.scene.ambient_light.radiance(hit))
     }
 
     fn diffuse(&self, hit: &Hit, _wo: &Vec3, _wi: &Vec3) -> Color {
