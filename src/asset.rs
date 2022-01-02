@@ -3,11 +3,11 @@ use std::sync::Arc;
 use nalgebra::Point3;
 use tobj::{load_obj, LoadOptions};
 
-use crate::brdf::{GlossySpecular, Lambertian, PerfectSpecular};
+use crate::brdf::Lambertian;
 use crate::color::Color;
-use crate::geometric_object::{Geometry, Sphere, Triangle};
+use crate::geometric_object::{Geometry, Triangle};
 use crate::light::{Area, Light};
-use crate::material::{Emissive, Matte, Reflective};
+use crate::material::{Emissive, Matte};
 
 pub struct Object {
     pub name: String,
@@ -23,7 +23,7 @@ pub struct Asset {
 
 impl Asset {
     #[must_use]
-    pub fn new(file_name: &str) -> Self {
+    pub fn new(file_name: &str, scale: f64) -> Self {
         let mut asset = Self {
             objects: vec![],
             geometries: vec![],
@@ -40,7 +40,6 @@ impl Asset {
         .expect("Failed to load file");
 
         let materials = materials.expect("loaded materials");
-        let scale = 555.0;
 
         for model in &models {
             let mesh = &model.mesh;
@@ -102,19 +101,6 @@ impl Asset {
             };
         }
 
-        let material = Reflective::new(
-            Lambertian::new(0.1, Color::new(1.0, 1.0, 1.0)),
-            Lambertian::new(0.7, Color::new(1.0, 1.0, 1.0)),
-            GlossySpecular::new(0.2, 3.0),
-            // FIXME fix broken reflection on sphere
-            PerfectSpecular::new(0.0, Color::new(1.0, 1.0, 1.0)),
-        );
-        asset.geometries.push(Arc::new(Sphere::new(
-            material,
-            40.0,
-            Point3::new(400.0, 40.0, 500.0),
-            scale,
-        )));
         asset
     }
 }

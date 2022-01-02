@@ -1,8 +1,8 @@
 use nalgebra::Point3;
 use std::ops::{MulAssign, SubAssign};
 
-use super::Geometry;
 use crate::aabb::Aabb;
+use crate::geometric_object::Geometry;
 use crate::material::Material;
 use crate::model::Vec3;
 use crate::ray::{HitRecord, Ray};
