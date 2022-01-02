@@ -6,6 +6,7 @@ use crate::geometric_object::Geometry;
 use crate::material::Material;
 use crate::model::Vec3;
 use crate::ray::{HitRecord, Ray};
+use crate::sampler::Sampler;
 
 pub struct Sphere<M: Material> {
     radius: f64,
@@ -87,7 +88,7 @@ impl<M: Material> Geometry for Sphere<M> {
         Aabb::new(self.get_min_point(), self.get_max_point())
     }
 
-    fn get_samples(&self, _sample_points_sqrt: u8) -> Vec<Point3<f64>> {
+    fn get_samples(&self, _sampler: &Sampler) -> Vec<Point3<f64>> {
         vec![]
     }
 }

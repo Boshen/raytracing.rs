@@ -19,5 +19,4 @@ pub trait Light: Send + Sync {
     fn get_direction(&self, hit: &Hit) -> Vec3;
     fn radiance(&self, hit: &Hit) -> Color;
     fn shadow_amount(&self, hit: &Hit) -> f64;
-    fn set_sample_points_sqrt(&mut self, n: u8);
 }

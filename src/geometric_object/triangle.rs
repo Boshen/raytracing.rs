@@ -5,7 +5,7 @@ use crate::aabb::Aabb;
 use crate::material::Material;
 use crate::model::Vec3;
 use crate::ray::{HitRecord, Ray};
-use crate::sampler::get_triangle;
+use crate::sampler::Sampler;
 
 pub struct Triangle<M: Material> {
     pub x: Point3<f64>,
@@ -112,7 +112,7 @@ impl<M: Material> Geometry for Triangle<M> {
         Aabb::new(self.get_min_point(), self.get_max_point())
     }
 
-    fn get_samples(&self, sample_points_sqrt: u8) -> Vec<Point3<f64>> {
-        get_triangle(sample_points_sqrt, &self.x, &self.y, &self.z).collect()
+    fn get_samples(&self, sampler: &Sampler) -> Vec<Point3<f64>> {
+        sampler.triangle(&self.x, &self.y, &self.z).collect()
     }
 }

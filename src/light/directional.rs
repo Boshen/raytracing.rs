@@ -23,6 +23,4 @@ impl Light for Directional {
     fn radiance(&self, _hit: &Hit) -> Color {
         self.cl.mul(self.ls)
     }
-
-    fn set_sample_points_sqrt(&mut self, _n: u8) {}
 }

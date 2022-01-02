@@ -26,6 +26,4 @@ impl Light for Point {
         let b = hit.renderer.is_in_shadow(&hit.hit_point, &direction, d);
         f64::from(u32::from(!b))
     }
-
-    fn set_sample_points_sqrt(&mut self, _n: u8) {}
 }

@@ -33,16 +33,9 @@ impl CornellBox {
         let ambient_occuluder = Arc::new(AmbientOcculuder::new(1.0, Vec3::repeat(1.0)));
         asset.lights.push(ambient_occuluder);
 
-        for light in &mut asset.lights {
-            if let Some(l) = Arc::get_mut(light) {
-                l.set_sample_points_sqrt(if args.preview { 1 } else { 8 });
-            }
-        }
-
         let mut camera_setting =
             Setting::new(Pot3::new(0.0, 0.0, -3.0), Pot3::new(0.0, 0.0, 0.0), 500.0);
         camera_setting.set_view((view_width, view_height));
-        camera_setting.set_sample_points_sqrt(if args.preview { 1 } else { 8 });
 
         let camera: Box<dyn Camera> = match args.camera {
             ArgCamera::Simple => Box::new(Simple::new(camera_setting)),

@@ -7,10 +7,12 @@ use crate::args::Args;
 use crate::color::Color;
 use crate::model::Vec3;
 use crate::ray::{Hit, Ray};
+use crate::sampler::Sampler;
 use crate::scene::CornellBox;
 
 pub struct Renderer {
     pub scene: CornellBox,
+    pub sampler: Sampler,
     max_depth: u8,
 }
 
@@ -19,6 +21,7 @@ impl Renderer {
     pub const fn new(scene: CornellBox, args: &Args) -> Self {
         Self {
             scene,
+            sampler: Sampler::new(if args.preview { 1 } else { 64 }),
             max_depth: if args.preview { 1 } else { 5 },
         }
     }
@@ -28,8 +31,6 @@ impl Renderer {
         let hres = self.scene.view_width;
         let vres = self.scene.view_height;
         let pixel_size = self.scene.camera.setting().pixel_size;
-        let sample_points_sqrt = self.scene.camera.setting().sample_points_sqrt;
-        let sample_points = sample_points_sqrt.pow(2);
 
         let vec = (0..(hres * vres))
             .into_par_iter()
@@ -37,13 +38,16 @@ impl Renderer {
                 let i = pixel_size * (f64::from(n % hres) - f64::from(hres) / 2.0);
                 let j = pixel_size * (f64::from(n / hres) - f64::from(vres) / 2.0);
                 let origin = Point2::new(i, j);
-                self.scene.camera.get_rays(origin).into_iter()
+                self.scene
+                    .camera
+                    .get_rays(origin, &self.sampler)
+                    .into_iter()
             })
             .map(|ray| self.trace(&ray, 0))
             .collect::<Vec<_>>();
 
-        vec.chunks(sample_points.into())
-            .map(|chunks| chunks.iter().sum::<Color>() / sample_points as f64)
+        vec.chunks(self.sampler.n.into())
+            .map(|chunks| chunks.iter().sum::<Color>() / self.sampler.n as f64)
             .collect()
     }
 

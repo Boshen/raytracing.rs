@@ -2,7 +2,7 @@ use nalgebra::{Point2, Vector2};
 
 use super::{Camera, Setting};
 use crate::ray::Ray;
-use crate::sampler::get_disk;
+use crate::sampler::Sampler;
 
 pub struct ThinLens {
     setting: Setting,
@@ -38,8 +38,9 @@ impl Camera for ThinLens {
     }
 
     #[must_use]
-    fn get_rays(&self, origin: Point2<f64>) -> Vec<Ray> {
-        get_disk(self.setting.sample_points_sqrt)
+    fn get_rays(&self, origin: Point2<f64>, sampler: &Sampler) -> Vec<Ray> {
+        sampler
+            .disk()
             .map(move |(sp, dp)| {
                 let start_point = sp + Vector2::new(origin.x + sp.x, origin.y + sp.y);
                 let end_point = dp * self.lens_radius;
