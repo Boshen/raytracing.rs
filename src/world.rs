@@ -7,13 +7,11 @@ use crate::geometric_object::Geometry;
 use crate::light::{Ambient, Light};
 use crate::model::Vec3;
 use crate::ray::{Hit, Ray};
-use crate::view_plane::ViewPlane;
 
 pub struct World {
-    pub vp: ViewPlane,
     pub lights: Vec<Arc<dyn Light>>,
     pub bvh: Arc<dyn Geometry>,
-    pub ambient_light: Ambient,
+    pub ambient_light: Arc<Ambient>,
     pub max_depth: i32,
 }
 

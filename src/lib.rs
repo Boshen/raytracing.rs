@@ -18,5 +18,5 @@ pub mod material;
 pub mod model;
 pub mod ray;
 pub mod sampler;
-pub mod view_plane;
+pub mod scene;
 pub mod world;

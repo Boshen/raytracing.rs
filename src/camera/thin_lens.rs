@@ -36,9 +36,9 @@ impl ThinLens {
 
 impl Camera for ThinLens {
     fn render_scene(&self, world: &World) -> Vec<Color> {
-        let hres = world.vp.hres;
-        let vres = world.vp.vres;
-        let pixel_size = world.vp.pixel_size;
+        let hres = self.setting.view_width;
+        let vres = self.setting.view_height;
+        let pixel_size = self.setting.pixel_size;
         let sample_points = self.setting.sample_points_sqrt.pow(2);
 
         let vec = (0..(hres * vres))
