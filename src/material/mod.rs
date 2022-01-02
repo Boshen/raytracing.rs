@@ -42,10 +42,11 @@ pub fn shade(m: &dyn Material, hit: &Hit) -> Color {
                 return Color::zeros();
             }
 
-            // wo: reflected direction
             let shadow_amount = light.shadow_amount(hit);
 
-            let wo = (hit.ray.dir * -1.0).normalize();
+            // wo: reflected direction
+            let wo = -hit.ray.dir;
+
             (m.diffuse(hit, &wo, &wi) + m.specular(hit, &wo, &wi))
                 .component_mul(&(radiance * shadow_amount))
                 * ndotwi

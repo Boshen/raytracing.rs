@@ -26,7 +26,7 @@ impl World {
         self.bvh
             .intersects(ray, 0.0, INFINITY)
             .map_or(Color::zeros(), |record| {
-                let wo = (-1.0 * ray.dir).normalize();
+                let wo = -ray.dir;
                 // revert normal if we hit the inside surface
                 let adjusted_normal = record.normal * record.normal.dot(&wo).signum();
                 let rayhit = Hit {
