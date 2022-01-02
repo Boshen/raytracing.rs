@@ -104,9 +104,10 @@ impl Asset {
 
         let material = Reflective::new(
             Lambertian::new(0.1, Color::new(1.0, 1.0, 1.0)),
-            Lambertian::new(0.1, Color::new(1.0, 1.0, 1.0)),
-            GlossySpecular::new(0.2, 2.0),
-            PerfectSpecular::new(0.5, Color::new(1.0, 1.0, 1.0)),
+            Lambertian::new(0.7, Color::new(1.0, 1.0, 1.0)),
+            GlossySpecular::new(0.2, 3.0),
+            // FIXME fix broken reflection on sphere
+            PerfectSpecular::new(0.0, Color::new(1.0, 1.0, 1.0)),
         );
         asset.geometries.push(Arc::new(Sphere::new(
             material,

@@ -35,7 +35,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     lights.push(ambient_occuluder);
     for light in &mut lights {
         if let Some(l) = Arc::get_mut(light) {
-            l.set_sample_points_sqrt(if args.preview { 1 } else { 4 });
+            l.set_sample_points_sqrt(if args.preview { 1 } else { 8 });
         }
     }
 
