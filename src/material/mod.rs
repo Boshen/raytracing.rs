@@ -9,20 +9,24 @@ pub use phong::*;
 pub use reflective::*;
 
 use crate::color::Color;
+use crate::light::Light;
 use crate::model::Vec3;
 use crate::ray::Hit;
 
 pub trait Material: Send + Sync {
     fn shade(&self, hit: &Hit) -> Color;
     fn emissive(&self) -> bool;
-    fn ambient(&self, hit: &Hit) -> Color;
+    fn ambient(&self) -> Color;
     fn diffuse(&self, hit: &Hit, wo: &Vec3, wi: &Vec3) -> Color;
     fn specular(&self, hit: &Hit, wo: &Vec3, wi: &Vec3) -> Color;
     fn reflective(&self, hit: &Hit, wo: &Vec3) -> Color;
 }
 
 pub fn shade(m: &dyn Material, hit: &Hit) -> Color {
-    let ambient = m.ambient(hit);
+    let ambient_color = m
+        .ambient()
+        .component_mul(&hit.renderer.scene.ambient_light.radiance(hit));
+
     let color = hit
         .renderer
         .scene
@@ -56,5 +60,5 @@ pub fn shade(m: &dyn Material, hit: &Hit) -> Color {
                 + m.reflective(hit, &wo)
         })
         .sum::<Color>();
-    ambient + color
+    ambient_color + color
 }

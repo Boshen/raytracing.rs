@@ -1,7 +1,6 @@
 use super::{shade, Material};
 use crate::brdf::{Brdf, GlossySpecular, Lambertian};
 use crate::color::Color;
-use crate::light::Light;
 use crate::model::Vec3;
 use crate::ray::Hit;
 
@@ -40,10 +39,8 @@ impl Material for Phong {
         false
     }
 
-    fn ambient(&self, hit: &Hit) -> Color {
-        self.ambient_brdf
-            .rho()
-            .component_mul(&hit.renderer.scene.ambient_light.radiance(hit))
+    fn ambient(&self) -> Color {
+        self.ambient_brdf.rho()
     }
 
     fn diffuse(&self, hit: &Hit, wo: &Vec3, wi: &Vec3) -> Color {

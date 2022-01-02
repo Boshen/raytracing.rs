@@ -29,7 +29,7 @@ impl Material for Emissive {
         true
     }
 
-    fn ambient(&self, _hit: &Hit) -> Color {
+    fn ambient(&self) -> Color {
         Color::zeros()
     }
 

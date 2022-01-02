@@ -1,7 +1,6 @@
 use super::{shade, Material};
 use crate::brdf::{Brdf, Lambertian};
 use crate::color::Color;
-use crate::light::Light;
 use crate::model::Vec3;
 use crate::ray::Hit;
 
@@ -29,10 +28,8 @@ impl Material for Matte {
         false
     }
 
-    fn ambient(&self, hit: &Hit) -> Color {
-        self.diffuse_brdf
-            .rho()
-            .component_mul(&hit.renderer.scene.ambient_light.radiance(hit))
+    fn ambient(&self) -> Color {
+        self.diffuse_brdf.rho()
     }
 
     fn diffuse(&self, hit: &Hit, _wo: &Vec3, _wi: &Vec3) -> Color {
