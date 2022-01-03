@@ -14,15 +14,32 @@ use crate::model::Vec3;
 use crate::ray::Hit;
 
 pub trait Material: Send + Sync {
-    fn shade(&self, hit: &Hit) -> Color;
-    fn emissive(&self) -> bool;
-    fn ambient(&self) -> Color;
-    fn diffuse(&self, hit: &Hit, wo: &Vec3, wi: &Vec3) -> Color;
-    fn specular(&self, hit: &Hit, wo: &Vec3, wi: &Vec3) -> Color;
-    fn reflective(&self, hit: &Hit, wo: &Vec3) -> Color;
+    fn shade(&self, hit: &Hit) -> Color {
+        shade(self, hit)
+    }
+
+    fn emissive(&self) -> bool {
+        false
+    }
+
+    fn ambient(&self) -> Color {
+        Color::zeros()
+    }
+
+    fn diffuse(&self, _hit: &Hit, _wo: &Vec3, _wi: &Vec3) -> Color {
+        Color::zeros()
+    }
+
+    fn specular(&self, _hit: &Hit, _wo: &Vec3, _wi: &Vec3) -> Color {
+        Color::zeros()
+    }
+
+    fn reflective(&self, _hit: &Hit, _wo: &Vec3) -> Color {
+        Color::zeros()
+    }
 }
 
-pub fn shade(m: &dyn Material, hit: &Hit) -> Color {
+pub fn shade<M: Material + ?Sized>(m: &M, hit: &Hit) -> Color {
     let ambient_color = m
         .ambient()
         .component_mul(&hit.renderer.scene.ambient_light.radiance(hit));
@@ -49,15 +66,16 @@ pub fn shade(m: &dyn Material, hit: &Hit) -> Color {
                 return Color::zeros();
             }
 
-            let shadow_amount = light.shadow_amount(hit);
+            let shadow = radiance * light.shadow_amount(hit);
 
             // wo: reflected direction
             let wo = -hit.ray.dir;
 
             let diffuse = m.diffuse(hit, &wo, &wi);
             let specular = m.specular(hit, &wo, &wi);
-            (diffuse + specular).component_mul(&(radiance * shadow_amount)) * ndotwi
-                + m.reflective(hit, &wo)
+            let reflective = m.reflective(hit, &wo);
+            let color = ndotwi * (diffuse + specular).component_mul(&shadow);
+            color + reflective
         })
         .sum::<Color>();
     ambient_color + color

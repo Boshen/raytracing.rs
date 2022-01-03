@@ -1,6 +1,5 @@
 use super::Material;
 use crate::color::Color;
-use crate::model::Vec3;
 use crate::ray::Hit;
 
 pub struct Emissive {
@@ -27,21 +26,5 @@ impl Material for Emissive {
 
     fn emissive(&self) -> bool {
         true
-    }
-
-    fn ambient(&self) -> Color {
-        Color::zeros()
-    }
-
-    fn diffuse(&self, _hit: &Hit, _wo: &Vec3, _wi: &Vec3) -> Color {
-        Color::zeros()
-    }
-
-    fn specular(&self, _hit: &Hit, _wo: &Vec3, _wi: &Vec3) -> Color {
-        Color::zeros()
-    }
-
-    fn reflective(&self, _hit: &Hit, _wo: &Vec3) -> Color {
-        Color::zeros()
     }
 }

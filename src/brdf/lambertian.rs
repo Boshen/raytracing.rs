@@ -6,8 +6,11 @@ use crate::model::Vec3;
 use crate::ray::Hit;
 
 pub struct Lambertian {
-    pub kd: f64,   // diffuse reflection coefficient [0, 1]
-    pub cd: Color, // diffuse color
+    /// diffuse reflection coefficient [0, 1]
+    pub kd: f64,
+
+    /// diffuse color
+    pub cd: Color,
 }
 
 impl Lambertian {
@@ -24,9 +27,5 @@ impl Brdf for Lambertian {
 
     fn rho(&self) -> Color {
         self.cd * self.kd
-    }
-
-    fn sample_f(&self, _hit: &Hit, _wo: &Vec3, _wi: &Vec3) -> Color {
-        Color::zeros()
     }
 }

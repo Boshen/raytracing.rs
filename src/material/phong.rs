@@ -1,4 +1,4 @@
-use super::{shade, Material};
+use super::Material;
 use crate::brdf::{Brdf, GlossySpecular, Lambertian};
 use crate::color::Color;
 use crate::model::Vec3;
@@ -31,14 +31,6 @@ impl Phong {
 }
 
 impl Material for Phong {
-    fn shade(&self, hit: &Hit) -> Color {
-        shade(self, hit)
-    }
-
-    fn emissive(&self) -> bool {
-        false
-    }
-
     fn ambient(&self) -> Color {
         self.ambient_brdf.rho()
     }
@@ -49,9 +41,5 @@ impl Material for Phong {
 
     fn specular(&self, hit: &Hit, wo: &Vec3, wi: &Vec3) -> Color {
         self.specular_brdf.f(hit, wo, wi)
-    }
-
-    fn reflective(&self, _hit: &Hit, _wo: &Vec3) -> Color {
-        Color::zeros()
     }
 }

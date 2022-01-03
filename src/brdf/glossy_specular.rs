@@ -4,8 +4,11 @@ use crate::model::Vec3;
 use crate::ray::Hit;
 
 pub struct GlossySpecular {
-    pub ks: f64,  // specular reflection coefficient [0, 1]
-    pub exp: f64, // shininess
+    /// specular reflection coefficient [0, 1]
+    pub ks: f64,
+
+    /// shininess
+    pub exp: f64,
 }
 
 impl GlossySpecular {
@@ -24,14 +27,6 @@ impl Brdf for GlossySpecular {
             return Color::zeros();
         }
         let s = self.ks * rdotwo.powf(self.exp);
-        Color::new(s, s, s)
-    }
-
-    fn rho(&self) -> Color {
-        Color::zeros() // is black for GlossySpecular
-    }
-
-    fn sample_f(&self, _hit: &Hit, _wo: &Vec3, _wi: &Vec3) -> Color {
-        Color::zeros()
+        Color::repeat(s)
     }
 }

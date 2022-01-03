@@ -10,10 +10,20 @@ use crate::color::Color;
 use crate::model::Vec3;
 use crate::ray::Hit;
 
+/// Bidrectional Reflectance Distribution Function
+/// describes how light is reflected at surfaces for materials
 pub trait Brdf {
-    // reciprocity
-    fn f(&self, hit: &Hit, wo: &Vec3, wi: &Vec3) -> Color;
-    // bihemispherical reflectance
-    fn rho(&self) -> Color;
-    fn sample_f(&self, hit: &Hit, wo: &Vec3, wi: &Vec3) -> Color;
+    /// Reciprocity
+    fn f(&self, _hit: &Hit, _wo: &Vec3, _wi: &Vec3) -> Color {
+        Color::zeros()
+    }
+
+    /// Bihemispherical reflectance
+    fn rho(&self) -> Color {
+        Color::zeros()
+    }
+
+    fn sample_f(&self, _hit: &Hit, _wo: &Vec3, _wi: &Vec3) -> Color {
+        Color::zeros()
+    }
 }

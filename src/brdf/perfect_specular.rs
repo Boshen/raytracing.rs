@@ -4,8 +4,11 @@ use crate::model::Vec3;
 use crate::ray::Hit;
 
 pub struct PerfectSpecular {
-    pub kr: f64,   // reflection coefficient
-    pub cr: Color, // reflection color
+    /// reflection coefficient
+    pub kr: f64,
+
+    /// reflection color
+    pub cr: Color,
 }
 
 impl PerfectSpecular {
@@ -16,14 +19,6 @@ impl PerfectSpecular {
 }
 
 impl Brdf for PerfectSpecular {
-    fn f(&self, _hit: &Hit, _wo: &Vec3, _wi: &Vec3) -> Color {
-        Color::zeros() // is black for PerfectSpecular
-    }
-
-    fn rho(&self) -> Color {
-        Color::zeros() // is black for PerfectSpecular
-    }
-
     fn sample_f(&self, hit: &Hit, _wo: &Vec3, wi: &Vec3) -> Color {
         self.cr * self.kr / hit.normal.dot(wi)
     }

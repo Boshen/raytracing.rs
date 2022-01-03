@@ -1,4 +1,4 @@
-use super::{shade, Material};
+use super::Material;
 use crate::brdf::{Brdf, GlossySpecular, Lambertian, PerfectSpecular};
 use crate::color::Color;
 use crate::model::Vec3;
@@ -29,14 +29,6 @@ impl Reflective {
 }
 
 impl Material for Reflective {
-    fn shade(&self, hit: &Hit) -> Color {
-        shade(self, hit)
-    }
-
-    fn emissive(&self) -> bool {
-        false
-    }
-
     fn ambient(&self) -> Color {
         self.ambient_brdf.rho()
     }

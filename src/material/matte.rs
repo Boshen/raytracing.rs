@@ -1,4 +1,4 @@
-use super::{shade, Material};
+use super::Material;
 use crate::brdf::{Brdf, Lambertian};
 use crate::color::Color;
 use crate::model::Vec3;
@@ -20,14 +20,6 @@ impl Matte {
 }
 
 impl Material for Matte {
-    fn shade(&self, hit: &Hit) -> Color {
-        shade(self, hit)
-    }
-
-    fn emissive(&self) -> bool {
-        false
-    }
-
     fn ambient(&self) -> Color {
         self.diffuse_brdf.rho()
     }
@@ -35,13 +27,5 @@ impl Material for Matte {
     fn diffuse(&self, hit: &Hit, _wo: &Vec3, _wi: &Vec3) -> Color {
         let z = Color::zeros();
         self.diffuse_brdf.f(hit, &z, &z)
-    }
-
-    fn specular(&self, _hit: &Hit, _wo: &Vec3, _wi: &Vec3) -> Color {
-        Color::zeros()
-    }
-
-    fn reflective(&self, _hit: &Hit, _wo: &Vec3) -> Color {
-        Color::zeros()
     }
 }
