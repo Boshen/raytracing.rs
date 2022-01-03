@@ -4,11 +4,11 @@ use super::{Camera, Setting};
 use crate::ray::Ray;
 use crate::sampler::Sampler;
 
-pub struct Simple {
+pub struct Pinhole {
     setting: Setting,
 }
 
-impl Simple {
+impl Pinhole {
     #[must_use]
     pub const fn new(setting: Setting) -> Self {
         Self { setting }
@@ -23,7 +23,7 @@ impl Simple {
     }
 }
 
-impl Camera for Simple {
+impl Camera for Pinhole {
     fn setting(&self) -> &Setting {
         &self.setting
     }

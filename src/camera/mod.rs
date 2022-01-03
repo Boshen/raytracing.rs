@@ -1,9 +1,9 @@
+mod pinhole;
 mod setting;
-mod simple;
 mod thin_lens;
 
+pub use pinhole::*;
 pub use setting::*;
-pub use simple::*;
 pub use thin_lens::*;
 
 use nalgebra::Point2;

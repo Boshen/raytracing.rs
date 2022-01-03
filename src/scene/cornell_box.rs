@@ -3,7 +3,7 @@ use std::sync::Arc;
 use crate::args::{ArgCamera, Args};
 use crate::asset::Asset;
 use crate::brdf::{GlossySpecular, Lambertian, PerfectSpecular};
-use crate::camera::{Camera, Setting, Simple, ThinLens};
+use crate::camera::{Camera, Pinhole, Setting, ThinLens};
 use crate::color::Color;
 use crate::geometric_object::{BvhNode, Geometry, Sphere};
 use crate::light::{Ambient, AmbientOcculuder, Light};
@@ -38,7 +38,7 @@ impl CornellBox {
         camera_setting.set_view((view_width, view_height));
 
         let camera: Box<dyn Camera> = match args.camera {
-            ArgCamera::Simple => Box::new(Simple::new(camera_setting)),
+            ArgCamera::Simple => Box::new(Pinhole::new(camera_setting)),
             ArgCamera::ThinLens => Box::new(ThinLens::new(camera_setting, 0.001, 500.0)),
         };
 
