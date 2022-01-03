@@ -24,8 +24,8 @@ impl Material for Matte {
         self.diffuse_brdf.rho()
     }
 
-    fn diffuse(&self, hit: &Hit, _wo: &Vec3, _wi: &Vec3) -> Color {
+    fn diffuse(&self, hit: &Hit, _wi: &Vec3) -> Color {
         let z = Color::zeros();
-        self.diffuse_brdf.f(hit, &z, &z)
+        self.diffuse_brdf.f(hit, &z)
     }
 }

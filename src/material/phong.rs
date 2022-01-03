@@ -35,11 +35,11 @@ impl Material for Phong {
         self.ambient_brdf.rho()
     }
 
-    fn diffuse(&self, hit: &Hit, wo: &Vec3, wi: &Vec3) -> Color {
-        self.diffuse_brdf.f(hit, wo, wi)
+    fn diffuse(&self, hit: &Hit, wi: &Vec3) -> Color {
+        self.diffuse_brdf.f(hit, wi)
     }
 
-    fn specular(&self, hit: &Hit, wo: &Vec3, wi: &Vec3) -> Color {
-        self.specular_brdf.f(hit, wo, wi)
+    fn specular(&self, hit: &Hit, wi: &Vec3) -> Color {
+        self.specular_brdf.f(hit, wi)
     }
 }

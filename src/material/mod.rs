@@ -26,25 +26,21 @@ pub trait Material: Send + Sync {
         Color::zeros()
     }
 
-    fn diffuse(&self, _hit: &Hit, _wo: &Vec3, _wi: &Vec3) -> Color {
+    fn diffuse(&self, _hit: &Hit, _wi: &Vec3) -> Color {
         Color::zeros()
     }
 
-    fn specular(&self, _hit: &Hit, _wo: &Vec3, _wi: &Vec3) -> Color {
+    fn specular(&self, _hit: &Hit, _wi: &Vec3) -> Color {
         Color::zeros()
     }
 
-    fn reflective(&self, _hit: &Hit, _wo: &Vec3) -> Color {
+    fn reflective(&self, _hit: &Hit) -> Color {
         Color::zeros()
     }
 }
 
 pub fn shade<M: Material + ?Sized>(m: &M, hit: &Hit) -> Color {
-    let ambient_color = m
-        .ambient()
-        .component_mul(&hit.renderer.scene.ambient_light.radiance(hit));
-
-    let color = hit
+    let light_color = hit
         .renderer
         .scene
         .lights
@@ -67,16 +63,18 @@ pub fn shade<M: Material + ?Sized>(m: &M, hit: &Hit) -> Color {
             }
 
             let shadow = radiance * light.shadow_amount(hit);
-
-            // wo: reflected direction
-            let wo = -hit.ray.dir;
-
-            let diffuse = m.diffuse(hit, &wo, &wi);
-            let specular = m.specular(hit, &wo, &wi);
-            let reflective = m.reflective(hit, &wo);
+            let diffuse = m.diffuse(hit, &wi);
+            let specular = m.specular(hit, &wi);
+            let reflective = m.reflective(hit);
             let color = ndotwi * (diffuse + specular).component_mul(&shadow);
+
             color + reflective
         })
         .sum::<Color>();
-    ambient_color + color
+
+    let ambient_color = m
+        .ambient()
+        .component_mul(&hit.renderer.scene.ambient_light.radiance(hit));
+
+    ambient_color + light_color
 }

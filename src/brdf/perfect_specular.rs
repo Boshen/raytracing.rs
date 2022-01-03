@@ -19,7 +19,8 @@ impl PerfectSpecular {
 }
 
 impl Brdf for PerfectSpecular {
-    fn sample_f(&self, hit: &Hit, _wo: &Vec3, wi: &Vec3) -> Color {
+    /// Chapter 24
+    fn sample_f(&self, hit: &Hit, wi: &Vec3) -> Vec3 {
         self.cr * self.kr / hit.normal.dot(wi)
     }
 }

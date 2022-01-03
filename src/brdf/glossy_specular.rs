@@ -19,14 +19,21 @@ impl GlossySpecular {
 }
 
 impl Brdf for GlossySpecular {
-    fn f(&self, hit: &Hit, wo: &Vec3, wi: &Vec3) -> Color {
+    /// Chapter 15
+    fn f(&self, hit: &Hit, wi: &Vec3) -> Color {
+        let wo = -hit.ray.dir;
         let ndotwi = hit.normal.dot(wi).max(0.0);
         let r = hit.normal * (2.0 * ndotwi) - wi;
-        let rdotwo = r.dot(wo);
+        let rdotwo = r.dot(&wo);
         if rdotwo <= 0.0 {
             return Color::zeros();
         }
         let s = self.ks * rdotwo.powf(self.exp);
         Color::repeat(s)
+    }
+
+    /// TODO Chapter 25
+    fn sample_f(&self, _hit: &Hit, _wi: &Vec3) -> Color {
+        Color::zeros()
     }
 }

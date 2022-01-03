@@ -14,7 +14,7 @@ use crate::ray::Hit;
 /// describes how light is reflected at surfaces for materials
 pub trait Brdf {
     /// Reciprocity
-    fn f(&self, _hit: &Hit, _wo: &Vec3, _wi: &Vec3) -> Color {
+    fn f(&self, _hit: &Hit, _wi: &Vec3) -> Color {
         Color::zeros()
     }
 
@@ -23,7 +23,8 @@ pub trait Brdf {
         Color::zeros()
     }
 
-    fn sample_f(&self, _hit: &Hit, _wo: &Vec3, _wi: &Vec3) -> Color {
+    /// The direction of reflected rays for simulating reflective materials
+    fn sample_f(&self, _hit: &Hit, _wi: &Vec3) -> Vec3 {
         Color::zeros()
     }
 }

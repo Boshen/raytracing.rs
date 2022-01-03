@@ -33,19 +33,20 @@ impl Material for Reflective {
         self.ambient_brdf.rho()
     }
 
-    fn diffuse(&self, hit: &Hit, wo: &Vec3, wi: &Vec3) -> Color {
-        self.diffuse_brdf.f(hit, wo, wi)
+    fn diffuse(&self, hit: &Hit, wi: &Vec3) -> Color {
+        self.diffuse_brdf.f(hit, wi)
     }
 
-    fn specular(&self, hit: &Hit, wo: &Vec3, wi: &Vec3) -> Color {
-        self.specular_brdf.f(hit, wo, wi)
+    fn specular(&self, hit: &Hit, wi: &Vec3) -> Color {
+        self.specular_brdf.f(hit, wi)
     }
 
-    fn reflective(&self, hit: &Hit, wo: &Vec3) -> Color {
+    fn reflective(&self, hit: &Hit) -> Color {
+        let wo = -hit.ray.dir;
         let normal = hit.normal;
-        let ndotwo = normal.dot(wo);
+        let ndotwo = normal.dot(&wo);
         let wi = normal * (2.0 * ndotwo) - wo;
-        let fr = self.reflective_brdf.sample_f(hit, wo, &wi);
+        let fr = self.reflective_brdf.sample_f(hit, &wi);
         let reflected_ray = Ray::new(hit.hit_point, wi);
         hit.renderer
             .trace(&reflected_ray, hit.depth + 1)

@@ -21,11 +21,18 @@ impl Lambertian {
 }
 
 impl Brdf for Lambertian {
-    fn f(&self, _hit: &Hit, _wo: &Vec3, _wi: &Vec3) -> Color {
+    /// Chapter 13.9
+    fn f(&self, _hit: &Hit, _wi: &Vec3) -> Color {
         self.rho() * FRAC_1_PI
     }
 
+    /// Chapter 13.9
     fn rho(&self) -> Color {
         self.cd * self.kd
+    }
+
+    /// TODO Chapter 26
+    fn sample_f(&self, _hit: &Hit, _wi: &Vec3) -> Color {
+        Color::zeros()
     }
 }
