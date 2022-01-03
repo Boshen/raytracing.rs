@@ -47,7 +47,7 @@ impl Renderer {
             .collect::<Vec<_>>();
 
         vec.chunks(self.sampler.n.into())
-            .map(|chunks| chunks.iter().sum::<Color>() / self.sampler.n as f64)
+            .map(|chunks| chunks.iter().sum::<Color>() / f64::from(self.sampler.n))
             .collect()
     }
 

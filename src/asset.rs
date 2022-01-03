@@ -46,9 +46,9 @@ impl Asset {
             let mut vertices: Vec<Point3<f64>> = vec![];
             for v in 0..mesh.positions.len() / 3 {
                 vertices.push(Point3::new(
-                    mesh.positions[3 * v] as f64,
-                    mesh.positions[3 * v + 1] as f64,
-                    mesh.positions[3 * v + 2] as f64,
+                    f64::from(mesh.positions[3 * v]),
+                    f64::from(mesh.positions[3 * v + 1]),
+                    f64::from(mesh.positions[3 * v + 2]),
                 ));
             }
 
@@ -59,15 +59,15 @@ impl Asset {
                 Some(material_id) => {
                     let m = &materials[material_id];
                     let ambient = Color::new(
-                        m.ambient[0] as f64,
-                        m.ambient[1] as f64,
-                        m.ambient[2] as f64,
+                        f64::from(m.ambient[0]),
+                        f64::from(m.ambient[1]),
+                        f64::from(m.ambient[2]),
                     );
 
                     let diffuse = Color::new(
-                        m.diffuse[0] as f64,
-                        m.diffuse[1] as f64,
-                        m.diffuse[2] as f64,
+                        f64::from(m.diffuse[0]),
+                        f64::from(m.diffuse[1]),
+                        f64::from(m.diffuse[2]),
                     );
 
                     for f in 0..(mesh.indices.len() / 3) {
@@ -78,7 +78,7 @@ impl Asset {
                         let v3 = vertices[*face_indices[2] as usize];
 
                         let triangle: Arc<dyn Geometry> = if m.ambient[0] > 1.0 {
-                            let material = Emissive::new(m.ambient[0] as f64, diffuse);
+                            let material = Emissive::new(f64::from(m.ambient[0]), diffuse);
                             Arc::new(Triangle::new(material, v1, v2, v3, scale))
                         } else {
                             let ambient_brdf = Lambertian::new(0.5, ambient);
@@ -91,7 +91,7 @@ impl Asset {
                     }
 
                     if m.ambient[0] > 1.0 {
-                        let emissive = Emissive::new(m.ambient[0] as f64, diffuse);
+                        let emissive = Emissive::new(f64::from(m.ambient[0]), diffuse);
                         let arealight = Arc::new(Area::new(triangles.clone(), emissive));
                         asset.lights.push(arealight);
                     }

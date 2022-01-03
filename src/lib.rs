@@ -1,9 +1,5 @@
 #![warn(clippy::all, clippy::pedantic, clippy::nursery)]
-#![allow(
-    clippy::cast_lossless,
-    clippy::cast_possible_truncation,
-    clippy::many_single_char_names
-)]
+#![allow(clippy::many_single_char_names)]
 
 pub mod aabb;
 pub mod args;

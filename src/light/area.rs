@@ -49,7 +49,9 @@ impl Light for Area {
                 !hit.renderer.is_in_shadow(&hit.hit_point, &wi, d)
             })
             .count();
-        f64::from(total as u32)
-            / f64::from((hit.renderer.sampler.n as usize * self.geometric_objects.len()) as u32)
+        #[allow(clippy::cast_possible_truncation)]
+        (f64::from(total as u32)
+            / f64::from(hit.renderer.sampler.n)
+            / f64::from(self.geometric_objects.len() as u32))
     }
 }
