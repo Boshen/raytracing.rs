@@ -45,6 +45,6 @@ impl Light for AmbientOcculuder {
             .filter(|dir| !hit.renderer.is_in_shadow(&hit.hit_point, dir, INFINITY))
             .count();
         #[allow(clippy::cast_possible_truncation)]
-        (f64::from(total as u32) / f64::from(hit.renderer.sampler.n))
+        (f64::from(total as u32) / f64::from(hit.renderer.sampler.count()))
     }
 }

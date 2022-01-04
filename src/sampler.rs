@@ -1,25 +1,73 @@
 use nalgebra::{Point2, Point3};
-use rand::distributions::Standard;
-use rand::{thread_rng, Rng};
+use num_integer::Roots;
+use rand::{distributions::Standard, thread_rng, Rng};
 use std::f64::consts::FRAC_PI_4;
 
 use crate::model::Vec3;
 
 pub struct Sampler {
-    pub n: u8, // number of sample points
+    /// number of sample points
+    num_samples: u8,
+
+    /// number of sample sets
+    num_sets: usize,
+
+    /// sets of samples
+    samples: Vec<(f64, f64)>,
 }
 
 impl Sampler {
     #[must_use]
-    pub const fn new(sample_points: u8) -> Self {
-        Self { n: sample_points }
+    pub fn new(num_samples: u8) -> Self {
+        let num_sets = 83; // suffieciently large prime number
+
+        let n = num_samples.sqrt();
+        let mut rng = thread_rng();
+        let mut samples = vec![];
+
+        // jitted samples
+        for _ in 0..num_sets {
+            for j in 0..n {
+                for k in 0..n {
+                    let n = f64::from(n);
+                    let point = (
+                        (f64::from(k) + rng.sample::<f64, _>(Standard)) / n,
+                        (f64::from(j) + rng.sample::<f64, _>(Standard)) / n,
+                    );
+                    samples.push(point);
+                }
+            }
+        }
+
+        Self {
+            num_samples,
+            num_sets,
+            samples,
+        }
+    }
+
+    #[must_use]
+    pub const fn count(&self) -> u8 {
+        self.num_samples
+    }
+
+    fn unit_square(&self) -> Vec<(f64, f64)> {
+        // take a random set to avoid shading streaks
+        let mut rng = thread_rng();
+        let skip: usize = rng.gen_range(0..self.num_sets);
+
+        self.samples
+            .iter()
+            .skip(skip)
+            .take(self.count().into())
+            .copied()
+            .collect()
     }
 
     pub fn square(&self) -> impl Iterator<Item = Point2<f64>> {
-        thread_rng()
-            .sample_iter(&Standard)
-            .take(self.n.into())
-            .map(|(i, j)| Point2::new(i, j))
+        self.unit_square()
+            .into_iter()
+            .map(|(x, y)| Point2::new(x, y))
     }
 
     pub fn triangle<'a>(

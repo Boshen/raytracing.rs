@@ -18,7 +18,7 @@ pub struct Renderer {
 
 impl Renderer {
     #[must_use]
-    pub const fn new(scene: CornellBox, args: &Args) -> Self {
+    pub fn new(scene: CornellBox, args: &Args) -> Self {
         Self {
             scene,
             sampler: Sampler::new(if args.preview { 1 } else { args.samples }),
@@ -46,8 +46,8 @@ impl Renderer {
             .map(|ray| self.trace(&ray, 0))
             .collect::<Vec<_>>();
 
-        vec.chunks(self.sampler.n.into())
-            .map(|chunks| chunks.iter().sum::<Color>() / f64::from(self.sampler.n))
+        vec.chunks(self.sampler.count().into())
+            .map(|chunks| chunks.iter().sum::<Color>() / f64::from(self.sampler.count()))
             .collect()
     }
 
