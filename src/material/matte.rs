@@ -29,4 +29,17 @@ impl Material for Matte {
         let z = Color::zeros();
         self.diffuse_brdf.f(hit, &z)
     }
+
+    // for path tracing (Chapter 26)
+    // fn reflective(&self, hit: &Hit) -> Color {
+    // let mut wi = Vec3::zeros();
+    // let mut pdf = 0.0;
+    // let fr = self.diffuse_brdf.sample_f(hit, &mut wi, &mut pdf);
+    // let reflected_ray = Ray::new(hit.hit_point, wi);
+    // hit.renderer
+    // .trace(&reflected_ray, hit.depth + 1)
+    // .component_mul(&fr)
+    // * hit.normal.dot(&wi)
+    // / pdf
+    // }
 }
