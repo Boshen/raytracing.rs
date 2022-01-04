@@ -1,7 +1,7 @@
 use nalgebra::{center, distance, Point3};
 use std::sync::Arc;
 
-use super::Light;
+use super::{in_shadow, Light};
 use crate::color::Color;
 use crate::geometric_object::Geometry;
 use crate::material::Emissive;
@@ -46,7 +46,7 @@ impl Light for Area {
             .filter(|point_on_light| {
                 let wi = (point_on_light - hit.hit_point).normalize(); // light direction
                 let d = distance(point_on_light, &hit.hit_point);
-                !hit.renderer.is_in_shadow(&hit.hit_point, &wi, d)
+                !in_shadow(hit, &wi, d)
             })
             .count();
         #[allow(clippy::cast_possible_truncation)]

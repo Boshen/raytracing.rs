@@ -1,11 +1,9 @@
 use nalgebra::Point2;
-use nalgebra::Point3;
 use rayon::prelude::*;
 use std::f64::INFINITY;
 
 use crate::args::Args;
 use crate::color::Color;
-use crate::model::Vec3;
 use crate::ray::{Hit, Ray};
 use crate::sampler::Sampler;
 use crate::scene::CornellBox;
@@ -73,16 +71,5 @@ impl Renderer {
                 };
                 record.material.shade(&rayhit)
             })
-    }
-
-    #[must_use]
-    pub fn is_in_shadow(&self, point: &Point3<f64>, dir: &Vec3, t_max: f64) -> bool {
-        let offset = 0.00001 * dir;
-        let shadow_ray = Ray::new(point + offset, *dir);
-        self.scene
-            .root
-            .intersects(&shadow_ray, 0.0, t_max)
-            .filter(|record| !record.material.emissive())
-            .is_some()
     }
 }

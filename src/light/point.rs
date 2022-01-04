@@ -1,6 +1,6 @@
 use nalgebra::{distance, Point3};
 
-use super::Light;
+use super::{in_shadow, Light};
 use crate::color::Color;
 use crate::model::Vec3;
 use crate::ray::Hit;
@@ -23,7 +23,7 @@ impl Light for Point {
     fn shadow_amount(&self, hit: &Hit) -> f64 {
         let direction = (self.location - hit.hit_point).normalize();
         let d = distance(&self.location, &hit.hit_point);
-        let b = hit.renderer.is_in_shadow(&hit.hit_point, &direction, d);
+        let b = in_shadow(hit, &direction, d);
         f64::from(u32::from(!b))
     }
 }

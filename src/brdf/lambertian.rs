@@ -31,8 +31,20 @@ impl Brdf for Lambertian {
         self.cd * self.kd
     }
 
-    /// TODO Chapter 26
-    fn sample_f(&self, _hit: &Hit, _wi: &mut Vec3, _pdf: &mut f64) -> Color {
-        Color::zeros()
+    /// Chapter 26
+    fn sample_f(&self, hit: &Hit, wi: &mut Vec3, pdf: &mut f64) -> Color {
+        let w = hit.normal;
+        let v = Vec3::new(0.0034, 1.0, 0.0071).cross(&w).normalize();
+        let u = v.cross(&w);
+        let sp = hit
+            .renderer
+            .sampler
+            .hemisphere()
+            .take(1)
+            .collect::<Vec<_>>()
+            .remove(0);
+        *wi = (sp.x * u + sp.y * v + sp.z * w).normalize();
+        *pdf = hit.normal.dot(wi) * FRAC_1_PI;
+        self.kd * self.cd * FRAC_1_PI
     }
 }

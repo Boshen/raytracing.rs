@@ -45,11 +45,11 @@ impl Material for Reflective {
         let mut wi = Vec3::zeros();
         let mut pdf = 0.0;
         let fr = self.reflective_brdf.sample_f(hit, &mut wi, &mut pdf);
-        let ndotwi = hit.normal.dot(&wi);
         let reflected_ray = Ray::new(hit.hit_point, wi);
         hit.renderer
             .trace(&reflected_ray, hit.depth + 1)
             .component_mul(&fr)
-            * ndotwi
+            * hit.normal.dot(&wi)
+            / pdf
     }
 }
