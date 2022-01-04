@@ -34,7 +34,7 @@ impl CornellBox {
         asset.lights.push(ambient_occuluder);
 
         let mut camera_setting =
-            Setting::new(Pot3::new(0.0, 0.0, -3.0), Pot3::new(0.0, 0.0, 0.0), 510.0);
+            Setting::new(Pot3::new(0.0, 0.0, -3.0), Pot3::new(0.0, 0.0, 0.0), 520.0);
         camera_setting.set_view((view_width, view_height));
 
         let camera: Box<dyn Camera> = match args.camera {

@@ -21,7 +21,7 @@ impl Renderer {
     pub const fn new(scene: CornellBox, args: &Args) -> Self {
         Self {
             scene,
-            sampler: Sampler::new(if args.preview { 1 } else { 64 }),
+            sampler: Sampler::new(if args.preview { 1 } else { args.samples }),
             max_depth: if args.preview { 1 } else { 5 },
         }
     }
