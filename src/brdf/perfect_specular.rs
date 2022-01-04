@@ -20,7 +20,10 @@ impl PerfectSpecular {
 
 impl Brdf for PerfectSpecular {
     /// Chapter 24
-    fn sample_f(&self, hit: &Hit, wi: &Vec3) -> Vec3 {
+    fn sample_f(&self, hit: &Hit, wi: &mut Vec3, _pdf: &mut f64) -> Vec3 {
+        let wo = -hit.ray.dir;
+        let ndotwo = hit.normal.dot(&wo);
+        *wi = hit.normal * (2.0 * ndotwo) - wo;
         self.cr * self.kr / hit.normal.dot(wi)
     }
 }

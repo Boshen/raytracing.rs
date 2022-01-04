@@ -4,6 +4,7 @@ use crate::color::Color;
 use crate::model::Vec3;
 use crate::ray::Hit;
 
+/// Perfect Diffuse Reflection with ambient and diffuse shading
 pub struct Matte {
     pub ambient_brdf: Lambertian,
     pub diffuse_brdf: Lambertian,

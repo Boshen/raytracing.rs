@@ -24,7 +24,8 @@ pub trait Brdf {
     }
 
     /// The direction of reflected rays for simulating reflective materials
-    fn sample_f(&self, _hit: &Hit, _wi: &Vec3) -> Vec3 {
+    /// modifies wi to be the direction of the reflected ray
+    fn sample_f(&self, _hit: &Hit, _wi: &mut Vec3, _pdf: &mut f64) -> Vec3 {
         Color::zeros()
     }
 }

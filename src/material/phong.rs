@@ -2,7 +2,7 @@ use super::Material;
 use crate::brdf::{Brdf, GlossySpecular, Lambertian};
 use crate::color::Color;
 use crate::model::Vec3;
-use crate::ray::Hit;
+use crate::ray::{Hit, Ray};
 
 pub struct Phong {
     pub ambient_brdf: Lambertian,
@@ -41,5 +41,18 @@ impl Material for Phong {
 
     fn specular(&self, hit: &Hit, wi: &Vec3) -> Color {
         self.specular_brdf.f(hit, wi)
+    }
+
+    // TODO: move to GlossyReflector (Chapter 25)
+    fn reflective(&self, hit: &Hit) -> Color {
+        let mut wi = Vec3::zeros();
+        let mut pdf = 0.0;
+        let fr = self.specular_brdf.sample_f(hit, &mut wi, &mut pdf);
+        let reflected_ray = Ray::new(hit.hit_point, wi);
+        hit.renderer
+            .trace(&reflected_ray, hit.depth + 1)
+            .component_mul(&fr)
+            * hit.normal.dot(&wi)
+            / pdf
     }
 }

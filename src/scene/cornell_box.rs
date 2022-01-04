@@ -7,7 +7,7 @@ use crate::camera::{Camera, Pinhole, Setting, ThinLens};
 use crate::color::Color;
 use crate::geometric_object::{BvhNode, Geometry, Sphere};
 use crate::light::{Ambient, AmbientOcculuder, Light};
-use crate::material::Reflective;
+use crate::material::{Phong, Reflective};
 use crate::model::{Pot3, Vec3};
 
 pub struct CornellBox {
@@ -34,30 +34,44 @@ impl CornellBox {
         asset.lights.push(ambient_occuluder);
 
         let mut camera_setting =
-            Setting::new(Pot3::new(0.0, 0.0, -3.0), Pot3::new(0.0, 0.0, 0.0), 500.0);
+            Setting::new(Pot3::new(0.0, 0.0, -3.0), Pot3::new(0.0, 0.0, 0.0), 510.0);
         camera_setting.set_view((view_width, view_height));
 
         let camera: Box<dyn Camera> = match args.camera {
             ArgCamera::Simple => Box::new(Pinhole::new(camera_setting)),
-            ArgCamera::ThinLens => Box::new(ThinLens::new(camera_setting, 0.001, 500.0)),
+            ArgCamera::ThinLens => Box::new(ThinLens::new(camera_setting, 0.001, 510.0)),
         };
 
-        let ball_material = Reflective::new(
-            Lambertian::new(0.1, Color::new(1.0, 1.0, 1.0)),
-            Lambertian::new(0.7, Color::new(1.0, 1.0, 1.0)),
-            GlossySpecular::new(0.2, 3.0),
+        // add ball with reflective
+        let ball1_material = Reflective::new(
+            Lambertian::new(0.1, Color::repeat(1.0)),
+            Lambertian::new(0.7, Color::repeat(1.0)),
             // FIXME fix broken reflection on sphere
-            PerfectSpecular::new(0.0, Color::new(1.0, 1.0, 1.0)),
+            GlossySpecular::new(0.0, 0.0, Color::repeat(1.0)),
+            PerfectSpecular::new(0.8, Color::repeat(1.0)),
         );
-
-        let ball = Arc::new(Sphere::new(
-            ball_material,
+        let ball1 = Arc::new(Sphere::new(
+            ball1_material,
             40.0,
-            Pot3::new(400.0, 40.0, 500.0),
+            Pot3::new(450.0, 40.0, 450.0),
             scale,
         ));
+        asset.geometries.push(ball1);
 
-        asset.geometries.push(ball);
+        // add ball with phong
+        let ball2_material = Phong::new(
+            Lambertian::new(0.1, Color::repeat(1.0)),
+            Lambertian::new(0.1, Color::repeat(1.0)),
+            GlossySpecular::new(0.3, 2.0, Color::repeat(1.0)),
+        );
+        let ball2 = Arc::new(Sphere::new(
+            ball2_material,
+            30.0,
+            Pot3::new(350.0, 30.0, 500.0),
+            scale,
+        ));
+        asset.geometries.push(ball2);
+
         let root = BvhNode::construct(asset.geometries);
 
         Self {

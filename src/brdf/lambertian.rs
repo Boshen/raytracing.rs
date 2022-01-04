@@ -32,7 +32,7 @@ impl Brdf for Lambertian {
     }
 
     /// TODO Chapter 26
-    fn sample_f(&self, _hit: &Hit, _wi: &Vec3) -> Color {
+    fn sample_f(&self, _hit: &Hit, _wi: &mut Vec3, _pdf: &mut f64) -> Color {
         Color::zeros()
     }
 }

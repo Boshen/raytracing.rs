@@ -53,7 +53,7 @@ impl Renderer {
 
     #[must_use]
     pub fn trace(&self, ray: &Ray, depth: u8) -> Color {
-        if depth >= self.max_depth {
+        if depth > self.max_depth {
             return Color::zeros();
         }
         self.scene

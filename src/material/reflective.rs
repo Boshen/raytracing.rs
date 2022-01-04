@@ -42,15 +42,14 @@ impl Material for Reflective {
     }
 
     fn reflective(&self, hit: &Hit) -> Color {
-        let wo = -hit.ray.dir;
-        let normal = hit.normal;
-        let ndotwo = normal.dot(&wo);
-        let wi = normal * (2.0 * ndotwo) - wo;
-        let fr = self.reflective_brdf.sample_f(hit, &wi);
+        let mut wi = Vec3::zeros();
+        let mut pdf = 0.0;
+        let fr = self.reflective_brdf.sample_f(hit, &mut wi, &mut pdf);
+        let ndotwi = hit.normal.dot(&wi);
         let reflected_ray = Ray::new(hit.hit_point, wi);
         hit.renderer
             .trace(&reflected_ray, hit.depth + 1)
             .component_mul(&fr)
-            * normal.dot(&wi)
+            * ndotwi
     }
 }

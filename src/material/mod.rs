@@ -62,11 +62,11 @@ pub fn shade<M: Material + ?Sized>(m: &M, hit: &Hit) -> Color {
                 return Color::zeros();
             }
 
-            let shadow = radiance * light.shadow_amount(hit);
+            let shadow = light.shadow_amount(hit);
             let diffuse = m.diffuse(hit, &wi);
             let specular = m.specular(hit, &wi);
             let reflective = m.reflective(hit);
-            let color = ndotwi * (diffuse + specular).component_mul(&shadow);
+            let color = ndotwi * (diffuse + specular).component_mul(&(radiance * shadow));
 
             color + reflective
         })
