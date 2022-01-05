@@ -1,5 +1,6 @@
 use nalgebra::Point3;
 
+use crate::counter;
 use crate::material::Material;
 use crate::model::Vec3;
 use crate::renderer::Renderer;
@@ -11,7 +12,8 @@ pub struct Ray {
 
 impl Ray {
     #[must_use]
-    pub const fn new(origin: Point3<f64>, dir: Vec3) -> Self {
+    pub fn new(origin: Point3<f64>, dir: Vec3) -> Self {
+        counter::inc_ray_count();
         Self { origin, dir }
     }
 

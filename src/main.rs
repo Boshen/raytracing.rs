@@ -9,6 +9,7 @@ use image::RgbImage;
 
 use raytracing::args::Args;
 use raytracing::color::to_rgb;
+use raytracing::counter;
 use raytracing::renderer::Renderer;
 use raytracing::scene::CornellBox;
 
@@ -30,7 +31,6 @@ fn main() -> Result<(), Box<dyn Error>> {
         duration.subsec_millis()
     );
 
-    let now = Instant::now();
     flip_horizontal(
         &RgbImage::from_vec(
             view_width,
@@ -40,13 +40,8 @@ fn main() -> Result<(), Box<dyn Error>> {
         .unwrap(),
     )
     .save("output.png")?;
-    let duration = now.elapsed();
 
-    println!(
-        "Save Time Elapased: {}.{}s",
-        duration.as_secs(),
-        duration.subsec_millis()
-    );
+    counter::print_count();
 
     Ok(())
 }

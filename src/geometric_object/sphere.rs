@@ -2,6 +2,7 @@ use nalgebra::Point3;
 use std::ops::{MulAssign, SubAssign};
 
 use crate::aabb::Aabb;
+use crate::counter;
 use crate::geometric_object::Geometry;
 use crate::material::Material;
 use crate::model::Vec3;
@@ -28,6 +29,8 @@ impl<M: Material> Sphere<M> {
 
 impl<M: Material> Geometry for Sphere<M> {
     fn intersects(&self, ray: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
+        counter::inc_intersection_count();
+
         let radius = self.radius;
         let center = Vec3::new(self.center.x, self.center.y, self.center.z);
         let start = Vec3::new(ray.origin.x, ray.origin.y, ray.origin.z);

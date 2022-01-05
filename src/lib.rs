@@ -7,6 +7,7 @@ pub mod asset;
 pub mod brdf;
 pub mod camera;
 pub mod color;
+pub mod counter;
 pub mod geometric_object;
 pub mod light;
 pub mod material;

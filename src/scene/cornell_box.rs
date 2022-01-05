@@ -46,8 +46,7 @@ impl CornellBox {
         let ball1_material = Reflective::new(
             Lambertian::new(0.1, Color::repeat(1.0)),
             Lambertian::new(0.7, Color::repeat(1.0)),
-            // FIXME fix broken reflection on sphere
-            GlossySpecular::new(0.0, 0.0, Color::repeat(1.0)),
+            GlossySpecular::new(0.1, 0.0, Color::repeat(1.0)),
             PerfectSpecular::new(0.8, Color::repeat(1.0)),
         );
         let ball1 = Arc::new(Sphere::new(
