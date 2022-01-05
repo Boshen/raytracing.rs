@@ -16,10 +16,10 @@ use raytracing::scene::CornellBox;
 fn main() -> Result<(), Box<dyn Error>> {
     let args = Args::parse();
 
-    let view_width = 500;
-    let view_height = 500;
-    let scene = CornellBox::new(view_width, view_height, &args);
+    let scene = CornellBox::new(args.height, args.height, &args);
     let renderer = Renderer::new(scene, &args);
+
+    println!("Config: {:?}", &args);
 
     let now = Instant::now();
     let pixels = renderer.render();
@@ -33,8 +33,8 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     flip_horizontal(
         &RgbImage::from_vec(
-            view_width,
-            view_height,
+            args.width,
+            args.height,
             pixels.iter().flat_map(to_rgb).collect(),
         )
         .unwrap(),

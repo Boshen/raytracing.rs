@@ -3,6 +3,12 @@ use clap::{ArgEnum, Parser};
 #[derive(Parser, Debug)]
 #[clap(about, version, author)]
 pub struct Args {
+    #[clap(long, default_value_t = 500)]
+    pub width: u32,
+
+    #[clap(long, default_value_t = 500)]
+    pub height: u32,
+
     #[clap(long)]
     pub preview: bool,
 
