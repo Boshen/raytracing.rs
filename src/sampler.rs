@@ -30,10 +30,15 @@ impl Sampler {
             for j in 0..n {
                 for k in 0..n {
                     let n = f64::from(n);
-                    let point = (
-                        (f64::from(k) + rng.sample::<f64, _>(Standard)) / n,
-                        (f64::from(j) + rng.sample::<f64, _>(Standard)) / n,
-                    );
+                    let (dx, dy) = if num_samples == 1 {
+                        (0.0, 0.0)
+                    } else {
+                        (
+                            rng.sample::<f64, _>(Standard),
+                            rng.sample::<f64, _>(Standard),
+                        )
+                    };
+                    let point = ((f64::from(k) + dx) / n, (f64::from(j) + dy) / n);
                     samples.push(point);
                 }
             }
