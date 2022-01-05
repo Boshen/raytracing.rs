@@ -55,7 +55,6 @@ impl Renderer {
             return Color::zeros();
         }
         self.scene
-            .root
             .intersects(ray, 0.0, INFINITY)
             .map_or(Color::zeros(), |record| {
                 let wo = -ray.dir;

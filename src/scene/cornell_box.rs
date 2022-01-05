@@ -9,6 +9,7 @@ use crate::geometric_object::{BvhNode, Geometry, Sphere};
 use crate::light::{Ambient, AmbientOcculuder, Light};
 use crate::material::{Phong, Reflective};
 use crate::model::{Pot3, Vec3};
+use crate::ray::{HitRecord, Ray};
 
 pub struct CornellBox {
     pub view_width: u32,
@@ -16,7 +17,7 @@ pub struct CornellBox {
     pub camera: Box<dyn Camera>,
     pub ambient_light: Arc<Ambient>,
     pub lights: Vec<Arc<dyn Light>>,
-    pub root: Arc<dyn Geometry>,
+    pub root: Vec<Arc<dyn Geometry>>,
 }
 
 impl CornellBox {
@@ -71,7 +72,7 @@ impl CornellBox {
         ));
         asset.geometries.push(ball2);
 
-        let root = BvhNode::construct(asset.geometries);
+        let root = vec![BvhNode::construct(asset.geometries)];
 
         Self {
             view_width,
@@ -81,5 +82,15 @@ impl CornellBox {
             lights: asset.lights,
             root,
         }
+    }
+
+    /// # Panics
+    /// will panic if `partial_cmp` fails
+    #[must_use]
+    pub fn intersects(&self, ray: &Ray, tmin: f64, tmax: f64) -> Option<HitRecord> {
+        self.root
+            .iter()
+            .filter_map(|o| o.intersects(ray, tmin, tmax))
+            .min_by(|a, b| a.dist.partial_cmp(&b.dist).unwrap())
     }
 }

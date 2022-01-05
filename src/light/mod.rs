@@ -22,13 +22,12 @@ pub trait Light: Send + Sync {
 }
 
 #[must_use]
-pub fn in_shadow(hit: &Hit, dir: &Vec3, t_max: f64) -> bool {
+pub fn in_shadow(hit: &Hit, dir: &Vec3, tmax: f64) -> bool {
     let offset = 0.00001 * dir;
     let shadow_ray = Ray::new(hit.hit_point + offset, *dir);
     hit.renderer
         .scene
-        .root
-        .intersects(&shadow_ray, 0.0, t_max)
+        .intersects(&shadow_ray, 0.0, tmax)
         .filter(|obj| !obj.material.emissive())
         .is_some()
 }
