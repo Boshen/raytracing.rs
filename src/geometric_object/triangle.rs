@@ -1,7 +1,6 @@
 use nalgebra::{center, Point3};
 
 use super::Geometry;
-use crate::aabb::Aabb;
 use crate::counter;
 use crate::material::Material;
 use crate::model::Vec3;
@@ -109,10 +108,6 @@ impl<M: Material> Geometry for Triangle<M> {
             self.x.y.max(self.y.y).max(self.z.y),
             self.x.z.max(self.y.z).max(self.z.z),
         )
-    }
-
-    fn get_bounding_box(&self) -> Aabb {
-        Aabb::new(self.get_min_point(), self.get_max_point())
     }
 
     fn get_samples(&self, sampler: &Sampler) -> Vec<Point3<f64>> {

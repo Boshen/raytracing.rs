@@ -1,13 +1,11 @@
 use nalgebra::Point3;
 use std::ops::{MulAssign, SubAssign};
 
-use crate::aabb::Aabb;
 use crate::counter;
 use crate::geometric_object::Geometry;
 use crate::material::Material;
 use crate::model::Vec3;
 use crate::ray::{HitRecord, Ray};
-use crate::sampler::Sampler;
 
 pub struct Sphere<M: Material> {
     radius: f64,
@@ -85,13 +83,5 @@ impl<M: Material> Geometry for Sphere<M> {
 
     fn get_max_point(&self) -> Point3<f64> {
         self.center + Vec3::repeat(self.radius)
-    }
-
-    fn get_bounding_box(&self) -> Aabb {
-        Aabb::new(self.get_min_point(), self.get_max_point())
-    }
-
-    fn get_samples(&self, _sampler: &Sampler) -> Vec<Point3<f64>> {
-        vec![]
     }
 }

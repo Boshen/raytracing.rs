@@ -6,9 +6,7 @@ use std::sync::Arc;
 
 use crate::aabb::Aabb;
 use crate::geometric_object::Geometry;
-use crate::model::Vec3;
 use crate::ray::{HitRecord, Ray};
-use crate::sampler::Sampler;
 
 pub struct BvhNode {
     pub left: Arc<dyn Geometry>,
@@ -54,29 +52,11 @@ impl Geometry for BvhNode {
         )
     }
 
-    fn scale(&mut self, _l: f64) {}
-
-    fn normal(&self, _p: &Point3<f64>) -> Vec3 {
-        Vec3::zeros()
-    }
-
-    fn get_center(&self) -> Point3<f64> {
-        Point3::origin()
-    }
-
     fn get_min_point(&self) -> Point3<f64> {
         self.aabb.min
     }
 
     fn get_max_point(&self) -> Point3<f64> {
         self.aabb.max
-    }
-
-    fn get_bounding_box(&self) -> Aabb {
-        Aabb::new(self.get_min_point(), self.get_max_point())
-    }
-
-    fn get_samples(&self, _sampler: &Sampler) -> Vec<Point3<f64>> {
-        vec![]
     }
 }
