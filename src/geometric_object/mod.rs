@@ -1,10 +1,8 @@
 use nalgebra::Point3;
 
-mod bvh_node;
 mod sphere;
 mod triangle;
 
-pub use bvh_node::*;
 pub use sphere::*;
 pub use triangle::*;
 

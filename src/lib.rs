@@ -2,6 +2,7 @@
 #![allow(clippy::many_single_char_names)]
 
 pub mod aabb;
+pub mod accelerator;
 pub mod args;
 pub mod asset;
 pub mod brdf;

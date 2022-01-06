@@ -1,11 +1,12 @@
 use std::sync::Arc;
 
+use crate::accelerator::BvhNode;
 use crate::args::{ArgCamera, Args};
 use crate::asset::Asset;
 use crate::brdf::{GlossySpecular, Lambertian, PerfectSpecular};
 use crate::camera::{Camera, Pinhole, Setting, ThinLens};
 use crate::color::Color;
-use crate::geometric_object::{BvhNode, Geometry, Sphere};
+use crate::geometric_object::{Geometry, Sphere};
 use crate::light::{Ambient, AmbientOcculuder, Light};
 use crate::material::{Phong, Reflective};
 use crate::model::{Pot3, Vec3};
