@@ -8,13 +8,13 @@ use crate::aabb::Aabb;
 use crate::geometric_object::Geometry;
 use crate::ray::{HitRecord, Ray};
 
-pub struct BvhNode {
+pub struct Bvh {
     pub left: Arc<dyn Geometry>,
     pub right: Arc<dyn Geometry>,
     pub aabb: Aabb,
 }
 
-impl BvhNode {
+impl Bvh {
     /// # Panic
     /// if `partial_cmp` fails
     #[must_use]
@@ -41,7 +41,7 @@ impl BvhNode {
     }
 }
 
-impl Geometry for BvhNode {
+impl Geometry for Bvh {
     fn intersects(&self, ray: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
         if !self.aabb.intersects(ray, t_min, t_max) {
             return None;

@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use crate::accelerator::BvhNode;
+use crate::accelerator::Bvh;
 use crate::args::{ArgCamera, Args};
 use crate::asset::Asset;
 use crate::brdf::{GlossySpecular, Lambertian, PerfectSpecular};
@@ -73,7 +73,7 @@ impl CornellBox {
         ));
         asset.geometries.push(ball2);
 
-        let root = vec![BvhNode::construct(asset.geometries)];
+        let root = vec![Bvh::construct(asset.geometries)];
 
         Self {
             view_width,
