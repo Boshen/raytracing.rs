@@ -1,4 +1,7 @@
 # Raytracing in Rust 🦀
+<a href="https://github.com/Boshen/raytracing.rs/actions/workflows/rust.yml">
+  <img src="https://github.com/Boshen/raytracing.rs/actions/workflows/rust.yml/badge.svg"/>
+</a>
 
 Implementing ray tracing from the book [Ray Tracing from the Ground Up](https://www.amazon.com/Ray-Tracing-Ground-Kevin-Suffern/dp/1568812728)
 
