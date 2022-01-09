@@ -17,3 +17,25 @@ pub mod ray;
 pub mod renderer;
 pub mod sampler;
 pub mod scene;
+
+#[cfg(test)]
+mod tests {
+    use crate::args::{ArgCamera, Args};
+    use crate::renderer::Renderer;
+    use crate::scene::CornellBox;
+
+    #[test]
+    fn render() {
+        let args = Args {
+            width: 10,
+            height: 10,
+            preview: false,
+            camera: ArgCamera::ThinLens,
+            samples: 4,
+        };
+        let scene = CornellBox::new(args.width, args.height, &args);
+        let renderer = Renderer::new(scene, &args);
+        let pixels = renderer.render();
+        assert_eq!(pixels.len(), 100);
+    }
+}
