@@ -19,9 +19,10 @@ impl Phong {
         diffuse_brdf: Lambertian,
         specular_brdf: GlossySpecular,
     ) -> Self {
-        if diffuse_brdf.kd + specular_brdf.ks >= 1.0 {
-            panic!("kd + ks >= 1.0 in Phong Constructor");
-        }
+        assert!(
+            (0.0..1.0).contains(&(diffuse_brdf.kd + specular_brdf.ks)),
+            "kd + ks >= 1.0 in Phong Constructor"
+        );
         Self {
             ambient_brdf,
             diffuse_brdf,
