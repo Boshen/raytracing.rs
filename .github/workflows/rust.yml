@@ -54,13 +54,14 @@ jobs:
       - name: Run cargo-tarpaulin
         uses: actions-rs/tarpaulin@v0.1
         with:
-          version: '0.15.0'
+          version: '0.19.0'
           args: '-- --test-threads 1'
 
       - name: Upload to codecov.io
-        uses: codecov/codecov-action@v1.0.2
+        uses: codecov/codecov-action@v2
         with:
           token: ${{secrets.CODECOV_TOKEN}}
+          files: cobertura.xml
 
       - name: Clean cache
         run: cargo install cargo-cache --no-default-features --features ci-autoclean && cargo-cache
