@@ -5,13 +5,8 @@ on:
   pull_request:
     paths-ignore:
       - '**.md'
-  workflow_dispatch:
 
 name: CI
-
-env:
-  RUST_TOOLCHAIN: stable
-  TOOLCHAIN_PROFILE: minimal
 
 jobs:
   lints:
@@ -20,22 +15,52 @@ jobs:
     steps:
       - name: Checkout sources
         uses: actions/checkout@v2
+
       - name: Install toolchain
         uses: actions-rs/toolchain@v1
         with:
-          profile: ${{ env.TOOLCHAIN_PROFILE }}
-          toolchain: ${{ env.RUST_TOOLCHAIN }}
-          override: true
+          toolchain: nightly
           components: rustfmt, clippy
+          override: true
+
       - name: Cache
         uses: Swatinem/rust-cache@v1
+
       - name: Run cargo fmt
-        uses: actions-rs/cargo@v1
-        with:
-          command: fmt
-          args: --all -- --check
+        run: cargo +nightly fmt --all -- --check
+
       - name: Run cargo clippy
-        uses: actions-rs/cargo@v1
+        run: cargo +nightly clippy -- -D warnings
+
+      - name: Clean cache
+        run: cargo install cargo-cache --no-default-features --features ci-autoclean && cargo-cache
+
+  coverage:
+    name: Run Code Coverage
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v2
+
+      - name: Install toolchain
+        uses: actions-rs/toolchain@v1
         with:
-          command: clippy
-          args: -- -D warnings
+          toolchain: nightly
+          override: true
+
+      - name: Cache
+        uses: Swatinem/rust-cache@v1
+
+      - name: Run cargo-tarpaulin
+        uses: actions-rs/tarpaulin@v0.1
+        with:
+          version: '0.15.0'
+          args: '-- --test-threads 1'
+
+      - name: Upload to codecov.io
+        uses: codecov/codecov-action@v1.0.2
+        with:
+          token: ${{secrets.CODECOV_TOKEN}}
+
+      - name: Clean cache
+        run: cargo install cargo-cache --no-default-features --features ci-autoclean && cargo-cache
