@@ -20,20 +20,13 @@ jobs:
         uses: visvirial/sccache-action@v1
 
       - name: Install toolchain
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: nightly
-          components: rustfmt, clippy
-          override: true
+        run: rustup show
 
       - name: Run cargo fmt
-        run: cargo +nightly fmt --all -- --check
+        run: cargo fmt --all -- --check
 
       - name: Run cargo clippy
-        run: cargo +nightly clippy -- -D warnings
-
-      - name: Clean cache
-        run: cargo install cargo-cache --no-default-features --features ci-autoclean && cargo-cache
+        run: cargo clippy -- -D warnings
 
   coverage:
     name: Run Code Coverage
@@ -46,10 +39,7 @@ jobs:
         uses: visvirial/sccache-action@v1
 
       - name: Install toolchain
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: nightly
-          override: true
+        run: rustup show
 
       - name: Run cargo-tarpaulin
         uses: actions-rs/tarpaulin@v0.1
@@ -62,6 +52,3 @@ jobs:
         with:
           token: ${{secrets.CODECOV_TOKEN}}
           files: cobertura.xml
-
-      - name: Clean cache
-        run: cargo install cargo-cache --no-default-features --features ci-autoclean && cargo-cache
