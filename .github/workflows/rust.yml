@@ -53,7 +53,7 @@ jobs:
           files: cobertura.xml
 
   bloat:
-    name: Run Cargo Bloat
+    name: Track Release Binary Size
     runs-on: ubuntu-latest
     steps:
       - name: Checkout sources
@@ -85,3 +85,19 @@ jobs:
         with:
           name: release-build-size
           path: release-build-size.jsonl # Use `jq -s '.' release-build-size.jsonl` to get JSON
+
+  benchmark:
+    name: Track Release Benchmark
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v2
+
+      - name: Install toolchain
+        run: rustup show
+
+      - name: Cache
+        uses: Swatinem/rust-cache@v1
+
+      - name: Run Benchmark
+        run: cargo bench
