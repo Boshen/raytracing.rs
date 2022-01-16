@@ -2,9 +2,8 @@ on:
   push:
     paths-ignore:
       - '**.md'
-  pull_request:
-    paths-ignore:
-      - '**.md'
+    branches:
+      - main
 
 name: CI
 
@@ -52,3 +51,37 @@ jobs:
         with:
           token: ${{secrets.CODECOV_TOKEN}}
           files: cobertura.xml
+
+  bloat:
+    name: Run Cargo Bloat
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v2
+
+      - name: Install toolchain
+        run: rustup show
+
+      - name: Cache
+        uses: Swatinem/rust-cache@v1
+
+      - name: Add Cargo Bloat
+        run: cargo install cargo-bloat --no-default-features
+
+      - uses: actions/download-artifact@v2
+        continue-on-error: true # Continue without existing file
+        with:
+          name: release-build-size
+          path: release-build-size.jsonl # JSON Line Format
+
+      - name: Save Cargo Bloat Output
+        run: |
+          cargo bloat --release --crates --message-format json > bloat.json
+          cat bloat.json
+          jq --argjson commit '{"commit":"${GITHUB_SHA::6}"}' '$commit + .' bloat.json >> release-build-size.jsonl
+
+      - name: Upload Cargo Bloat Output
+        uses: actions/upload-artifact@v2
+        with:
+          name: release-build-size
+          path: release-build-size.jsonl # Use `jq -s '.' release-build-size.jsonl` to get JSON
