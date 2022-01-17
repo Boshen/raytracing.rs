@@ -11,7 +11,7 @@ nalgebra = "0.30.1"
 rayon = "1.5.1"
 rand = "0.8.4"
 tobj = "3.2.0"
-clap = { version = "3.0.5", features = ["derive"] }
+clap = { version = "3.0.7", features = ["derive"] }
 
 [dev-dependencies]
 # use `cargo criterion` with `cargo install cargo-criterion`
