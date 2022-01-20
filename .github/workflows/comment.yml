@@ -1,0 +1,24 @@
+name: Comment
+
+on:
+  issue_comment:
+    types: [created]
+
+env:
+  RUST_LOG: info
+  RUST_BACKTRACE: 1
+
+jobs:
+  comment:
+    name: comment
+    if: github.event.issue.pull_request && contains(github.event.comment.body, '+bench')
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+       os: [ubuntu-latest]
+
+    steps:
+      - name: Checkout PR Branch
+        uses: actions/checkout@v2
