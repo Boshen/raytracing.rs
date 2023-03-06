@@ -6,7 +6,7 @@ edition = "2021"
 
 [dependencies]
 num-integer = "0.1.45"
-image = "0.24.4"
+image = "0.24.5"
 nalgebra = "0.31.0"
 rayon = "1.7.0"
 rand = "0.8.5"
