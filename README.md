@@ -30,3 +30,7 @@ cargo run --release && open output.png
 * Add more scenes: a lot of spheres
 * Implement Regular Grids (Chapter 22)
 * Implement static dispatch for Bvh. We need macro to implement `Bvh<L, R> { left: Bvh<L>, right: Bvh<R> }`
+
+# Progress Report
+
+https://github.com/Boshen/raytracing.rs/issues/1
