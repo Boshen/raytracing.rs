@@ -8,12 +8,11 @@ static GLOBAL: mimalloc::MiMalloc = mimalloc::MiMalloc;
 
 use std::{error::Error, time::Instant};
 
-use clap::Parser;
 use image::{imageops::flip_horizontal, RgbImage};
-use raytracing::{args::Args, color::to_rgb, counter, renderer::Renderer, scene::CornellBox};
+use raytracing::{args::args, color::to_rgb, counter, renderer::Renderer, scene::CornellBox};
 
 fn main() -> Result<(), Box<dyn Error>> {
-    let args = Args::parse();
+    let args = args().run();
 
     let scene = CornellBox::new(args.height, args.height, &args);
     let renderer = Renderer::new(scene, &args);
