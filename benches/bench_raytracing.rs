@@ -9,11 +9,20 @@ use raytracing::{
 };
 
 pub fn bench_simple(c: &mut Criterion) {
-    let args =
-        Args { width: 10, height: 10, preview: false, camera: ArgCamera::ThinLens, samples: 4 };
-    let scene = CornellBox::new(args.width, args.height, &args);
-    let renderer = Renderer::new(scene, &args);
-    c.bench_function("render", |b| b.iter(|| black_box(renderer.render())));
+    c.bench_function("render", |b| {
+        b.iter(|| {
+            let args = Args {
+                width: 100,
+                height: 100,
+                preview: false,
+                camera: ArgCamera::ThinLens,
+                samples: 16,
+            };
+            let scene = CornellBox::new(args.width, args.height, &args);
+            let renderer = Renderer::new(scene, &args);
+            black_box(renderer.render());
+        });
+    });
 }
 
 criterion_group!(simple, bench_simple);
