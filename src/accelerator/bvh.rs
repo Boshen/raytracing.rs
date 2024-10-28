@@ -1,12 +1,15 @@
 //! Bounding Volume Hierarchy
 
-use nalgebra::Point3;
-use rand::{thread_rng, Rng};
 use std::sync::Arc;
 
-use crate::aabb::Aabb;
-use crate::geometric_object::Geometry;
-use crate::ray::{HitRecord, Ray};
+use nalgebra::Point3;
+use rand::{thread_rng, Rng};
+
+use crate::{
+    aabb::Aabb,
+    geometric_object::Geometry,
+    ray::{HitRecord, Ray},
+};
 
 pub struct Bvh {
     pub left: Arc<dyn Geometry>,

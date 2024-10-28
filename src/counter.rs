@@ -16,8 +16,5 @@ pub fn inc_intersection_count() {
 
 pub fn print_count() {
     println!("Number of Rays: {}", RAY_COUNT.load(Ordering::Relaxed),);
-    println!(
-        "Number of Intersections: {}",
-        INTERSECTION_COUNT.load(Ordering::Relaxed),
-    );
+    println!("Number of Intersections: {}", INTERSECTION_COUNT.load(Ordering::Relaxed),);
 }

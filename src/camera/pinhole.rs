@@ -1,8 +1,7 @@
 use nalgebra::{Point2, Vector2};
 
 use super::{Camera, Setting};
-use crate::ray::Ray;
-use crate::sampler::Sampler;
+use crate::{ray::Ray, sampler::Sampler};
 
 pub struct Pinhole {
     setting: Setting,
@@ -30,9 +29,6 @@ impl Camera for Pinhole {
 
     #[must_use]
     fn get_rays(&self, origin: Point2<f64>, sampler: &Sampler) -> Vec<Ray> {
-        sampler
-            .square()
-            .map(|dp| self.get_ray(origin - dp))
-            .collect()
+        sampler.square().map(|dp| self.get_ray(origin - dp)).collect()
     }
 }

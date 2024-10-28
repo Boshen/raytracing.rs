@@ -1,5 +1,6 @@
-use crate::ray::Ray;
 use nalgebra::Point3;
+
+use crate::ray::Ray;
 
 pub struct Aabb {
     pub min: Point3<f64>,

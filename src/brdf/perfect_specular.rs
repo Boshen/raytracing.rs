@@ -1,7 +1,5 @@
 use super::Brdf;
-use crate::color::Color;
-use crate::model::Vec3;
-use crate::ray::Hit;
+use crate::{color::Color, model::Vec3, ray::Hit};
 
 pub struct PerfectSpecular {
     /// reflection coefficient

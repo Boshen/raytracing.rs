@@ -1,8 +1,10 @@
 use super::Material;
-use crate::brdf::{Brdf, GlossySpecular, Lambertian, PerfectSpecular};
-use crate::color::Color;
-use crate::model::Vec3;
-use crate::ray::{Hit, Ray};
+use crate::{
+    brdf::{Brdf, GlossySpecular, Lambertian, PerfectSpecular},
+    color::Color,
+    model::Vec3,
+    ray::{Hit, Ray},
+};
 
 pub struct Reflective {
     pub ambient_brdf: Lambertian,
@@ -19,12 +21,7 @@ impl Reflective {
         specular_brdf: GlossySpecular,
         reflective_brdf: PerfectSpecular,
     ) -> Self {
-        Self {
-            ambient_brdf,
-            diffuse_brdf,
-            specular_brdf,
-            reflective_brdf,
-        }
+        Self { ambient_brdf, diffuse_brdf, specular_brdf, reflective_brdf }
     }
 }
 
@@ -46,10 +43,7 @@ impl Material for Reflective {
         let mut pdf = 0.0;
         let fr = self.reflective_brdf.sample_f(hit, &mut wi, &mut pdf);
         let reflected_ray = Ray::new(hit.hit_point, wi);
-        hit.renderer
-            .trace(&reflected_ray, hit.depth + 1)
-            .component_mul(&fr)
-            * hit.normal.dot(&wi)
+        hit.renderer.trace(&reflected_ray, hit.depth + 1).component_mul(&fr) * hit.normal.dot(&wi)
             / pdf
     }
 }

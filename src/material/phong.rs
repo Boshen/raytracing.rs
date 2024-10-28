@@ -1,8 +1,10 @@
 use super::Material;
-use crate::brdf::{Brdf, GlossySpecular, Lambertian};
-use crate::color::Color;
-use crate::model::Vec3;
-use crate::ray::{Hit, Ray};
+use crate::{
+    brdf::{Brdf, GlossySpecular, Lambertian},
+    color::Color,
+    model::Vec3,
+    ray::{Hit, Ray},
+};
 
 pub struct Phong {
     pub ambient_brdf: Lambertian,
@@ -23,11 +25,7 @@ impl Phong {
             (0.0..1.0).contains(&(diffuse_brdf.kd + specular_brdf.ks)),
             "kd + ks >= 1.0 in Phong Constructor"
         );
-        Self {
-            ambient_brdf,
-            diffuse_brdf,
-            specular_brdf,
-        }
+        Self { ambient_brdf, diffuse_brdf, specular_brdf }
     }
 }
 
@@ -50,10 +48,7 @@ impl Material for Phong {
         let mut pdf = 0.0;
         let fr = self.specular_brdf.sample_f(hit, &mut wi, &mut pdf);
         let reflected_ray = Ray::new(hit.hit_point, wi);
-        hit.renderer
-            .trace(&reflected_ray, hit.depth + 1)
-            .component_mul(&fr)
-            * hit.normal.dot(&wi)
+        hit.renderer.trace(&reflected_ray, hit.depth + 1).component_mul(&fr) * hit.normal.dot(&wi)
             / pdf
     }
 }

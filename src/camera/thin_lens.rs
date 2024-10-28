@@ -1,8 +1,7 @@
 use nalgebra::{Point2, Vector2};
 
 use super::{Camera, Setting};
-use crate::ray::Ray;
-use crate::sampler::Sampler;
+use crate::{ray::Ray, sampler::Sampler};
 
 pub struct ThinLens {
     setting: Setting,
@@ -13,11 +12,7 @@ pub struct ThinLens {
 impl ThinLens {
     #[must_use]
     pub const fn new(setting: Setting, lens_radius: f64, focal_plane_distance: f64) -> Self {
-        Self {
-            setting,
-            lens_radius,
-            focal_plane_distance,
-        }
+        Self { setting, lens_radius, focal_plane_distance }
     }
 
     #[must_use]

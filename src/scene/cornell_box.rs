@@ -1,16 +1,18 @@
 use std::sync::Arc;
 
-use crate::accelerator::Bvh;
-use crate::args::{ArgCamera, Args};
-use crate::asset::Asset;
-use crate::brdf::{GlossySpecular, Lambertian, PerfectSpecular};
-use crate::camera::{Camera, Pinhole, Setting, ThinLens};
-use crate::color::Color;
-use crate::geometric_object::{Geometry, Sphere};
-use crate::light::{Ambient, AmbientOcculuder, Light};
-use crate::material::{Phong, Reflective};
-use crate::model::{Pot3, Vec3};
-use crate::ray::{HitRecord, Ray};
+use crate::{
+    accelerator::Bvh,
+    args::{ArgCamera, Args},
+    asset::Asset,
+    brdf::{GlossySpecular, Lambertian, PerfectSpecular},
+    camera::{Camera, Pinhole, Setting, ThinLens},
+    color::Color,
+    geometric_object::{Geometry, Sphere},
+    light::{Ambient, AmbientOcculuder, Light},
+    material::{Phong, Reflective},
+    model::{Pot3, Vec3},
+    ray::{HitRecord, Ray},
+};
 
 pub struct CornellBox {
     pub view_width: u32,
@@ -27,10 +29,7 @@ impl CornellBox {
         let scale = 555.0;
         let mut asset = Asset::new("./assets/cornell_box.obj", scale);
 
-        let ambient_light = Arc::new(Ambient {
-            ls: 0.1,
-            cl: Vec3::repeat(1.0),
-        });
+        let ambient_light = Arc::new(Ambient { ls: 0.1, cl: Vec3::repeat(1.0) });
 
         let ambient_occuluder = Arc::new(AmbientOcculuder::new(1.0, Vec3::repeat(1.0)));
         asset.lights.push(ambient_occuluder);
@@ -51,12 +50,8 @@ impl CornellBox {
             GlossySpecular::new(0.1, 0.0, Color::repeat(1.0)),
             PerfectSpecular::new(0.8, Color::repeat(1.0)),
         );
-        let ball1 = Arc::new(Sphere::new(
-            ball1_material,
-            40.0,
-            Pot3::new(450.0, 40.0, 450.0),
-            scale,
-        ));
+        let ball1 =
+            Arc::new(Sphere::new(ball1_material, 40.0, Pot3::new(450.0, 40.0, 450.0), scale));
         asset.geometries.push(ball1);
 
         // add ball with phong
@@ -65,24 +60,13 @@ impl CornellBox {
             Lambertian::new(0.1, Color::repeat(1.0)),
             GlossySpecular::new(0.3, 2.0, Color::repeat(1.0)),
         );
-        let ball2 = Arc::new(Sphere::new(
-            ball2_material,
-            30.0,
-            Pot3::new(350.0, 30.0, 500.0),
-            scale,
-        ));
+        let ball2 =
+            Arc::new(Sphere::new(ball2_material, 30.0, Pot3::new(350.0, 30.0, 500.0), scale));
         asset.geometries.push(ball2);
 
         let root = vec![Bvh::construct(asset.geometries)];
 
-        Self {
-            view_width,
-            view_height,
-            camera,
-            ambient_light,
-            lights: asset.lights,
-            root,
-        }
+        Self { view_width, view_height, camera, ambient_light, lights: asset.lights, root }
     }
 
     /// # Panics

@@ -1,6 +1,6 @@
-use criterion::{black_box, criterion_group, criterion_main, Criterion};
 use std::time::Duration;
 
+use criterion::{black_box, criterion_group, criterion_main, Criterion};
 use raytracing::{
     args::{ArgCamera, Args},
     renderer::Renderer,
@@ -8,13 +8,8 @@ use raytracing::{
 };
 
 pub fn criterion_benchmark(c: &mut Criterion) {
-    let args = Args {
-        width: 10,
-        height: 10,
-        preview: false,
-        camera: ArgCamera::ThinLens,
-        samples: 4,
-    };
+    let args =
+        Args { width: 10, height: 10, preview: false, camera: ArgCamera::ThinLens, samples: 4 };
     let scene = CornellBox::new(args.width, args.height, &args);
     let renderer = Renderer::new(scene, &args);
     c.bench_function("render", |b| b.iter(|| black_box(renderer.render())));

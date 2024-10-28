@@ -6,10 +6,12 @@ mod triangle;
 pub use sphere::*;
 pub use triangle::*;
 
-use crate::aabb::Aabb;
-use crate::model::Vec3;
-use crate::ray::{HitRecord, Ray};
-use crate::sampler::Sampler;
+use crate::{
+    aabb::Aabb,
+    model::Vec3,
+    ray::{HitRecord, Ray},
+    sampler::Sampler,
+};
 
 pub trait Geometry: Send + Sync {
     fn scale(&mut self, _l: f64) {}

@@ -6,9 +6,7 @@ pub use glossy_specular::*;
 pub use lambertian::*;
 pub use perfect_specular::*;
 
-use crate::color::Color;
-use crate::model::Vec3;
-use crate::ray::Hit;
+use crate::{color::Color, model::Vec3, ray::Hit};
 
 /// Bidrectional Reflectance Distribution Function
 /// describes how light is reflected at surfaces for materials

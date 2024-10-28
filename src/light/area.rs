@@ -1,12 +1,9 @@
-use nalgebra::{center, distance, Point3};
 use std::sync::Arc;
 
+use nalgebra::{center, distance, Point3};
+
 use super::{in_shadow, Light};
-use crate::color::Color;
-use crate::geometric_object::Geometry;
-use crate::material::Emissive;
-use crate::model::Vec3;
-use crate::ray::Hit;
+use crate::{color::Color, geometric_object::Geometry, material::Emissive, model::Vec3, ray::Hit};
 
 pub struct Area {
     center: Point3<f64>,
@@ -21,11 +18,7 @@ impl Area {
             .iter()
             .map(|o| o.get_center())
             .fold(Point3::origin(), |a, b| center(&a, &b));
-        Self {
-            center,
-            geometric_objects,
-            material,
-        }
+        Self { center, geometric_objects, material }
     }
 }
 

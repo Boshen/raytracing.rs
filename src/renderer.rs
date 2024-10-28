@@ -1,11 +1,13 @@
 use nalgebra::Point2;
 use rayon::prelude::*;
 
-use crate::args::Args;
-use crate::color::Color;
-use crate::ray::{Hit, Ray};
-use crate::sampler::Sampler;
-use crate::scene::CornellBox;
+use crate::{
+    args::Args,
+    color::Color,
+    ray::{Hit, Ray},
+    sampler::Sampler,
+    scene::CornellBox,
+};
 
 pub struct Renderer {
     pub scene: CornellBox,
@@ -35,10 +37,7 @@ impl Renderer {
                 let i = pixel_size * (f64::from(n % width) - f64::from(width) / 2.0);
                 let j = pixel_size * (f64::from(n / width) - f64::from(height) / 2.0);
                 let origin = Point2::new(i, j);
-                self.scene
-                    .camera
-                    .get_rays(origin, &self.sampler)
-                    .into_iter()
+                self.scene.camera.get_rays(origin, &self.sampler).into_iter()
             })
             .map(|ray| self.trace(&ray, 0))
             .collect::<Vec<_>>();
@@ -53,21 +52,19 @@ impl Renderer {
         if depth > self.max_depth {
             return Color::zeros();
         }
-        self.scene
-            .intersects(ray, 0.0, f64::INFINITY)
-            .map_or_else(Color::zeros, |record| {
-                let wo = -ray.dir;
-                // revert normal if we hit the inside surface
-                let adjusted_normal = record.normal * record.normal.dot(&wo).signum();
-                let rayhit = Hit {
-                    ray,
-                    hit_point: record.hit_point,
-                    material: record.material,
-                    normal: adjusted_normal,
-                    renderer: self,
-                    depth,
-                };
-                record.material.shade(&rayhit)
-            })
+        self.scene.intersects(ray, 0.0, f64::INFINITY).map_or_else(Color::zeros, |record| {
+            let wo = -ray.dir;
+            // revert normal if we hit the inside surface
+            let adjusted_normal = record.normal * record.normal.dot(&wo).signum();
+            let rayhit = Hit {
+                ray,
+                hit_point: record.hit_point,
+                material: record.material,
+                normal: adjusted_normal,
+                renderer: self,
+                depth,
+            };
+            record.material.shade(&rayhit)
+        })
     }
 }

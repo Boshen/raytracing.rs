@@ -1,7 +1,8 @@
+use std::f64::consts::FRAC_PI_4;
+
 use nalgebra::{Point2, Point3};
 use num_integer::Roots;
 use rand::{distributions::Standard, thread_rng, Rng};
-use std::f64::consts::FRAC_PI_4;
 
 use crate::model::Vec3;
 
@@ -33,10 +34,7 @@ impl Sampler {
                     let (dx, dy) = if num_samples == 1 {
                         (0.0, 0.0)
                     } else {
-                        (
-                            rng.sample::<f64, _>(Standard),
-                            rng.sample::<f64, _>(Standard),
-                        )
+                        (rng.sample::<f64, _>(Standard), rng.sample::<f64, _>(Standard))
                     };
                     let point = ((f64::from(k) + dx) / n, (f64::from(j) + dy) / n);
                     samples.push(point);
@@ -44,11 +42,7 @@ impl Sampler {
             }
         }
 
-        Self {
-            num_samples,
-            num_sets,
-            samples,
-        }
+        Self { num_samples, num_sets, samples }
     }
 
     #[must_use]
@@ -61,18 +55,11 @@ impl Sampler {
         let mut rng = thread_rng();
         let skip: usize = rng.gen_range(0..self.num_sets);
 
-        self.samples
-            .iter()
-            .skip(skip)
-            .take(self.count().into())
-            .copied()
-            .collect()
+        self.samples.iter().skip(skip).take(self.count().into()).copied().collect()
     }
 
     pub fn square(&self) -> impl Iterator<Item = Point2<f64>> {
-        self.unit_square()
-            .into_iter()
-            .map(|(x, y)| Point2::new(x, y))
+        self.unit_square().into_iter().map(|(x, y)| Point2::new(x, y))
     }
 
     pub fn triangle<'a>(

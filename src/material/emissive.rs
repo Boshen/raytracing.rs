@@ -1,6 +1,5 @@
 use super::Material;
-use crate::color::Color;
-use crate::ray::Hit;
+use crate::{color::Color, ray::Hit};
 
 pub struct Emissive {
     pub ls: f64, // radiance scaling factor

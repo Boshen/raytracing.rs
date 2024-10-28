@@ -8,10 +8,7 @@ pub use matte::*;
 pub use phong::*;
 pub use reflective::*;
 
-use crate::color::Color;
-use crate::light::Light;
-use crate::model::Vec3;
-use crate::ray::Hit;
+use crate::{color::Color, light::Light, model::Vec3, ray::Hit};
 
 pub trait Material: Send + Sync {
     fn shade(&self, hit: &Hit) -> Color {
@@ -72,9 +69,7 @@ pub fn shade<M: Material + ?Sized>(m: &M, hit: &Hit) -> Color {
         })
         .sum::<Color>();
 
-    let ambient_color = m
-        .ambient()
-        .component_mul(&hit.renderer.scene.ambient_light.radiance(hit));
+    let ambient_color = m.ambient().component_mul(&hit.renderer.scene.ambient_light.radiance(hit));
 
     ambient_color + light_color
 }

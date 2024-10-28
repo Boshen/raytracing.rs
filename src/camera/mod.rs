@@ -2,14 +2,12 @@ mod pinhole;
 mod setting;
 mod thin_lens;
 
+use nalgebra::Point2;
 pub use pinhole::*;
 pub use setting::*;
 pub use thin_lens::*;
 
-use nalgebra::Point2;
-
-use crate::ray::Ray;
-use crate::sampler::Sampler;
+use crate::{ray::Ray, sampler::Sampler};
 
 pub trait Camera: Send + Sync {
     fn setting(&self) -> &Setting;

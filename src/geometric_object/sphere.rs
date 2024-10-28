@@ -1,11 +1,14 @@
-use nalgebra::Point3;
 use std::ops::{MulAssign, SubAssign};
 
-use crate::counter;
-use crate::geometric_object::Geometry;
-use crate::material::Material;
-use crate::model::Vec3;
-use crate::ray::{HitRecord, Ray};
+use nalgebra::Point3;
+
+use crate::{
+    counter,
+    geometric_object::Geometry,
+    material::Material,
+    model::Vec3,
+    ray::{HitRecord, Ray},
+};
 
 pub struct Sphere<M: Material> {
     radius: f64,
@@ -15,11 +18,7 @@ pub struct Sphere<M: Material> {
 
 impl<M: Material> Sphere<M> {
     pub fn new(material: M, radius: f64, center: Point3<f64>, scale: f64) -> Self {
-        let mut sphere = Self {
-            radius,
-            center,
-            material,
-        };
+        let mut sphere = Self { radius, center, material };
         sphere.scale(scale);
         sphere
     }
@@ -36,8 +35,10 @@ impl<M: Material> Geometry for Sphere<M> {
 
         let a = dir.dot(&dir);
         let b = 2.0 * dir.dot(&(start - center));
-        let c =
-            radius.mul_add(-radius, 2.0f64.mul_add(-center.dot(&start), center.dot(&center) + start.dot(&start)));
+        let c = radius.mul_add(
+            -radius,
+            2.0f64.mul_add(-center.dot(&start), center.dot(&center) + start.dot(&start)),
+        );
 
         let disc = b.mul_add(b, -(4.0 * a * c));
 

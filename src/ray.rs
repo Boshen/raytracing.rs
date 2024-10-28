@@ -1,9 +1,6 @@
 use nalgebra::Point3;
 
-use crate::counter;
-use crate::material::Material;
-use crate::model::Vec3;
-use crate::renderer::Renderer;
+use crate::{counter, material::Material, model::Vec3, renderer::Renderer};
 
 pub struct Ray {
     pub origin: Point3<f64>,

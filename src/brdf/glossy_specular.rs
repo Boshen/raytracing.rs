@@ -1,7 +1,5 @@
 use super::Brdf;
-use crate::color::Color;
-use crate::model::Vec3;
-use crate::ray::Hit;
+use crate::{color::Color, model::Vec3, ray::Hit};
 
 /// Shows specular highlights (shiny white dot) on surfaces
 pub struct GlossySpecular {
@@ -45,13 +43,7 @@ impl Brdf for GlossySpecular {
         let w = r;
         let u = Vec3::new(0.00424, 1.0, 0.00764).cross(&w).normalize();
         let v = u.cross(&w);
-        let sp = hit
-            .renderer
-            .sampler
-            .hemisphere()
-            .take(1)
-            .collect::<Vec<_>>()
-            .remove(0);
+        let sp = hit.renderer.sampler.hemisphere().take(1).collect::<Vec<_>>().remove(0);
         // reflected ray direction
         *wi = sp.x * u + sp.y * v + sp.z * w;
         // reflected ray is below surface

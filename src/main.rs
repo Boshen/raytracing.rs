@@ -1,17 +1,10 @@
 #![warn(clippy::all, clippy::pedantic, clippy::nursery)]
 
-use std::error::Error;
-use std::time::Instant;
+use std::{error::Error, time::Instant};
 
 use clap::Parser;
-use image::imageops::flip_horizontal;
-use image::RgbImage;
-
-use raytracing::args::Args;
-use raytracing::color::to_rgb;
-use raytracing::counter;
-use raytracing::renderer::Renderer;
-use raytracing::scene::CornellBox;
+use image::{imageops::flip_horizontal, RgbImage};
+use raytracing::{args::Args, color::to_rgb, counter, renderer::Renderer, scene::CornellBox};
 
 fn main() -> Result<(), Box<dyn Error>> {
     let args = Args::parse();
@@ -25,19 +18,11 @@ fn main() -> Result<(), Box<dyn Error>> {
     let pixels = renderer.render();
     let duration = now.elapsed();
 
-    println!(
-        "Render Time Elapased: {}.{}s",
-        duration.as_secs(),
-        duration.subsec_millis()
-    );
+    println!("Render Time Elapased: {}.{}s", duration.as_secs(), duration.subsec_millis());
 
     flip_horizontal(
-        &RgbImage::from_vec(
-            args.width,
-            args.height,
-            pixels.iter().flat_map(to_rgb).collect(),
-        )
-        .unwrap(),
+        &RgbImage::from_vec(args.width, args.height, pixels.iter().flat_map(to_rgb).collect())
+            .unwrap(),
     )
     .save("output.png")?;
 

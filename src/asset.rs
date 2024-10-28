@@ -3,11 +3,13 @@ use std::sync::Arc;
 use nalgebra::Point3;
 use tobj::{load_obj, LoadOptions};
 
-use crate::brdf::Lambertian;
-use crate::color::Color;
-use crate::geometric_object::{Geometry, Triangle};
-use crate::light::{Area, Light};
-use crate::material::{Emissive, Matte};
+use crate::{
+    brdf::Lambertian,
+    color::Color,
+    geometric_object::{Geometry, Triangle},
+    light::{Area, Light},
+    material::{Emissive, Matte},
+};
 
 pub struct Object {
     pub name: String,
@@ -25,20 +27,11 @@ impl Asset {
     /// # Panics
     #[must_use]
     pub fn new(file_name: &str, scale: f64) -> Self {
-        let mut asset = Self {
-            objects: vec![],
-            geometries: vec![],
-            lights: vec![],
-        };
+        let mut asset = Self { objects: vec![], geometries: vec![], lights: vec![] };
 
-        let (models, materials) = load_obj(
-            file_name,
-            &LoadOptions {
-                triangulate: true,
-                ..LoadOptions::default()
-            },
-        )
-        .expect("Failed to load file");
+        let (models, materials) =
+            load_obj(file_name, &LoadOptions { triangulate: true, ..LoadOptions::default() })
+                .expect("Failed to load file");
 
         let materials = materials.expect("loaded materials");
 

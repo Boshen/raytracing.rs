@@ -1,8 +1,10 @@
 use super::Material;
-use crate::brdf::{Brdf, Lambertian};
-use crate::color::Color;
-use crate::model::Vec3;
-use crate::ray::Hit;
+use crate::{
+    brdf::{Brdf, Lambertian},
+    color::Color,
+    model::Vec3,
+    ray::Hit,
+};
 
 /// Perfect Diffuse Reflection with ambient and diffuse shading
 pub struct Matte {
@@ -13,10 +15,7 @@ pub struct Matte {
 impl Matte {
     #[must_use]
     pub const fn new(ambient_brdf: Lambertian, diffuse_brdf: Lambertian) -> Self {
-        Self {
-            ambient_brdf,
-            diffuse_brdf,
-        }
+        Self { ambient_brdf, diffuse_brdf }
     }
 }
 

@@ -1,9 +1,7 @@
 use std::f64::consts::FRAC_1_PI;
 
 use super::Brdf;
-use crate::color::Color;
-use crate::model::Vec3;
-use crate::ray::Hit;
+use crate::{color::Color, model::Vec3, ray::Hit};
 
 pub struct Lambertian {
     /// diffuse reflection coefficient [0, 1]
@@ -36,13 +34,7 @@ impl Brdf for Lambertian {
         let w = hit.normal;
         let v = Vec3::new(0.0034, 1.0, 0.0071).cross(&w).normalize();
         let u = v.cross(&w);
-        let sp = hit
-            .renderer
-            .sampler
-            .hemisphere()
-            .take(1)
-            .collect::<Vec<_>>()
-            .remove(0);
+        let sp = hit.renderer.sampler.hemisphere().take(1).collect::<Vec<_>>().remove(0);
         *wi = (sp.x * u + sp.y * v + sp.z * w).normalize();
         *pdf = hit.normal.dot(wi) * FRAC_1_PI;
         self.kd * self.cd * FRAC_1_PI

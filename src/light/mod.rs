@@ -10,9 +10,11 @@ pub use area::*;
 pub use directional::*;
 pub use point::*;
 
-use crate::color::Color;
-use crate::model::Vec3;
-use crate::ray::{Hit, Ray};
+use crate::{
+    color::Color,
+    model::Vec3,
+    ray::{Hit, Ray},
+};
 
 pub trait Light: Send + Sync {
     // the direction of the incoming light at a hit point

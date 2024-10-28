@@ -1,11 +1,13 @@
 use nalgebra::{center, Point3};
 
 use super::Geometry;
-use crate::counter;
-use crate::material::Material;
-use crate::model::Vec3;
-use crate::ray::{HitRecord, Ray};
-use crate::sampler::Sampler;
+use crate::{
+    counter,
+    material::Material,
+    model::Vec3,
+    ray::{HitRecord, Ray},
+    sampler::Sampler,
+};
 
 pub struct Triangle<M: Material> {
     pub x: Point3<f64>,
