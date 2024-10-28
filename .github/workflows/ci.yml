@@ -24,6 +24,7 @@ jobs:
       - uses: Boshen/setup-rust@main
         with:
           save-cache: ${{ github.ref_name == 'main' }}
+          components: clippy rustfmt
       - run: cargo check
       - run: cargo fmt --all -- --check
       - run: cargo clippy -- -D warnings
