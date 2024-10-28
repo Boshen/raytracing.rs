@@ -41,16 +41,26 @@ rand = "0.8.5"
 tobj = "3.2.5"
 clap = { version = "3.2.25", features = ["derive"] }
 
+[target.'cfg(all(not(target_env = "msvc"), not(target_os = "windows")))'.dependencies]
+jemallocator = { version = "0.5.4" }
+
+[target.'cfg(target_os = "windows")'.dependencies]
+mimalloc = { version = "0.1.43" }
+
 [dev-dependencies]
 # use `cargo criterion` with `cargo install cargo-criterion`
 criterion = {version = "0.4", default-features = false }
 
-[profile.release]
-lto = "fat"
-codegen-units = 1
-panic = "abort"
-incremental = true
-
 [[bench]]
 name = "bench_raytracing"
 harness = false
+
+[profile.release]
+# Configurations explicitly listed here for clarity.
+# Using the best options for performance.
+opt-level = 3
+lto = "fat"
+codegen-units = 1
+strip = "symbols" # Set to `false` for debug information
+debug = false # Set to `true` for debug information
+panic = "abort" # Let it crash and force ourselves to write safe Rust

@@ -1,4 +1,10 @@
-#![warn(clippy::all, clippy::pedantic, clippy::nursery)]
+#[cfg(all(not(target_env = "msvc"), not(target_os = "windows")))]
+#[global_allocator]
+static GLOBAL: jemallocator::Jemalloc = jemallocator::Jemalloc;
+
+#[cfg(target_os = "windows")]
+#[global_allocator]
+static GLOBAL: mimalloc::MiMalloc = mimalloc::MiMalloc;
 
 use std::{error::Error, time::Instant};
 
