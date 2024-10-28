@@ -41,14 +41,16 @@ rand = "0.8.5"
 tobj = "3.2.5"
 clap = { version = "3.2.25", features = ["derive"] }
 
+criterion2 = { version = "1.1.1", default-features = false, optional = true }
+
 [target.'cfg(all(not(target_env = "msvc"), not(target_os = "windows")))'.dependencies]
 jemallocator = { version = "0.5.4" }
 
 [target.'cfg(target_os = "windows")'.dependencies]
 mimalloc = { version = "0.1.43" }
 
-[dev-dependencies]
-criterion2 = { version = "1.1.1", default-features = false }
+[features]
+codspeed = ["criterion2/codspeed"]
 
 [[bench]]
 name = "bench_raytracing"
