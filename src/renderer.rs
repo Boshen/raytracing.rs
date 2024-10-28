@@ -1,6 +1,5 @@
 use nalgebra::Point2;
 use rayon::prelude::*;
-use std::f64::INFINITY;
 
 use crate::args::Args;
 use crate::color::Color;
@@ -55,8 +54,8 @@ impl Renderer {
             return Color::zeros();
         }
         self.scene
-            .intersects(ray, 0.0, INFINITY)
-            .map_or(Color::zeros(), |record| {
+            .intersects(ray, 0.0, f64::INFINITY)
+            .map_or_else(Color::zeros, |record| {
                 let wo = -ray.dir;
                 // revert normal if we hit the inside surface
                 let adjusted_normal = record.normal * record.normal.dot(&wo).signum();

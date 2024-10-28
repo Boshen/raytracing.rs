@@ -99,15 +99,15 @@ impl Sampler {
             let cos_phi = phi.cos();
             let sin_phi = phi.sin();
             let cos_theta = (1.0 - p.y).powf((e + 1.0_f64).recip());
-            let sin_theta = (1.0 - cos_theta * cos_theta).sqrt();
+            let sin_theta = cos_theta.mul_add(-cos_theta, 1.0).sqrt();
             Vec3::new(sin_theta * cos_phi, sin_theta * sin_phi, cos_theta)
         })
     }
 
     pub fn disk(&self) -> impl Iterator<Item = (Point2<f64>, Point2<f64>)> {
         self.square().map(|p| {
-            let x = 2.0 * p.x - 1.0;
-            let y = 2.0 * p.y - 1.0;
+            let x = 2.0f64.mul_add(p.x, -1.0);
+            let y = 2.0f64.mul_add(p.y, -1.0);
             let (r, phi) = if x > -y {
                 if x > y {
                     (x, y / x)

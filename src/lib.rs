@@ -1,6 +1,3 @@
-#![warn(clippy::all, clippy::pedantic, clippy::nursery)]
-#![allow(clippy::many_single_char_names)]
-
 pub mod aabb;
 pub mod accelerator;
 pub mod args;

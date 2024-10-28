@@ -15,8 +15,9 @@ pub struct Bvh {
 }
 
 impl Bvh {
-    /// # Panic
-    /// if `partial_cmp` fails
+    /// # Panics
+    ///
+    /// * if `partial_cmp` fails
     #[must_use]
     pub fn construct(mut objects: Vec<Arc<dyn Geometry>>) -> Arc<dyn Geometry> {
         match objects.len() {

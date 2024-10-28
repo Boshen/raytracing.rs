@@ -37,9 +37,9 @@ impl<M: Material> Geometry for Sphere<M> {
         let a = dir.dot(&dir);
         let b = 2.0 * dir.dot(&(start - center));
         let c =
-            center.dot(&center) + start.dot(&start) - 2.0 * center.dot(&start) - radius * radius;
+            radius.mul_add(-radius, 2.0f64.mul_add(-center.dot(&start), center.dot(&center) + start.dot(&start)));
 
-        let disc = b * b - 4.0 * a * c;
+        let disc = b.mul_add(b, -(4.0 * a * c));
 
         if disc < 0.0 {
             return None;

@@ -22,6 +22,7 @@ pub struct Asset {
 }
 
 impl Asset {
+    /// # Panics
     #[must_use]
     pub fn new(file_name: &str, scale: f64) -> Self {
         let mut asset = Self {
@@ -31,7 +32,7 @@ impl Asset {
         };
 
         let (models, materials) = load_obj(
-            &file_name,
+            file_name,
             &LoadOptions {
                 triangulate: true,
                 ..LoadOptions::default()
