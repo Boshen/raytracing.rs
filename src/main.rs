@@ -9,7 +9,7 @@ static GLOBAL: mimalloc::MiMalloc = mimalloc::MiMalloc;
 use std::{error::Error, time::Instant};
 
 use image::{imageops::flip_horizontal, RgbImage};
-use raytracing::{args::args, color::to_rgb, counter, renderer::Renderer, scene::CornellBox};
+use raytracing::{args::args, color::to_rgb, renderer::Renderer, scene::CornellBox};
 
 fn main() -> Result<(), Box<dyn Error>> {
     let args = args().run();
@@ -30,8 +30,6 @@ fn main() -> Result<(), Box<dyn Error>> {
             .unwrap(),
     )
     .save("output.png")?;
-
-    counter::print_count();
 
     Ok(())
 }

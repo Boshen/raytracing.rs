@@ -2,7 +2,6 @@ use nalgebra::{center, Point3};
 
 use super::Geometry;
 use crate::{
-    counter,
     material::Material,
     model::Vec3,
     ray::{HitRecord, Ray},
@@ -26,8 +25,6 @@ impl<M: Material> Triangle<M> {
 
 impl<M: Material> Geometry for Triangle<M> {
     fn intersects(&self, ray: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
-        counter::inc_intersection_count();
-
         let epsilon = 0.000_001;
         let e1 = self.y - self.x;
         let e2 = self.z - self.x;
