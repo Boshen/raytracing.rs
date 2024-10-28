@@ -49,3 +49,30 @@ jobs:
         with:
           token: ${{secrets.CODECOV_TOKEN}}
           files: cobertura.xml
+
+  benchmark:
+    name: Benchmark
+    runs-on: ubuntu-latest
+    steps:
+      - uses: taiki-e/checkout-action@v1
+
+      - uses: Boshen/setup-rust@main
+        with:
+          save-cache: ${{ github.ref_name == 'main' }}
+          cache-key: benchmark
+          tools: cargo-codspeed
+
+      - name: Build
+        env:
+          RUSTFLAGS: "-C debuginfo=1 -C strip=none -g --cfg codspeed"
+        run: |
+          cargo build --release --bench bench_raytracing --features codspeed
+          mkdir -p target/codspeed/raytracing
+          mv target/release/deps/bench_raytracing-* target/codspeed/raytracing
+          rm target/codspeed/raytracing/*.d
+
+      - uses: CodSpeedHQ/action@v3
+        timeout-minutes: 5
+        with:
+          run: cargo codspeed run
+          token: ${{ secrets.CODSPEED_TOKEN }}
