@@ -48,8 +48,7 @@ jemallocator = { version = "0.5.4" }
 mimalloc = { version = "0.1.43" }
 
 [dev-dependencies]
-# use `cargo criterion` with `cargo install cargo-criterion`
-criterion = {version = "0.4", default-features = false }
+criterion2 = { version = "1.1.1", default-features = false }
 
 [[bench]]
 name = "bench_raytracing"
