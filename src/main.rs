@@ -23,7 +23,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let pixels = renderer.render();
     let duration = now.elapsed();
 
-    println!("Render Time Elapased: {}.{}s", duration.as_secs(), duration.subsec_millis());
+    println!("Render Time Elapsed: {}.{}s", duration.as_secs(), duration.subsec_millis());
 
     flip_horizontal(
         &RgbImage::from_vec(args.width, args.height, pixels.iter().flat_map(to_rgb).collect())
