@@ -34,14 +34,14 @@ many_single_char_names = "allow"
 
 [dependencies]
 num-integer = "0.1.46"
-image = "0.24.9"
-nalgebra = "0.32.6"
+image = "0.25.5"
+nalgebra = "0.33.2"
 rayon = "1.10.0"
 rand = "0.8.5"
-tobj = "3.2.5"
+tobj = "4.0.2"
 bpaf = { version = "0.9.15", features = ["derive"] }
 
-criterion2 = { version = "1.1.1", default-features = false, optional = true }
+criterion2 = { version = "2.0.0", default-features = false, optional = true }
 
 [target.'cfg(all(not(target_env = "msvc"), not(target_os = "windows")))'.dependencies]
 jemallocator = { version = "0.5.4" }

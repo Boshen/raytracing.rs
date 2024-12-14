@@ -52,16 +52,18 @@ impl Asset {
                 None => {}
                 Some(material_id) => {
                     let m = &materials[material_id];
-                    let ambient = Color::new(
-                        f64::from(m.ambient[0]),
-                        f64::from(m.ambient[1]),
-                        f64::from(m.ambient[2]),
+                    let ambient = m.ambient.unwrap_or_default();
+                    let ambient_color = Color::new(
+                        f64::from(ambient[0]),
+                        f64::from(ambient[1]),
+                        f64::from(ambient[2]),
                     );
 
-                    let diffuse = Color::new(
-                        f64::from(m.diffuse[0]),
-                        f64::from(m.diffuse[1]),
-                        f64::from(m.diffuse[2]),
+                    let diffuse = m.diffuse.unwrap_or_default();
+                    let diffuse_color = Color::new(
+                        f64::from(diffuse[0]),
+                        f64::from(diffuse[1]),
+                        f64::from(diffuse[2]),
                     );
 
                     for f in 0..(mesh.indices.len() / 3) {
@@ -71,12 +73,12 @@ impl Asset {
                         let v2 = vertices[*face_indices[1] as usize];
                         let v3 = vertices[*face_indices[2] as usize];
 
-                        let triangle: Arc<dyn Geometry> = if m.ambient[0] > 1.0 {
-                            let material = Emissive::new(f64::from(m.ambient[0]), diffuse);
+                        let triangle: Arc<dyn Geometry> = if ambient[0] > 1.0 {
+                            let material = Emissive::new(f64::from(ambient[0]), diffuse_color);
                             Arc::new(Triangle::new(material, v1, v2, v3, scale))
                         } else {
-                            let ambient_brdf = Lambertian::new(0.5, ambient);
-                            let diffuse_brdf = Lambertian::new(1.0, diffuse);
+                            let ambient_brdf = Lambertian::new(0.5, ambient_color);
+                            let diffuse_brdf = Lambertian::new(1.0, diffuse_color);
                             let material = Matte::new(ambient_brdf, diffuse_brdf);
                             Arc::new(Triangle::new(material, v1, v2, v3, scale))
                         };
@@ -84,8 +86,8 @@ impl Asset {
                         triangles.push(triangle);
                     }
 
-                    if m.ambient[0] > 1.0 {
-                        let emissive = Emissive::new(f64::from(m.ambient[0]), diffuse);
+                    if ambient[0] > 1.0 {
+                        let emissive = Emissive::new(f64::from(ambient[0]), diffuse_color);
                         let arealight = Arc::new(Area::new(triangles.clone(), emissive));
                         asset.lights.push(arealight);
                     }
