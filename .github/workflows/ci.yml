@@ -42,7 +42,7 @@ jobs:
           tools: cargo-llvm-cov
           components: llvm-tools-preview
 
-      - run: cargo codecov --lcov --output-path lcov.info
+      - run: cargo llvm-cov --lcov --output-path lcov.info
 
       - name: Upload to codecov.io
         if: env.CODECOV_TOKEN
