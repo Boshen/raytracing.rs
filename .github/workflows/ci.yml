@@ -35,20 +35,22 @@ jobs:
     steps:
       - uses: taiki-e/checkout-action@v1
 
-      - uses: Boshen/setup-rust@main
+      - uses: oxc-project/setup-rust@v1.0.0
         with:
+          cache-key: codecov
           save-cache: ${{ github.ref_name == 'main' }}
-          cache-key: coverage
+          tools: cargo-llvm-cov
+          components: llvm-tools-preview
 
-      - uses: actions-rs/tarpaulin@v0.1
-        with:
-          version: '0.19.0'
-          args: '-- --test-threads 1'
+      - run: cargo codecov --lcov --output-path lcov.info
 
-      - uses: codecov/codecov-action@v2
+      - name: Upload to codecov.io
+        if: env.CODECOV_TOKEN
+        uses: codecov/codecov-action@v5
         with:
-          token: ${{secrets.CODECOV_TOKEN}}
-          files: cobertura.xml
+          token: ${{ secrets.CODECOV_TOKEN }}
+          fail_ci_if_error: true
+          files: lcov.info
 
   benchmark:
     name: Benchmark
