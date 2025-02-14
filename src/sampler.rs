@@ -2,7 +2,7 @@ use std::f64::consts::FRAC_PI_4;
 
 use nalgebra::{Point2, Point3};
 use num_integer::Roots;
-use rand::{distributions::Standard, thread_rng, Rng};
+use rand::{distr::StandardUniform, rng, Rng};
 
 use crate::model::Vec3;
 
@@ -23,7 +23,7 @@ impl Sampler {
         let num_sets = 83; // suffieciently large prime number
 
         let n = num_samples.sqrt();
-        let mut rng = thread_rng();
+        let mut rng = rng();
         let mut samples = vec![];
 
         // jitted samples
@@ -34,7 +34,10 @@ impl Sampler {
                     let (dx, dy) = if num_samples == 1 {
                         (0.0, 0.0)
                     } else {
-                        (rng.sample::<f64, _>(Standard), rng.sample::<f64, _>(Standard))
+                        (
+                            rng.sample::<f64, _>(StandardUniform),
+                            rng.sample::<f64, _>(StandardUniform),
+                        )
                     };
                     let point = ((f64::from(k) + dx) / n, (f64::from(j) + dy) / n);
                     samples.push(point);
@@ -52,8 +55,8 @@ impl Sampler {
 
     fn unit_square(&self) -> Vec<(f64, f64)> {
         // take a random set to avoid shading streaks
-        let mut rng = thread_rng();
-        let skip: usize = rng.gen_range(0..self.num_sets);
+        let mut rng = rng();
+        let skip: usize = rng.random_range(0..self.num_sets);
 
         self.samples.iter().skip(skip).take(self.count().into()).copied().collect()
     }
