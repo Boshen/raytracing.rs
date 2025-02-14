@@ -3,7 +3,7 @@
 use std::sync::Arc;
 
 use nalgebra::Point3;
-use rand::{thread_rng, Rng};
+use rand::{rng, Rng};
 
 use crate::{
     aabb::Aabb,
@@ -27,7 +27,7 @@ impl Bvh {
             0 => unreachable!(),
             1 => objects.remove(0),
             _ => {
-                let axis = thread_rng().gen_range(0..3);
+                let axis = rng().random_range(0..3);
                 objects.sort_by(|a, b| {
                     a.get_bounding_box().min[axis]
                         .partial_cmp(&b.get_bounding_box().min[axis])
