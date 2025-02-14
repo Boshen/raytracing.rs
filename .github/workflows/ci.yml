@@ -69,9 +69,9 @@ jobs:
           RUSTFLAGS: "-C debuginfo=1 -C strip=none -g --cfg codspeed"
         run: |
           cargo build --release --bench bench_raytracing --features codspeed
-          mkdir -p target/codspeed/raytracing
-          mv target/release/deps/bench_raytracing-* target/codspeed/raytracing
-          rm target/codspeed/raytracing/*.d
+          mkdir -p target/codspeed/instrumentation/raytracing
+          mv target/release/deps/bench_raytracing-* target/codspeed/instrumentation/raytracing
+          rm target/codspeed/instrumentation/raytracing/*.d
 
       - uses: CodSpeedHQ/action@v3
         timeout-minutes: 5
