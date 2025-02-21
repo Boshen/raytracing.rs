@@ -1,8 +1,8 @@
 use std::sync::Arc;
 
-use nalgebra::{center, distance, Point3};
+use nalgebra::{Point3, center, distance};
 
-use super::{in_shadow, Light};
+use super::{Light, in_shadow};
 use crate::{color::Color, geometric_object::Geometry, material::Emissive, model::Vec3, ray::Hit};
 
 pub struct Area {

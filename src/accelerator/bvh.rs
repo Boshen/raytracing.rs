@@ -3,7 +3,7 @@
 use std::sync::Arc;
 
 use nalgebra::Point3;
-use rand::{rng, Rng};
+use rand::{Rng, rng};
 
 use crate::{
     aabb::Aabb,

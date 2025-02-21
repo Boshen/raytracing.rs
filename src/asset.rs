@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use nalgebra::Point3;
-use tobj::{load_obj, LoadOptions};
+use tobj::{LoadOptions, load_obj};
 
 use crate::{
     brdf::Lambertian,

@@ -2,7 +2,7 @@ use std::f64::consts::FRAC_PI_4;
 
 use nalgebra::{Point2, Point3};
 use num_integer::Roots;
-use rand::{distr::StandardUniform, rng, Rng};
+use rand::{Rng, distr::StandardUniform, rng};
 
 use crate::model::Vec3;
 
@@ -66,7 +66,7 @@ impl Sampler {
     }
 
     pub fn triangle<'a>(
-        &self,
+        &'a self,
         x: &'a Point3<f64>,
         y: &'a Point3<f64>,
         z: &'a Point3<f64>,
@@ -99,11 +99,7 @@ impl Sampler {
             let x = 2.0f64.mul_add(p.x, -1.0);
             let y = 2.0f64.mul_add(p.y, -1.0);
             let (r, phi) = if x > -y {
-                if x > y {
-                    (x, y / x)
-                } else {
-                    (y, 2.0 - x / y)
-                }
+                if x > y { (x, y / x) } else { (y, 2.0 - x / y) }
             } else if x < y {
                 (-x, 4.0 + y / x)
             } else {

@@ -1,6 +1,6 @@
-use nalgebra::{distance, Point3};
+use nalgebra::{Point3, distance};
 
-use super::{in_shadow, Light};
+use super::{Light, in_shadow};
 use crate::{color::Color, model::Vec3, ray::Hit};
 
 pub struct Point {

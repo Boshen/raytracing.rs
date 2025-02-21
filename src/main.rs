@@ -8,7 +8,7 @@ static GLOBAL: mimalloc::MiMalloc = mimalloc::MiMalloc;
 
 use std::{error::Error, time::Instant};
 
-use image::{imageops::flip_horizontal, RgbImage};
+use image::{RgbImage, imageops::flip_horizontal};
 use raytracing::{args::args, color::to_rgb, renderer::Renderer, scene::CornellBox};
 
 fn main() -> Result<(), Box<dyn Error>> {

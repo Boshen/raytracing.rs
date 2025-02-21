@@ -2,7 +2,7 @@
 name = "raytracing"
 version = "0.1.0"
 authors = ["Boshen"]
-edition = "2021"
+edition = "2024"
 
 [lints.clippy]
 all = { level = "warn", priority = -1 }
@@ -55,6 +55,7 @@ codspeed = ["criterion2/codspeed"]
 [[bench]]
 name = "bench_raytracing"
 harness = false
+required-features = ["codspeed"]
 
 [profile.release]
 # Configurations explicitly listed here for clarity.

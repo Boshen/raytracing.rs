@@ -1,4 +1,4 @@
-use nalgebra::{center, Point3};
+use nalgebra::{Point3, center};
 
 use super::Geometry;
 use crate::{
