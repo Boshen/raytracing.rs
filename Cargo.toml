@@ -41,7 +41,7 @@ rand = "0.9.0"
 tobj = "4.0.2"
 bpaf = { version = "0.9.15", features = ["derive"] }
 
-criterion2 = { version = "2.0.0", default-features = false, optional = true }
+criterion2 = { version = "3.0.0", default-features = false, optional = true }
 
 [target.'cfg(all(not(target_env = "msvc"), not(target_os = "windows")))'.dependencies]
 jemallocator = { version = "0.5.4" }
