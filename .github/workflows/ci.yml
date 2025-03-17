@@ -20,7 +20,7 @@ jobs:
     name: Check
     runs-on: ubuntu-latest
     steps:
-      - uses: taiki-e/checkout-action@v1
+      - uses: taiki-e/checkout-action@b13d20b7cda4e2f325ef19895128f7ff735c0b3d # v1.3.1
       - uses: Boshen/setup-rust@main
         with:
           save-cache: ${{ github.ref_name == 'main' }}
@@ -33,9 +33,9 @@ jobs:
     name: Run Code Coverage
     runs-on: ubuntu-latest
     steps:
-      - uses: taiki-e/checkout-action@v1
+      - uses: taiki-e/checkout-action@b13d20b7cda4e2f325ef19895128f7ff735c0b3d # v1.3.1
 
-      - uses: oxc-project/setup-rust@v1.0.0
+      - uses: oxc-project/setup-rust@cd82e1efec7fef815e2c23d296756f31c7cdc03d # v1.0.0
         with:
           cache-key: codecov
           save-cache: ${{ github.ref_name == 'main' }}
@@ -46,7 +46,7 @@ jobs:
 
       - name: Upload to codecov.io
         if: env.CODECOV_TOKEN
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@0565863a31f2c772f9f0395002a31e3f06189574 # v5.4.0
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: true
@@ -56,7 +56,7 @@ jobs:
     name: Benchmark
     runs-on: ubuntu-latest
     steps:
-      - uses: taiki-e/checkout-action@v1
+      - uses: taiki-e/checkout-action@b13d20b7cda4e2f325ef19895128f7ff735c0b3d # v1.3.1
 
       - uses: Boshen/setup-rust@main
         with:
@@ -73,7 +73,7 @@ jobs:
           mv target/release/deps/bench_raytracing-* target/codspeed/instrumentation/raytracing
           rm target/codspeed/instrumentation/raytracing/*.d
 
-      - uses: CodSpeedHQ/action@v3
+      - uses: CodSpeedHQ/action@0010eb0ca6e89b80c88e8edaaa07cfe5f3e6664d # v3.5.0
         timeout-minutes: 5
         with:
           run: cargo codspeed run
