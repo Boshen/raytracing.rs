@@ -94,7 +94,7 @@ impl Asset {
 
                     asset.geometries.extend(triangles);
                 }
-            };
+            }
         }
 
         asset
