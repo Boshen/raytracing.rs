@@ -32,7 +32,6 @@ impl Camera for ThinLens {
         &self.setting
     }
 
-    #[must_use]
     fn get_rays(&self, origin: Point2<f64>, sampler: &Sampler) -> Vec<Ray> {
         sampler
             .disk()
