@@ -73,7 +73,7 @@ jobs:
           mv target/release/deps/bench_raytracing-* target/codspeed/instrumentation/raytracing
           rm target/codspeed/instrumentation/raytracing/*.d
 
-      - uses: CodSpeedHQ/action@c28fe9fbe7d57a3da1b7834ae3761c1d8217612d # v3.7.0
+      - uses: CodSpeedHQ/action@0b6e7a3d96c9d2a6057e7bcea6b45aaf2f7ce60b # v3.8.0
         timeout-minutes: 5
         with:
           run: cargo codspeed run
