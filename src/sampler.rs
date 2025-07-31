@@ -1,3 +1,5 @@
+//! Sampling strategies for antialiasing and Monte Carlo integration.
+
 use std::f64::consts::FRAC_PI_4;
 
 use nalgebra::{Point2, Point3};
@@ -6,33 +8,35 @@ use rand::{Rng, distr::StandardUniform, rng};
 
 use crate::model::Vec3;
 
+/// Generates sample points for various rendering techniques including
+/// antialiasing, area lighting, and Monte Carlo integration.
 pub struct Sampler {
-    /// number of sample points
+    /// Number of sample points per pixel
     num_samples: u8,
-
-    /// number of sample sets
+    /// Number of different sample sets to reduce correlation artifacts
     num_sets: usize,
-
-    /// sets of samples
+    /// Pre-computed sample points in unit square
     samples: Vec<(f64, f64)>,
 }
 
 impl Sampler {
+    /// Creates a new sampler with the specified number of samples per pixel.
+    /// Uses jittered sampling for better antialiasing quality.
     #[must_use]
     pub fn new(num_samples: u8) -> Self {
-        let num_sets = 83; // suffieciently large prime number
+        let num_sets = 83; // sufficiently large prime number to reduce correlation
 
         let n = num_samples.sqrt();
         let mut rng = rng();
         let mut samples = vec![];
 
-        // jitted samples
+        // Generate jittered samples for better quality than regular grid
         for _ in 0..num_sets {
             for j in 0..n {
                 for k in 0..n {
                     let n = f64::from(n);
                     let (dx, dy) = if num_samples == 1 {
-                        (0.0, 0.0)
+                        (0.5, 0.5) // Center sample for single sample
                     } else {
                         (
                             rng.sample::<f64, _>(StandardUniform),
@@ -48,23 +52,27 @@ impl Sampler {
         Self { num_samples, num_sets, samples }
     }
 
+    /// Returns the number of samples per pixel
     #[must_use]
     pub const fn count(&self) -> u8 {
         self.num_samples
     }
 
+    /// Returns sample points in unit square [0,1)²
     fn unit_square(&self) -> Vec<(f64, f64)> {
-        // take a random set to avoid shading streaks
+        // Take a random set to avoid shading streaks
         let mut rng = rng();
         let skip: usize = rng.random_range(0..self.num_sets);
 
         self.samples.iter().skip(skip).take(self.count().into()).copied().collect()
     }
 
+    /// Returns sample points in unit square as Point2 coordinates
     pub fn square(&self) -> impl Iterator<Item = Point2<f64>> {
         self.unit_square().into_iter().map(|(x, y)| Point2::new(x, y))
     }
 
+    /// Maps unit square samples to barycentric coordinates on a triangle
     pub fn triangle<'a>(
         &'a self,
         x: &'a Point3<f64>,
@@ -82,6 +90,8 @@ impl Sampler {
         })
     }
 
+    /// Maps unit square samples to hemisphere using cosine-weighted distribution
+    /// for importance sampling in global illumination
     pub fn hemisphere(&self) -> impl Iterator<Item = Vec3> {
         self.square().map(|p| {
             let e = 1.0;
@@ -94,6 +104,8 @@ impl Sampler {
         })
     }
 
+    /// Maps unit square samples to unit disk using concentric mapping
+    /// for depth of field and area light sampling  
     pub fn disk(&self) -> impl Iterator<Item = (Point2<f64>, Point2<f64>)> {
         self.square().map(|p| {
             let x = 2.0f64.mul_add(p.x, -1.0);
