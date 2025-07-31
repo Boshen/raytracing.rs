@@ -9,22 +9,41 @@ use crate::{
     scene::CornellBox,
 };
 
+/// Default maximum ray tracing depth for non-preview renders
+const DEFAULT_MAX_DEPTH: u8 = 5;
+/// Maximum ray tracing depth for preview renders
+const PREVIEW_MAX_DEPTH: u8 = 1;
+/// Minimum sample count for preview renders
+pub const PREVIEW_SAMPLES: u8 = 1;
+
+/// The main rendering engine that traces rays through a scene
 pub struct Renderer {
+    /// The scene to render
     pub scene: CornellBox,
+    /// The sampler for antialiasing and Monte Carlo integration
     pub sampler: Sampler,
+    /// Maximum recursion depth for ray bounces
     max_depth: u8,
 }
 
 impl Renderer {
+    /// Creates a new renderer with the given scene and configuration
     #[must_use]
     pub fn new(scene: CornellBox, args: &Args) -> Self {
         Self {
             scene,
-            sampler: Sampler::new(if args.preview { 1 } else { args.samples }),
-            max_depth: if args.preview { 1 } else { 5 },
+            sampler: Sampler::new(if args.preview { PREVIEW_SAMPLES } else { args.samples }),
+            max_depth: if args.preview { PREVIEW_MAX_DEPTH } else { DEFAULT_MAX_DEPTH },
         }
     }
 
+    /// Returns the maximum ray tracing depth
+    #[must_use]
+    pub const fn max_depth(&self) -> u8 {
+        self.max_depth
+    }
+
+    /// Renders the scene and returns a vector of colors for each pixel
     #[must_use]
     pub fn render(&self) -> Vec<Color> {
         let width = self.scene.view_width;
@@ -47,6 +66,14 @@ impl Renderer {
             .collect()
     }
 
+    /// Traces a ray through the scene and returns the resulting color
+    /// 
+    /// # Arguments
+    /// * `ray` - The ray to trace
+    /// * `depth` - Current recursion depth
+    /// 
+    /// # Returns
+    /// The color contribution from this ray
     #[must_use]
     pub fn trace(&self, ray: &Ray, depth: u8) -> Color {
         if depth > self.max_depth {
