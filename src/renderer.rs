@@ -67,11 +67,11 @@ impl Renderer {
     }
 
     /// Traces a ray through the scene and returns the resulting color
-    /// 
+    ///
     /// # Arguments
     /// * `ray` - The ray to trace
     /// * `depth` - Current recursion depth
-    /// 
+    ///
     /// # Returns
     /// The color contribution from this ray
     #[must_use]

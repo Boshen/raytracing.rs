@@ -39,23 +39,23 @@ pub enum ArgCamera {
 
 impl Args {
     /// Validates the configuration arguments
-    /// 
+    ///
     /// # Errors
     /// Returns an error if any arguments are invalid
     pub fn validate(&self) -> Result<(), String> {
         if self.width == 0 || self.height == 0 {
             return Err("Width and height must be greater than 0".to_string());
         }
-        
+
         if self.samples == 0 {
             return Err("Sample count must be greater than 0".to_string());
         }
-        
+
         // Reasonable limits to prevent excessive memory usage
         if self.width > 8192 || self.height > 8192 {
             return Err("Width and height must be 8192 or less".to_string());
         }
-        
+
         Ok(())
     }
 }

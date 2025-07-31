@@ -33,8 +33,6 @@ pub mod aabb;
 pub mod accelerator;
 /// Command line argument parsing and configuration
 pub mod args;
-/// Error types and handling for the raytracing library
-pub mod error;
 /// Asset loading and management utilities
 pub mod asset;
 /// Bidirectional Reflectance Distribution Functions for realistic material rendering
@@ -43,6 +41,8 @@ pub mod brdf;
 pub mod camera;
 /// Color representation and operations
 pub mod color;
+/// Error types and handling for the raytracing library
+pub mod error;
 /// Geometric objects that can be rendered (spheres, triangles, etc.)
 pub mod geometric_object;
 /// Light sources and illumination models
@@ -105,13 +105,8 @@ mod tests {
     #[test]
     fn render_different_sample_counts() {
         for samples in [1, 2, 4, 8] {
-            let args = Args { 
-                width: 2, 
-                height: 2, 
-                preview: false, 
-                camera: ArgCamera::Simple, 
-                samples 
-            };
+            let args =
+                Args { width: 2, height: 2, preview: false, camera: ArgCamera::Simple, samples };
             let scene = CornellBox::new(args.width, args.height, &args);
             let renderer = Renderer::new(scene, &args);
             let pixels = renderer.render();
