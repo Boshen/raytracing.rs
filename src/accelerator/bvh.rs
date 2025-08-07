@@ -46,7 +46,7 @@ impl Bvh {
 }
 
 impl Geometry for Bvh {
-    fn intersects(&self, ray: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
+    fn intersects(&self, ray: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord<'_>> {
         if !self.aabb.intersects(ray, t_min, t_max) {
             return None;
         }

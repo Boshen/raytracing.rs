@@ -24,7 +24,7 @@ impl<M: Material> Sphere<M> {
 }
 
 impl<M: Material> Geometry for Sphere<M> {
-    fn intersects(&self, ray: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
+    fn intersects(&self, ray: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord<'_>> {
         let radius = self.radius;
         let center = Vec3::new(self.center.x, self.center.y, self.center.z);
         let start = Vec3::new(ray.origin.x, ray.origin.y, ray.origin.z);

@@ -72,7 +72,7 @@ impl CornellBox {
     /// # Panics
     /// will panic if `partial_cmp` fails
     #[must_use]
-    pub fn intersects(&self, ray: &Ray, tmin: f64, tmax: f64) -> Option<HitRecord> {
+    pub fn intersects(&self, ray: &Ray, tmin: f64, tmax: f64) -> Option<HitRecord<'_>> {
         self.root
             .iter()
             .filter_map(|o| o.intersects(ray, tmin, tmax))
