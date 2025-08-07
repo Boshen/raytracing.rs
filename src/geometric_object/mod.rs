@@ -16,7 +16,7 @@ use crate::{
 pub trait Geometry: Send + Sync {
     fn scale(&mut self, _l: f64) {}
 
-    fn intersects(&self, ray: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord>;
+    fn intersects(&self, ray: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord<'_>>;
 
     fn normal(&self, _p: &Point3<f64>) -> Vec3 {
         Vec3::zeros()
