@@ -10,8 +10,10 @@
 //! - `CornellBox`: Classic Cornell Box scene for testing global illumination
 
 mod cornell_box;
+mod factory;
 
 pub use cornell_box::*;
+pub use factory::*;
 
 use crate::{
     camera::Camera,

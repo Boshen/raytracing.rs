@@ -14,6 +14,12 @@ use crate::{
     brdf::{GlossySpecular, Lambertian, PerfectSpecular},
     camera::{Camera, Pinhole, Setting, ThinLens},
     color::Color,
+    config::{
+        camera::{DEFAULT_EYE_POSITION, DEFAULT_FOCAL_DISTANCE, DEFAULT_FOCAL_LENGTH, DEFAULT_LENS_RADIUS, DEFAULT_LOOKAT_POSITION},
+        geometry::spheres::{LARGE_SPHERE_POSITION, LARGE_SPHERE_RADIUS, SMALL_SPHERE_POSITION, SMALL_SPHERE_RADIUS},
+        scene::{CORNELL_BOX_ASSET_PATH, CORNELL_BOX_SCALE, DEFAULT_AMBIENT_STRENGTH},
+    },
+    error::Result,
     geometric_object::{Geometry, Sphere},
     light::{Ambient, AmbientOcculuder, Light},
     material::{Phong, Reflective},
@@ -53,16 +59,15 @@ impl CornellBox {
     /// 3. Sets up camera (pinhole or thin lens)
     /// 4. Configures lighting (ambient + area light)
     /// 5. Builds BVH acceleration structure
-    #[must_use]
-    pub fn new(view_width: u32, view_height: u32, args: &Args) -> Self {
-        // Scene scale factor (Cornell Box is traditionally 555 units)
-        let scale = 555.0;
-
+    ///
+    /// # Errors
+    /// Returns an error if the scene assets cannot be loaded
+    pub fn new(view_width: u32, view_height: u32, args: &Args) -> Result<Self> {
         // Load base geometry from OBJ file
-        let mut asset = Asset::new("./assets/cornell_box.obj", scale);
+        let mut asset = Asset::new(CORNELL_BOX_ASSET_PATH, CORNELL_BOX_SCALE)?;
 
         // Configure ambient lighting
-        let ambient_light = Arc::new(Ambient { ls: 0.1, cl: Vec3::repeat(1.0) });
+        let ambient_light = Arc::new(Ambient { ls: DEFAULT_AMBIENT_STRENGTH, cl: Vec3::repeat(1.0) });
 
         // Add area light at the top (simulates the ceiling light)
         let ambient_occuluder = Arc::new(AmbientOcculuder::new(1.0, Vec3::repeat(1.0)));
@@ -70,9 +75,9 @@ impl CornellBox {
 
         // Configure camera position and field of view
         let mut camera_setting = Setting::new(
-            Pot3::new(0.0, 0.0, -3.0), // Eye position
-            Pot3::new(0.0, 0.0, 0.0),  // Look-at point
-            520.0,                     // Focal length
+            Pot3::new(DEFAULT_EYE_POSITION[0], DEFAULT_EYE_POSITION[1], DEFAULT_EYE_POSITION[2]),
+            Pot3::new(DEFAULT_LOOKAT_POSITION[0], DEFAULT_LOOKAT_POSITION[1], DEFAULT_LOOKAT_POSITION[2]),
+            DEFAULT_FOCAL_LENGTH,
         );
         camera_setting.set_view((view_width, view_height));
 
@@ -81,8 +86,8 @@ impl CornellBox {
             ArgCamera::Simple => Box::new(Pinhole::new(camera_setting)),
             ArgCamera::ThinLens => Box::new(ThinLens::new(
                 camera_setting,
-                0.001, // Lens radius (aperture)
-                510.0, // Focus distance
+                DEFAULT_LENS_RADIUS,
+                DEFAULT_FOCAL_DISTANCE,
             )),
         };
 
@@ -95,9 +100,9 @@ impl CornellBox {
         );
         let ball1 = Arc::new(Sphere::new(
             ball1_material,
-            40.0,                          // Radius
-            Pot3::new(450.0, 40.0, 450.0), // Position (right side, on floor)
-            scale,
+            LARGE_SPHERE_RADIUS,
+            Pot3::new(LARGE_SPHERE_POSITION[0], LARGE_SPHERE_POSITION[1], LARGE_SPHERE_POSITION[2]),
+            CORNELL_BOX_SCALE,
         ));
         asset.geometries.push(ball1);
 
@@ -109,16 +114,16 @@ impl CornellBox {
         );
         let ball2 = Arc::new(Sphere::new(
             ball2_material,
-            30.0,                          // Radius
-            Pot3::new(350.0, 30.0, 500.0), // Position (left side, on floor)
-            scale,
+            SMALL_SPHERE_RADIUS,
+            Pot3::new(SMALL_SPHERE_POSITION[0], SMALL_SPHERE_POSITION[1], SMALL_SPHERE_POSITION[2]),
+            CORNELL_BOX_SCALE,
         ));
         asset.geometries.push(ball2);
 
         // Build BVH acceleration structure for efficient ray tracing
         let root = vec![Bvh::construct(asset.geometries)];
 
-        Self { view_width, view_height, camera, ambient_light, lights: asset.lights, root }
+        Ok(Self { view_width, view_height, camera, ambient_light, lights: asset.lights, root })
     }
 
     /// Implementation moved from trait method for performance.

@@ -4,22 +4,17 @@ use rayon::prelude::*;
 use crate::{
     args::Args,
     color::Color,
+    config::render::{DEFAULT_MAX_DEPTH, PREVIEW_MAX_DEPTH, PREVIEW_SAMPLES},
     ray::{Hit, Ray},
     sampler::Sampler,
-    scene::CornellBox,
+    scene::Scene,
 };
 
-/// Default maximum ray tracing depth for non-preview renders
-const DEFAULT_MAX_DEPTH: u8 = 5;
-/// Maximum ray tracing depth for preview renders
-const PREVIEW_MAX_DEPTH: u8 = 1;
-/// Minimum sample count for preview renders
-pub const PREVIEW_SAMPLES: u8 = 1;
 
 /// The main rendering engine that traces rays through a scene
 pub struct Renderer {
     /// The scene to render
-    pub scene: CornellBox,
+    pub scene: Box<dyn Scene>,
     /// The sampler for antialiasing and Monte Carlo integration
     pub sampler: Sampler,
     /// Maximum recursion depth for ray bounces
@@ -29,7 +24,7 @@ pub struct Renderer {
 impl Renderer {
     /// Creates a new renderer with the given scene and configuration
     #[must_use]
-    pub fn new(scene: CornellBox, args: &Args) -> Self {
+    pub fn new(scene: Box<dyn Scene>, args: &Args) -> Self {
         Self {
             scene,
             sampler: Sampler::new(if args.preview { PREVIEW_SAMPLES } else { args.samples }),
@@ -46,9 +41,9 @@ impl Renderer {
     /// Renders the scene and returns a vector of colors for each pixel
     #[must_use]
     pub fn render(&self) -> Vec<Color> {
-        let width = self.scene.view_width;
-        let height = self.scene.view_height;
-        let pixel_size = self.scene.camera.setting().pixel_size;
+        let width = self.scene.view_width();
+        let height = self.scene.view_height();
+        let pixel_size = self.scene.camera().setting().pixel_size;
 
         let vec = (0..(width * height))
             .into_par_iter()
@@ -56,7 +51,7 @@ impl Renderer {
                 let i = pixel_size * (f64::from(n % width) - f64::from(width) / 2.0);
                 let j = pixel_size * (f64::from(n / width) - f64::from(height) / 2.0);
                 let origin = Point2::new(i, j);
-                self.scene.camera.get_rays(origin, &self.sampler).into_iter()
+                self.scene.camera().get_rays(origin, &self.sampler).into_iter()
             })
             .map(|ray| self.trace(&ray, 0))
             .collect::<Vec<_>>();

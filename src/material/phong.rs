@@ -42,7 +42,9 @@ impl Material for Phong {
         self.specular_brdf.f(hit, wi)
     }
 
-    // TODO: move to GlossyReflector (Chapter 25)
+    // FUTURE: Consider creating a separate GlossyReflector material type (Chapter 25)
+    // This would allow for materials that have both Phong shading and perfect reflection
+    // without mixing concerns in the Phong material itself.
     fn reflective(&self, hit: &Hit) -> Color {
         let mut wi = Vec3::zeros();
         let mut pdf = 0.0;

@@ -65,7 +65,7 @@ impl Bvh {
                 objects.sort_by(|a, b| {
                     a.get_bounding_box().min[axis]
                         .partial_cmp(&b.get_bounding_box().min[axis])
-                        .expect("legal partial_cmp")
+                        .unwrap_or(std::cmp::Ordering::Equal)
                 });
 
                 // Split objects at median

@@ -45,9 +45,10 @@ use image::{RgbImage, imageops::flip_horizontal};
 use raytracing::{
     args::args,
     color::{Color, to_rgb},
+    config::render::{OUTPUT_FILENAME, PREVIEW_SAMPLES},
     error::{RayTracingError, Result},
-    renderer::{PREVIEW_SAMPLES, Renderer},
-    scene::CornellBox,
+    renderer::Renderer,
+    scene::SceneFactory,
 };
 
 /// Main entry point for the ray tracer.
@@ -70,7 +71,7 @@ fn main() -> Result<()> {
 
     // Initialize the scene and renderer
     println!("🎬 Initializing scene...");
-    let scene = create_scene(&args);
+    let scene = SceneFactory::create_scene(&args)?;
     let renderer = Renderer::new(scene, &args);
 
     // Display rendering configuration
@@ -89,15 +90,6 @@ fn main() -> Result<()> {
     Ok(())
 }
 
-/// Creates the appropriate scene based on configuration.
-///
-/// Currently only supports Cornell Box, but this is where
-/// you'd add scene selection logic for multiple scenes.
-fn create_scene(args: &raytracing::args::Args) -> CornellBox {
-    // Note: Using height for both dimensions creates a square image
-    // This is intentional for the Cornell Box scene
-    CornellBox::new(args.height, args.height, args)
-}
 
 /// Prints the rendering configuration in a user-friendly format.
 fn print_config(args: &raytracing::args::Args) {
@@ -128,12 +120,12 @@ fn print_stats(duration: std::time::Duration, args: &raytracing::args::Args) {
 fn save_image(pixels: &[Color], args: &raytracing::args::Args) -> Result<()> {
     println!("💾 Saving image...");
 
-    flip_horizontal(
-        &RgbImage::from_vec(args.width, args.height, pixels.iter().flat_map(to_rgb).collect())
-            .unwrap(),
-    )
-    .save("output.png")?;
+    let rgb_data: Vec<u8> = pixels.iter().flat_map(to_rgb).collect();
+    let image = RgbImage::from_vec(args.width, args.height, rgb_data)
+        .ok_or_else(|| RayTracingError::RenderError("Failed to create image from pixel data".to_string()))?;
 
-    println!("📸 Image saved as output.png");
+    flip_horizontal(&image).save(OUTPUT_FILENAME)?;
+
+    println!("📸 Image saved as {}", OUTPUT_FILENAME);
     Ok(())
 }

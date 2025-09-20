@@ -11,6 +11,8 @@ pub enum RayTracingError {
     RenderError(String),
     /// Invalid configuration or arguments
     ConfigError(String),
+    /// Error occurred during asset loading
+    AssetError(String),
 }
 
 impl fmt::Display for RayTracingError {
@@ -19,6 +21,7 @@ impl fmt::Display for RayTracingError {
             Self::ImageError(err) => write!(f, "Image processing error: {err}"),
             Self::RenderError(msg) => write!(f, "Render error: {msg}"),
             Self::ConfigError(msg) => write!(f, "Configuration error: {msg}"),
+            Self::AssetError(msg) => write!(f, "Asset loading error: {msg}"),
         }
     }
 }
@@ -27,7 +30,7 @@ impl std::error::Error for RayTracingError {
     fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
         match self {
             Self::ImageError(err) => Some(err),
-            Self::RenderError(_) | Self::ConfigError(_) => None,
+            Self::RenderError(_) | Self::ConfigError(_) | Self::AssetError(_) => None,
         }
     }
 }

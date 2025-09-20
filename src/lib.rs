@@ -22,8 +22,8 @@
 //!     camera: raytracing::args::ArgCamera::ThinLens,
 //!     samples: 4,
 //! };
-//! let scene = CornellBox::new(args.width, args.height, &args);
-//! let renderer = Renderer::new(scene, &args);
+//! let scene = CornellBox::new(args.width, args.height, &args).unwrap();
+//! let renderer = Renderer::new(Box::new(scene), &args);
 //! let pixels = renderer.render();
 //! ```
 
@@ -41,6 +41,8 @@ pub mod brdf;
 pub mod camera;
 /// Color representation and operations
 pub mod color;
+/// Configuration constants and settings
+pub mod config;
 /// Error types and handling for the raytracing library
 pub mod error;
 /// Geometric objects that can be rendered (spheres, triangles, etc.)
@@ -72,8 +74,8 @@ mod tests {
     fn render_basic() {
         let args =
             Args { width: 10, height: 10, preview: false, camera: ArgCamera::ThinLens, samples: 4 };
-        let scene = CornellBox::new(args.width, args.height, &args);
-        let renderer = Renderer::new(scene, &args);
+        let scene = CornellBox::new(args.width, args.height, &args).unwrap();
+        let renderer = Renderer::new(Box::new(scene), &args);
         let pixels = renderer.render();
         assert_eq!(pixels.len(), 100);
     }
@@ -82,8 +84,8 @@ mod tests {
     fn render_preview_mode() {
         let args =
             Args { width: 5, height: 5, preview: true, camera: ArgCamera::Simple, samples: 1 };
-        let scene = CornellBox::new(args.width, args.height, &args);
-        let renderer = Renderer::new(scene, &args);
+        let scene = CornellBox::new(args.width, args.height, &args).unwrap();
+        let renderer = Renderer::new(Box::new(scene), &args);
         let pixels = renderer.render();
         assert_eq!(pixels.len(), 25);
         // Preview mode should use 1 sample and depth 1
@@ -95,8 +97,8 @@ mod tests {
     fn render_different_cameras() {
         for camera in [ArgCamera::Simple, ArgCamera::ThinLens] {
             let args = Args { width: 3, height: 3, preview: true, camera, samples: 1 };
-            let scene = CornellBox::new(args.width, args.height, &args);
-            let renderer = Renderer::new(scene, &args);
+            let scene = CornellBox::new(args.width, args.height, &args).unwrap();
+            let renderer = Renderer::new(Box::new(scene), &args);
             let pixels = renderer.render();
             assert_eq!(pixels.len(), 9);
         }
@@ -107,8 +109,8 @@ mod tests {
         for samples in [1, 2, 4, 8] {
             let args =
                 Args { width: 2, height: 2, preview: false, camera: ArgCamera::Simple, samples };
-            let scene = CornellBox::new(args.width, args.height, &args);
-            let renderer = Renderer::new(scene, &args);
+            let scene = CornellBox::new(args.width, args.height, &args).unwrap();
+            let renderer = Renderer::new(Box::new(scene), &args);
             let pixels = renderer.render();
             assert_eq!(pixels.len(), 4);
             assert_eq!(renderer.sampler.count(), samples);

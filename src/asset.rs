@@ -6,6 +6,7 @@ use tobj::{LoadOptions, load_obj};
 use crate::{
     brdf::Lambertian,
     color::Color,
+    error::{RayTracingError, Result},
     geometric_object::{Geometry, Triangle},
     light::{Area, Light},
     material::{Emissive, Matte},
@@ -24,16 +25,22 @@ pub struct Asset {
 }
 
 impl Asset {
-    /// # Panics
-    #[must_use]
-    pub fn new(file_name: &str, scale: f64) -> Self {
+    /// Creates a new asset from a 3D model file.
+    ///
+    /// # Arguments
+    /// * `file_name` - Path to the 3D model file
+    /// * `scale` - Scale factor to apply to the loaded geometry
+    ///
+    /// # Errors
+    /// Returns an error if the file cannot be loaded or parsed
+    pub fn new(file_name: &str, scale: f64) -> Result<Self> {
         let mut asset = Self { objects: vec![], geometries: vec![], lights: vec![] };
 
         let (models, materials) =
             load_obj(file_name, &LoadOptions { triangulate: true, ..LoadOptions::default() })
-                .expect("Failed to load file");
+                .map_err(|e| RayTracingError::AssetError(format!("Failed to load file '{}': {}", file_name, e)))?;
 
-        let materials = materials.expect("loaded materials");
+        let materials = materials.unwrap_or_default();
 
         for model in &models {
             let mesh = &model.mesh;
@@ -97,6 +104,6 @@ impl Asset {
             }
         }
 
-        asset
+        Ok(asset)
     }
 }
