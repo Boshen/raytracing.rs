@@ -90,7 +90,6 @@ fn main() -> Result<()> {
     Ok(())
 }
 
-
 /// Prints the rendering configuration in a user-friendly format.
 fn print_config(args: &raytracing::args::Args) {
     println!("📋 Configuration:");
@@ -121,11 +120,12 @@ fn save_image(pixels: &[Color], args: &raytracing::args::Args) -> Result<()> {
     println!("💾 Saving image...");
 
     let rgb_data: Vec<u8> = pixels.iter().flat_map(to_rgb).collect();
-    let image = RgbImage::from_vec(args.width, args.height, rgb_data)
-        .ok_or_else(|| RayTracingError::RenderError("Failed to create image from pixel data".to_string()))?;
+    let image = RgbImage::from_vec(args.width, args.height, rgb_data).ok_or_else(|| {
+        RayTracingError::RenderError("Failed to create image from pixel data".to_string())
+    })?;
 
     flip_horizontal(&image).save(OUTPUT_FILENAME)?;
 
-    println!("📸 Image saved as {}", OUTPUT_FILENAME);
+    println!("📸 Image saved as {OUTPUT_FILENAME}");
     Ok(())
 }

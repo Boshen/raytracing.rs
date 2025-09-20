@@ -10,7 +10,6 @@ use crate::{
     scene::Scene,
 };
 
-
 /// The main rendering engine that traces rays through a scene
 pub struct Renderer {
     /// The scene to render

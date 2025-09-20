@@ -38,7 +38,9 @@ impl Asset {
 
         let (models, materials) =
             load_obj(file_name, &LoadOptions { triangulate: true, ..LoadOptions::default() })
-                .map_err(|e| RayTracingError::AssetError(format!("Failed to load file '{}': {}", file_name, e)))?;
+                .map_err(|e| {
+                    RayTracingError::AssetError(format!("Failed to load file '{file_name}': {e}"))
+                })?;
 
         let materials = materials.unwrap_or_default();
 

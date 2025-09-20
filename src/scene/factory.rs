@@ -4,7 +4,11 @@
 //! configuration parameters, making it easier to add new scene types
 //! and manage scene creation logic.
 
-use crate::{args::Args, error::Result, scene::{CornellBox, Scene}};
+use crate::{
+    args::Args,
+    error::Result,
+    scene::{CornellBox, Scene},
+};
 
 /// Factory for creating different types of scenes.
 pub struct SceneFactory;

@@ -130,7 +130,8 @@ pub fn shade<M: Material + ?Sized>(m: &M, hit: &Hit) -> Color {
         .sum::<Color>();
 
     // Add ambient lighting contribution
-    let ambient_color = m.ambient().component_mul(&hit.renderer.scene.ambient_light().radiance(hit));
+    let ambient_color =
+        m.ambient().component_mul(&hit.renderer.scene.ambient_light().radiance(hit));
 
     ambient_color + light_color
 }

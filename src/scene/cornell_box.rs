@@ -15,8 +15,13 @@ use crate::{
     camera::{Camera, Pinhole, Setting, ThinLens},
     color::Color,
     config::{
-        camera::{DEFAULT_EYE_POSITION, DEFAULT_FOCAL_DISTANCE, DEFAULT_FOCAL_LENGTH, DEFAULT_LENS_RADIUS, DEFAULT_LOOKAT_POSITION},
-        geometry::spheres::{LARGE_SPHERE_POSITION, LARGE_SPHERE_RADIUS, SMALL_SPHERE_POSITION, SMALL_SPHERE_RADIUS},
+        camera::{
+            DEFAULT_EYE_POSITION, DEFAULT_FOCAL_DISTANCE, DEFAULT_FOCAL_LENGTH,
+            DEFAULT_LENS_RADIUS, DEFAULT_LOOKAT_POSITION,
+        },
+        geometry::spheres::{
+            LARGE_SPHERE_POSITION, LARGE_SPHERE_RADIUS, SMALL_SPHERE_POSITION, SMALL_SPHERE_RADIUS,
+        },
         scene::{CORNELL_BOX_ASSET_PATH, CORNELL_BOX_SCALE, DEFAULT_AMBIENT_STRENGTH},
     },
     error::Result,
@@ -67,7 +72,8 @@ impl CornellBox {
         let mut asset = Asset::new(CORNELL_BOX_ASSET_PATH, CORNELL_BOX_SCALE)?;
 
         // Configure ambient lighting
-        let ambient_light = Arc::new(Ambient { ls: DEFAULT_AMBIENT_STRENGTH, cl: Vec3::repeat(1.0) });
+        let ambient_light =
+            Arc::new(Ambient { ls: DEFAULT_AMBIENT_STRENGTH, cl: Vec3::repeat(1.0) });
 
         // Add area light at the top (simulates the ceiling light)
         let ambient_occuluder = Arc::new(AmbientOcculuder::new(1.0, Vec3::repeat(1.0)));
@@ -76,7 +82,11 @@ impl CornellBox {
         // Configure camera position and field of view
         let mut camera_setting = Setting::new(
             Pot3::new(DEFAULT_EYE_POSITION[0], DEFAULT_EYE_POSITION[1], DEFAULT_EYE_POSITION[2]),
-            Pot3::new(DEFAULT_LOOKAT_POSITION[0], DEFAULT_LOOKAT_POSITION[1], DEFAULT_LOOKAT_POSITION[2]),
+            Pot3::new(
+                DEFAULT_LOOKAT_POSITION[0],
+                DEFAULT_LOOKAT_POSITION[1],
+                DEFAULT_LOOKAT_POSITION[2],
+            ),
             DEFAULT_FOCAL_LENGTH,
         );
         camera_setting.set_view((view_width, view_height));
@@ -84,11 +94,9 @@ impl CornellBox {
         // Select camera type based on arguments
         let camera: Box<dyn Camera> = match args.camera {
             ArgCamera::Simple => Box::new(Pinhole::new(camera_setting)),
-            ArgCamera::ThinLens => Box::new(ThinLens::new(
-                camera_setting,
-                DEFAULT_LENS_RADIUS,
-                DEFAULT_FOCAL_DISTANCE,
-            )),
+            ArgCamera::ThinLens => {
+                Box::new(ThinLens::new(camera_setting, DEFAULT_LENS_RADIUS, DEFAULT_FOCAL_DISTANCE))
+            }
         };
 
         // Add reflective sphere (demonstrates perfect and glossy reflections)
