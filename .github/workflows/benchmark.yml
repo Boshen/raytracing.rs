@@ -1,0 +1,38 @@
+name: Benchmark
+
+permissions: {}
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}
+  cancel-in-progress: true
+
+jobs:
+  benchmark:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: taiki-e/checkout-action@b13d20b7cda4e2f325ef19895128f7ff735c0b3d # v1.3.1
+
+      - uses: oxc-project/setup-rust@d286d43bc1f606abbd98096666ff8be68c8d5f57 # v1.0.2
+        with:
+          cache-key: benchmark
+          save-cache: ${{ github.ref_name == 'main' }}
+          tools: cargo-codspeed
+
+      - name: Build benchmark
+        run: cargo codspeed build --features codspeed
+
+      - name: Run benchmark
+        uses: CodSpeedHQ/action@653fdc30e6c40ffd9739e40c8a0576f4f4523ca1 # v4.0.1
+        timeout-minutes: 15
+        with:
+          token: ${{ secrets.CODSPEED_TOKEN }}
+          mode: instrumentation
+          run: cargo codspeed run
