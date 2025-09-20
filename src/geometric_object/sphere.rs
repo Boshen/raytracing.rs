@@ -1,3 +1,5 @@
+//! Sphere geometric primitive.
+
 use std::ops::{MulAssign, SubAssign};
 
 use nalgebra::Point3;
@@ -9,13 +11,27 @@ use crate::{
     ray::{HitRecord, Ray},
 };
 
+/// A sphere defined by its center and radius.
+///
+/// Spheres are one of the most efficient primitives for ray tracing
+/// due to their simple intersection calculations.
 pub struct Sphere<M: Material> {
+    /// Sphere radius
     radius: f64,
+    /// Sphere center in world space
     center: Point3<f64>,
+    /// Material properties
     material: M,
 }
 
 impl<M: Material> Sphere<M> {
+    /// Creates a new sphere with the given material, radius, and center.
+    ///
+    /// # Arguments
+    /// * `material` - The material properties for shading
+    /// * `radius` - The sphere's radius
+    /// * `center` - The sphere's center position
+    /// * `scale` - Scale factor to apply to the sphere
     pub fn new(material: M, radius: f64, center: Point3<f64>, scale: f64) -> Self {
         let mut sphere = Self { radius, center, material };
         sphere.scale(scale);
