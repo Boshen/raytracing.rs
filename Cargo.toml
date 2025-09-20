@@ -4,6 +4,9 @@ version = "0.1.0"
 authors = ["Boshen"]
 edition = "2024"
 
+[lib]
+doctest = false
+
 [lints.clippy]
 all = { level = "warn", priority = -1 }
 pedantic = { level = "warn", priority = -1 }

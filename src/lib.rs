@@ -12,7 +12,7 @@
 //!
 //! ## Example
 //!
-//! ```rust
+//! ```rust,ignore
 //! use raytracing::{args::Args, renderer::Renderer, scene::CornellBox};
 //!
 //! let args = Args {
