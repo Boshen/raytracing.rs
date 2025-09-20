@@ -11,6 +11,7 @@ use crate::ray::Ray;
 ///
 /// AABBs are used in BVH nodes to quickly test whether a ray might
 /// intersect the geometry contained within.
+#[derive(Clone)]
 pub struct Aabb {
     /// Minimum corner of the bounding box (smallest x, y, z values)
     pub min: Point3<f64>,
@@ -89,5 +90,19 @@ impl Aabb {
             box0.max.z.max(box1.max.z),
         );
         Self::new(small, big)
+    }
+
+    /// Calculates the surface area of the bounding box.
+    ///
+    /// Used by the Surface Area Heuristic (SAH) for BVH construction.
+    /// The surface area is proportional to the probability that a random
+    /// ray will intersect the box.
+    ///
+    /// # Returns
+    /// The surface area of the box (2 * (width*height + width*depth + height*depth))
+    #[must_use]
+    pub fn surface_area(&self) -> f64 {
+        let extent = self.max - self.min;
+        2.0 * (extent.x * extent.y + extent.x * extent.z + extent.y * extent.z)
     }
 }
