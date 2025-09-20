@@ -6,6 +6,9 @@ This is a Ray Tracing implementation in Rust based on "Ray Tracing from the Grou
 ## Key Commands
 - Build and run: `cargo run --release && open output.png`
 - Development watch: `cargo watch -x clippy -x 'run --release' -s 'open output.png'`
+- **Ready for commit**: `just ready` (runs fmt + clippy + tests)
+- Format code: `cargo fmt`
+- Check lints: `cargo clippy`
 - Run tests: `cargo test`
 - Run benchmarks: `cargo bench --features codspeed`
 
@@ -25,9 +28,10 @@ This is a Ray Tracing implementation in Rust based on "Ray Tracing from the Grou
 ## Development Guidelines
 1. Performance is a priority - use release builds for testing rendering
 2. The project uses strict Clippy lints - ensure code passes `cargo clippy`
-3. Linear algebra operations use nalgebra
-4. Parallel processing uses rayon
-5. Output is always `output.png` in the project root
+3. **Always run `cargo fmt` after making code changes** to maintain consistent formatting
+4. Linear algebra operations use nalgebra
+5. Parallel processing uses rayon
+6. Output is always `output.png` in the project root
 
 ## Testing Approach
 - Unit tests are located alongside source files
