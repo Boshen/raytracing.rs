@@ -114,11 +114,11 @@ fn print_stats(duration: std::time::Duration, args: &raytracing::args::Args) {
     let total_rays = args.width
         * args.height
         * u32::from(if args.preview { PREVIEW_SAMPLES } else { args.samples });
-    let rays_per_sec = total_rays as f64 / duration.as_secs_f64();
+    let rays_per_sec = f64::from(total_rays) / duration.as_secs_f64();
 
     println!("✅ Render completed in {}.{:03}s", duration.as_secs(), duration.subsec_millis());
-    println!("   Total rays: {}", total_rays);
-    println!("   Performance: {:.0} rays/second", rays_per_sec);
+    println!("   Total rays: {total_rays}");
+    println!("   Performance: {rays_per_sec:.0} rays/second");
 }
 
 /// Saves the rendered pixels as a PNG image.
