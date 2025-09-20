@@ -104,17 +104,16 @@ fn print_config(args: &raytracing::args::Args) {
     println!("📋 Configuration:");
     println!("  Resolution: {}x{}", args.width, args.height);
     println!("  Camera: {:?}", args.camera);
-    println!("  Samples per pixel: {}",
-        if args.preview { PREVIEW_SAMPLES } else { args.samples });
-    println!("  Max ray depth: {}",
-        if args.preview { 1 } else { 5 });
+    println!("  Samples per pixel: {}", if args.preview { PREVIEW_SAMPLES } else { args.samples });
+    println!("  Max ray depth: {}", if args.preview { 1 } else { 5 });
     println!("  Mode: {}", if args.preview { "Preview" } else { "Production" });
 }
 
 /// Prints rendering statistics after completion.
 fn print_stats(duration: std::time::Duration, args: &raytracing::args::Args) {
-    let total_rays = args.width * args.height *
-        u32::from(if args.preview { PREVIEW_SAMPLES } else { args.samples });
+    let total_rays = args.width
+        * args.height
+        * u32::from(if args.preview { PREVIEW_SAMPLES } else { args.samples });
     let rays_per_sec = total_rays as f64 / duration.as_secs_f64();
 
     println!("✅ Render completed in {}.{:03}s", duration.as_secs(), duration.subsec_millis());
@@ -130,12 +129,10 @@ fn save_image(pixels: &[Color], args: &raytracing::args::Args) -> Result<()> {
     println!("💾 Saving image...");
 
     flip_horizontal(
-        &RgbImage::from_vec(
-            args.width,
-            args.height,
-            pixels.iter().flat_map(to_rgb).collect()
-        ).unwrap(),
-    ).save("output.png")?;
+        &RgbImage::from_vec(args.width, args.height, pixels.iter().flat_map(to_rgb).collect())
+            .unwrap(),
+    )
+    .save("output.png")?;
 
     println!("📸 Image saved as output.png");
     Ok(())

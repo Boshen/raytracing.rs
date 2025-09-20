@@ -51,8 +51,8 @@ impl Aabb {
 
             // Update the intersection interval
             // We need the ray to be inside all three slabs simultaneously
-            tmin = t1.min(t2).max(tmin);  // Latest entry point
-            tmax = t1.max(t2).min(tmax);  // Earliest exit point
+            tmin = t1.min(t2).max(tmin); // Latest entry point
+            tmax = t1.max(t2).min(tmax); // Earliest exit point
 
             // If ray exits before it enters, there's no intersection
             if tmax < tmin {

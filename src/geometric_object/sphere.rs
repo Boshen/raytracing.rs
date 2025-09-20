@@ -50,9 +50,10 @@ impl<M: Material> Geometry for Sphere<M> {
         // Solve quadratic equation for ray-sphere intersection:
         // |P(t) - C|² = r²  where P(t) = O + t*D
         // Expands to: at² + bt + c = 0
-        let a = dir.dot(&dir);  // a = D·D (usually 1 if normalized)
-        let b = 2.0 * dir.dot(&(start - center));  // b = 2D·(O-C)
-        let c = radius.mul_add(  // c = (O-C)·(O-C) - r²
+        let a = dir.dot(&dir); // a = D·D (usually 1 if normalized)
+        let b = 2.0 * dir.dot(&(start - center)); // b = 2D·(O-C)
+        let c = radius.mul_add(
+            // c = (O-C)·(O-C) - r²
             -radius,
             2.0f64.mul_add(-center.dot(&start), center.dot(&center) + start.dot(&start)),
         );

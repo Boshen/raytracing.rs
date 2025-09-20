@@ -69,12 +69,11 @@ impl CornellBox {
         asset.lights.push(ambient_occuluder);
 
         // Configure camera position and field of view
-        let mut camera_setting =
-            Setting::new(
-                Pot3::new(0.0, 0.0, -3.0),  // Eye position
-                Pot3::new(0.0, 0.0, 0.0),   // Look-at point
-                520.0                        // Focal length
-            );
+        let mut camera_setting = Setting::new(
+            Pot3::new(0.0, 0.0, -3.0), // Eye position
+            Pot3::new(0.0, 0.0, 0.0),  // Look-at point
+            520.0,                     // Focal length
+        );
         camera_setting.set_view((view_width, view_height));
 
         // Select camera type based on arguments
@@ -82,37 +81,37 @@ impl CornellBox {
             ArgCamera::Simple => Box::new(Pinhole::new(camera_setting)),
             ArgCamera::ThinLens => Box::new(ThinLens::new(
                 camera_setting,
-                0.001,  // Lens radius (aperture)
-                510.0   // Focus distance
+                0.001, // Lens radius (aperture)
+                510.0, // Focus distance
             )),
         };
 
         // Add reflective sphere (demonstrates perfect and glossy reflections)
         let ball1_material = Reflective::new(
-            Lambertian::new(0.1, Color::repeat(1.0)),     // Ambient
-            Lambertian::new(0.7, Color::repeat(1.0)),     // Diffuse
+            Lambertian::new(0.1, Color::repeat(1.0)),          // Ambient
+            Lambertian::new(0.7, Color::repeat(1.0)),          // Diffuse
             GlossySpecular::new(0.1, 0.0, Color::repeat(1.0)), // Specular
             PerfectSpecular::new(0.8, Color::repeat(1.0)),     // Reflection
         );
         let ball1 = Arc::new(Sphere::new(
             ball1_material,
-            40.0,                           // Radius
-            Pot3::new(450.0, 40.0, 450.0),  // Position (right side, on floor)
-            scale
+            40.0,                          // Radius
+            Pot3::new(450.0, 40.0, 450.0), // Position (right side, on floor)
+            scale,
         ));
         asset.geometries.push(ball1);
 
         // Add Phong-shaded sphere (demonstrates classic shading model)
         let ball2_material = Phong::new(
-            Lambertian::new(0.1, Color::repeat(1.0)),      // Ambient
-            Lambertian::new(0.1, Color::repeat(1.0)),      // Diffuse
+            Lambertian::new(0.1, Color::repeat(1.0)),          // Ambient
+            Lambertian::new(0.1, Color::repeat(1.0)),          // Diffuse
             GlossySpecular::new(0.3, 2.0, Color::repeat(1.0)), // Specular with shininess
         );
         let ball2 = Arc::new(Sphere::new(
             ball2_material,
-            30.0,                           // Radius
-            Pot3::new(350.0, 30.0, 500.0),  // Position (left side, on floor)
-            scale
+            30.0,                          // Radius
+            Pot3::new(350.0, 30.0, 500.0), // Position (left side, on floor)
+            scale,
         ));
         asset.geometries.push(ball2);
 
@@ -121,7 +120,6 @@ impl CornellBox {
 
         Self { view_width, view_height, camera, ambient_light, lights: asset.lights, root }
     }
-
 
     /// Implementation moved from trait method for performance.
     /// Tests for ray-object intersection in the scene.
