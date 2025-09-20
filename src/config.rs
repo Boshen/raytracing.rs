@@ -75,3 +75,21 @@ pub mod geometry {
         pub const LARGE_SPHERE_POSITION: [f64; 3] = [200.0, 60.0, 400.0];
     }
 }
+
+/// BVH (Bounding Volume Hierarchy) configuration constants
+pub mod bvh {
+    /// Number of bins to use for SAH evaluation
+    pub const SAH_BINS: usize = 12;
+
+    /// Cost of traversing an interior node
+    pub const TRAVERSAL_COST: f64 = 1.0;
+
+    /// Cost of intersecting a primitive
+    pub const INTERSECTION_COST: f64 = 1.0;
+
+    /// Maximum depth for BVH tree (to prevent stack overflow)
+    pub const MAX_DEPTH: usize = 64;
+
+    /// Minimum primitives to consider SAH splitting (below this, just create leaf)
+    pub const MIN_PRIMITIVES_FOR_SPLIT: usize = 4;
+}
