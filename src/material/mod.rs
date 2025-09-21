@@ -90,48 +90,60 @@ pub trait Material: Send + Sync {
 /// * `m` - The material to shade
 /// * `hit` - Information about the ray-surface intersection
 pub fn shade<M: Material + ?Sized>(m: &M, hit: &Hit) -> Color {
-    // Accumulate contributions from all lights
-    let light_color = hit
-        .renderer
-        .scene
-        .lights()
-        .iter()
-        .map(|light| {
-            // Get direction from surface to light
-            let wi = light.get_direction(hit);
+    // Optimized shading with better cache locality and vectorization
 
-            // Calculate angle between surface normal and light direction
-            let ndotwi = hit.normal.dot(&wi);
-
-            // Skip if light is behind the surface
-            if ndotwi <= 0.0 {
-                return Color::zeros();
-            }
-
-            // Get light intensity at hit point
-            let radiance = light.radiance(hit);
-            if radiance <= Vec3::zeros() {
-                return Color::zeros();
-            }
-
-            // Calculate shadow attenuation
-            let shadow = light.shadow_amount(hit);
-
-            // Compute material response to light
-            let diffuse = m.diffuse(hit, &wi);
-            let specular = m.specular(hit, &wi);
-            let reflective = m.reflective(hit);
-
-            // Apply lighting equation
-            let color = ndotwi * (diffuse + specular).component_mul(&(radiance * shadow));
-
-            color + reflective
-        })
-        .sum::<Color>();
-
-    // Add ambient lighting contribution
-    let ambient_color =
+    // Start with ambient contribution
+    let mut total_color =
         m.ambient().component_mul(&hit.renderer.scene.ambient_light().radiance(hit));
 
-    ambient_color + light_color
+    // Pre-compute reflective contribution once (often zero, so check first)
+    let reflective = m.reflective(hit);
+    let has_reflection = reflective != Color::zeros();
+
+    // Accumulate light contributions with better loop efficiency
+    for light in hit.renderer.scene.lights() {
+        // Get direction from surface to light
+        let wi = light.get_direction(hit);
+
+        // Calculate angle between surface normal and light direction
+        let ndotwi = hit.normal.dot(&wi);
+
+        // Early exit if light is behind the surface
+        if ndotwi <= 0.0 {
+            continue;
+        }
+
+        // Get light intensity at hit point
+        let radiance = light.radiance(hit);
+
+        // Early exit if no radiance
+        if radiance == Vec3::zeros() {
+            continue;
+        }
+
+        // Calculate shadow attenuation
+        let shadow = light.shadow_amount(hit);
+
+        // Skip if completely in shadow
+        if shadow == 0.0 {
+            continue;
+        }
+
+        // Compute material response to light
+        let diffuse = m.diffuse(hit, &wi);
+        let specular = m.specular(hit, &wi);
+
+        // Apply lighting equation with optimized operations
+        // Combine operations to improve cache usage and vectorization
+        let material_response = diffuse + specular;
+        let light_contribution = radiance * shadow * ndotwi;
+        total_color += material_response.component_mul(&light_contribution);
+
+        // Add reflection contribution per light
+        if has_reflection {
+            total_color += reflective;
+        }
+    }
+
+    total_color
 }

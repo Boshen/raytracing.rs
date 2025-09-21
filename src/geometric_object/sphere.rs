@@ -41,45 +41,50 @@ impl<M: Material> Sphere<M> {
 
 impl<M: Material> Geometry for Sphere<M> {
     fn intersects(&self, ray: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord<'_>> {
-        // Extract sphere properties
-        let radius = self.radius;
-        let center = Vec3::new(self.center.x, self.center.y, self.center.z);
-        let start = Vec3::new(ray.origin.x, ray.origin.y, ray.origin.z);
-        let dir = ray.dir;
+        // Optimized ray-sphere intersection using improved quadratic formula
+        // Avoids unnecessary conversions and leverages FMA instructions
 
-        // Solve quadratic equation for ray-sphere intersection:
-        // |P(t) - C|² = r²  where P(t) = O + t*D
-        // Expands to: at² + bt + c = 0
-        let a = dir.dot(&dir); // a = D·D (usually 1 if normalized)
-        let b = 2.0 * dir.dot(&(start - center)); // b = 2D·(O-C)
-        let c = radius.mul_add(
-            // c = (O-C)·(O-C) - r²
-            -radius,
-            2.0f64.mul_add(-center.dot(&start), center.dot(&center) + start.dot(&start)),
-        );
+        // Vector from ray origin to sphere center
+        let oc = ray.origin - self.center;
 
-        // Calculate discriminant: b² - 4ac
-        let disc = b.mul_add(b, -(4.0 * a * c));
+        // Coefficients for quadratic equation
+        // Using half_b optimization to reduce operations
+        let a = ray.dir.dot(&ray.dir); // Usually 1.0 for normalized rays
+        let half_b = oc.dot(&ray.dir);
+        let c = oc.dot(&oc) - self.radius * self.radius;
 
-        // No intersection if discriminant is negative
-        if disc < 0.0 {
+        // Calculate discriminant with FMA: half_b² - ac
+        let discriminant = half_b.mul_add(half_b, -a * c);
+
+        // Early exit if no intersection
+        if discriminant < 0.0 {
             return None;
         }
 
-        // Find the nearest intersection point (smaller t value)
-        let t = (-b - disc.sqrt()) / (2.0 * a);
+        // Calculate nearest intersection point
+        let sqrt_disc = discriminant.sqrt();
 
-        // Check if intersection is behind ray origin
-        if t < 0.0 {
-            return None;
-        }
+        // Try nearer intersection first
+        let t = (-half_b - sqrt_disc) / a;
 
-        // Check if intersection is within valid range
+        // Check if nearer intersection is valid
         if t < t_min || t > t_max {
-            return None;
+            // Try farther intersection
+            let t_far = (-half_b + sqrt_disc) / a;
+            if t_far < t_min || t_far > t_max {
+                return None;
+            }
+            // Use farther intersection
+            let hit_point = ray.get_point(t_far);
+            return Some(HitRecord {
+                dist: t_far,
+                hit_point,
+                normal: self.normal(&hit_point),
+                material: &self.material,
+            });
         }
 
-        // Calculate hit point and return hit record
+        // Use nearer intersection
         let hit_point = ray.get_point(t);
         Some(HitRecord {
             dist: t,
