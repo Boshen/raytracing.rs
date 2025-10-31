@@ -52,14 +52,9 @@ impl SceneFactory {
 }
 
 /// Available scene types that can be created by the factory.
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Default)]
 pub enum SceneType {
     /// Classic Cornell Box scene for testing global illumination
+    #[default]
     CornellBox,
-}
-
-impl Default for SceneType {
-    fn default() -> Self {
-        Self::CornellBox
-    }
 }
