@@ -65,17 +65,10 @@ jobs:
           tools: cargo-codspeed
 
       - name: Build
-        env:
-          RUSTFLAGS: "-C debuginfo=1 -C strip=none -g --cfg codspeed"
-        run: |
-          cargo build --release --bench bench_raytracing --features codspeed
-          mkdir -p target/codspeed/instrumentation/raytracing
-          mv target/release/deps/bench_raytracing-* target/codspeed/instrumentation/raytracing
-          rm target/codspeed/instrumentation/raytracing/*.d
+        run: cargo codspeed build --bench bench_raytracing --features codspeed
 
       - uses: CodSpeedHQ/action@972e3437949c89e1357ebd1a2dbc852fcbc57245 # v4.5.1
         timeout-minutes: 5
         with:
+          mode: simulation
           run: cargo codspeed run
-          mode: instrumentation
-          token: ${{ secrets.CODSPEED_TOKEN }}
