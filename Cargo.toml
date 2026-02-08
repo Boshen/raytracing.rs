@@ -40,7 +40,7 @@ num-integer = "0.1.46"
 image = "0.25.5"
 nalgebra = "0.34.0"
 rayon = "1.10.0"
-rand = "0.9.0"
+rand = "0.10.0"
 tobj = "4.0.2"
 bpaf = { version = "0.9.15", features = ["derive"] }
 
