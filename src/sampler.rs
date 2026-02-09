@@ -1,12 +1,23 @@
 //! Sampling strategies for antialiasing and Monte Carlo integration.
 
 use std::f64::consts::FRAC_PI_4;
+use std::sync::atomic::{AtomicU64, Ordering};
+use std::time::{SystemTime, UNIX_EPOCH};
 
 use nalgebra::{Point2, Point3};
 use num_integer::Roots;
-use rand::{RngExt, distr::StandardUniform, rng};
+use rand::{RngExt, SeedableRng, distr::StandardUniform, rngs::SmallRng};
 
 use crate::model::Vec3;
+
+fn make_rng() -> SmallRng {
+    static COUNTER: AtomicU64 = AtomicU64::new(0);
+    let time_seed = SystemTime::now().duration_since(UNIX_EPOCH).map_or(0, |duration| {
+        duration.as_secs().rotate_left(32) ^ u64::from(duration.subsec_nanos())
+    });
+    let counter_seed = COUNTER.fetch_add(0x9E37_79B9_7F4A_7C15, Ordering::Relaxed);
+    SmallRng::seed_from_u64(time_seed ^ counter_seed)
+}
 
 /// Generates sample points for various rendering techniques including
 /// antialiasing, area lighting, and Monte Carlo integration.
@@ -27,7 +38,7 @@ impl Sampler {
         let num_sets = 83; // sufficiently large prime number to reduce correlation
 
         let n = num_samples.sqrt();
-        let mut rng = rng();
+        let mut rng = make_rng();
         let mut samples = vec![];
 
         // Generate jittered samples for better quality than regular grid
@@ -61,7 +72,7 @@ impl Sampler {
     /// Returns sample points in unit square [0,1)²
     fn unit_square(&self) -> Vec<(f64, f64)> {
         // Take a random set to avoid shading streaks
-        let mut rng = rng();
+        let mut rng = make_rng();
         let skip: usize = rng.random_range(0..self.num_sets);
 
         self.samples.iter().skip(skip).take(self.count().into()).copied().collect()
