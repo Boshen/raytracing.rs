@@ -4,7 +4,7 @@ use std::f64::consts::FRAC_PI_4;
 
 use nalgebra::{Point2, Point3};
 use num_integer::Roots;
-use rand::{Rng, distr::StandardUniform, rng};
+use rand::{RngExt, distr::StandardUniform, rng};
 
 use crate::model::Vec3;
 
