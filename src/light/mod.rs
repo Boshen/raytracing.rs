@@ -30,6 +30,5 @@ pub fn in_shadow(hit: &Hit, dir: &Vec3, tmax: f64) -> bool {
     hit.renderer
         .scene
         .intersects(&shadow_ray, 0.0, tmax)
-        .filter(|obj| !obj.material.emissive())
-        .is_some()
+        .is_some_and(|obj| !obj.material.emissive())
 }
