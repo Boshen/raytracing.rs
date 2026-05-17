@@ -21,7 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: taiki-e/checkout-action@7d1e50e93dc4fb3bba58f85018fadf77898aee8b # v1.4.2
-      - uses: Boshen/setup-rust@92d71e4da65d4ae1f12e234c5bfa27b964ce994f # main
+      - uses: Boshen/setup-rust@8f1716bb8b583c857a1b0f4972a7bfbea4103eaa # main
         with:
           save-cache: ${{ github.ref_name == 'main' }}
           components: clippy rustfmt
@@ -67,7 +67,7 @@ jobs:
       - name: Build
         run: cargo codspeed build --bench bench_raytracing --features codspeed
 
-      - uses: CodSpeedHQ/action@c381be0bfd20e844fb45594f6aa182ffcd94545c # v4.15.0
+      - uses: CodSpeedHQ/action@3194d9a39c4d46684cb44bf7207fc56626aad8fd # v4.15.1
         timeout-minutes: 5
         with:
           mode: simulation
