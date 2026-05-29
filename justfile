@@ -8,7 +8,7 @@ default:
 
 # Initialize the development environment
 init:
-    cargo install cargo-watch cargo-llvm-cov cargo-codspeed
+    cargo install cargo-watch cargo-codspeed
     git config core.hooksPath .githooks
 
 # Install git pre-commit hooks
@@ -46,10 +46,6 @@ build-release:
 # Run all tests
 test:
     cargo test --release
-
-# Run tests with coverage
-coverage:
-    cargo llvm-cov --lcov --output-path lcov.info
 
 # Watch for changes and run tests
 watch-test:

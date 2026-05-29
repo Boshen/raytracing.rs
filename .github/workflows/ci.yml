@@ -29,29 +29,6 @@ jobs:
       - run: cargo fmt --all -- --check
       - run: cargo clippy -- -D warnings
 
-  coverage:
-    name: Run Code Coverage
-    runs-on: ubuntu-latest
-    steps:
-      - uses: taiki-e/checkout-action@7d1e50e93dc4fb3bba58f85018fadf77898aee8b # v1.4.2
-
-      - uses: oxc-project/setup-rust@23f38cfb0c04af97a055f76acee94d5be71c7c82 # v1.0.16
-        with:
-          cache-key: codecov
-          save-cache: ${{ github.ref_name == 'main' }}
-          tools: cargo-llvm-cov
-          components: llvm-tools-preview
-
-      - run: cargo llvm-cov --lcov --output-path lcov.info
-
-      - name: Upload to codecov.io
-        if: env.CODECOV_TOKEN
-        uses: codecov/codecov-action@e79a6962e0d4c0c17b229090214935d2e33f8354 # v6.0.1
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          fail_ci_if_error: true
-          files: lcov.info
-
   benchmark:
     name: Benchmark
     runs-on: ubuntu-latest
