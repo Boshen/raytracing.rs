@@ -21,7 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: taiki-e/checkout-action@7d1e50e93dc4fb3bba58f85018fadf77898aee8b # v1.4.2
-      - uses: Boshen/setup-rust@5d429e6d39c5c2a8426a01e49bb3632538bf103d # main
+      - uses: Boshen/setup-rust@053830d84d32d4e66b21382863df2ffd56a6fd83 # main
         with:
           save-cache: ${{ github.ref_name == 'main' }}
           components: clippy rustfmt
